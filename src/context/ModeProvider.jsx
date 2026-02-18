@@ -23,6 +23,7 @@ const initialState = {
   isSubmitted: false,
   diagramBlocks: [],
   diagramOpen: false,
+  diagramLayout: '1d', // '1d' | '2d'
   showOverlay: false,
   currentSpeechLine: 0,
 }
@@ -91,6 +92,9 @@ function modeReducer(state, action) {
 
     case 'TOGGLE_DIAGRAM':
       return { ...state, diagramOpen: !state.diagramOpen }
+
+    case 'SET_DIAGRAM_LAYOUT':
+      return { ...state, diagramLayout: action.payload }
 
     case 'SHOW_OVERLAY':
       return { ...state, showOverlay: true, sessionState: 'expert' }

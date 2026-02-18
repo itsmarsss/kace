@@ -1,11 +1,12 @@
 import { useRef, useEffect } from 'react'
-import { X } from 'lucide-react'
+import { X, Workflow, List } from 'lucide-react'
 import { useMode } from '../../context/ModeProvider'
 import DiagramBlock from './DiagramBlock'
 import DiagramArrows from './DiagramArrows'
+import DiagramLayout2D from './DiagramLayout2D'
 
 export default function DiagramPanel() {
-  const { diagramBlocks, diagramOpen, dispatch } = useMode()
+  const { diagramBlocks, diagramOpen, diagramLayout, dispatch } = useMode()
   const containerRef = useRef(null)
   const blockRefs = useRef([])
 
@@ -17,6 +18,8 @@ export default function DiagramPanel() {
   if (!diagramOpen) {
     return null
   }
+
+  const is2D = diagramLayout === '2d'
 
   return (
     <div
@@ -42,7 +45,7 @@ export default function DiagramPanel() {
           gap: '12px',
         }}
       >
-        <div>
+        <div style={{ flex: 1 }}>
           <div
             style={{
               fontFamily: '"DM Sans", sans-serif',
@@ -65,6 +68,62 @@ export default function DiagramPanel() {
           >
             Your extracted reasoning
           </div>
+        </div>
+
+        {/* Layout toggle */}
+        <div
+          style={{
+            display: 'flex',
+            gap: '4px',
+            background: 'var(--muted-bg)',
+            padding: '2px',
+            borderRadius: 'var(--r-sm)',
+          }}
+        >
+          <button
+            onClick={() => dispatch({ type: 'SET_DIAGRAM_LAYOUT', payload: '1d' })}
+            style={{
+              padding: '4px 8px',
+              border: 'none',
+              background: !is2D ? 'var(--surface)' : 'transparent',
+              color: !is2D ? 'var(--text)' : 'var(--text-mute)',
+              borderRadius: 'var(--r-xs)',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              fontSize: '10px',
+              fontFamily: '"DM Sans", sans-serif',
+              fontWeight: 500,
+              transition: 'all 0.15s',
+              boxShadow: !is2D ? 'var(--shadow-sm)' : 'none',
+            }}
+          >
+            <List size={12} />
+            Linear
+          </button>
+          <button
+            onClick={() => dispatch({ type: 'SET_DIAGRAM_LAYOUT', payload: '2d' })}
+            style={{
+              padding: '4px 8px',
+              border: 'none',
+              background: is2D ? 'var(--surface)' : 'transparent',
+              color: is2D ? 'var(--text)' : 'var(--text-mute)',
+              borderRadius: 'var(--r-xs)',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              fontSize: '10px',
+              fontFamily: '"DM Sans", sans-serif',
+              fontWeight: 500,
+              transition: 'all 0.15s',
+              boxShadow: is2D ? 'var(--shadow-sm)' : 'none',
+            }}
+          >
+            <Workflow size={12} />
+            Graph
+          </button>
         </div>
 
         <button
@@ -101,6 +160,7 @@ export default function DiagramPanel() {
         style={{
           flex: 1,
           overflowY: 'auto',
+          overflowX: is2D ? 'auto' : 'hidden',
           padding: '16px',
           position: 'relative',
         }}
@@ -122,7 +182,11 @@ export default function DiagramPanel() {
             Analysis could not be completed. You can still view the expert
             comparison.
           </div>
+        ) : is2D ? (
+          // 2D graph layout
+          <DiagramLayout2D blocks={diagramBlocks} blockRefs={blockRefs.current} />
         ) : (
+          // 1D vertical layout
           <>
             {/* SVG arrows layer (behind blocks) */}
             <DiagramArrows
