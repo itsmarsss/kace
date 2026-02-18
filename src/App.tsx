@@ -13,14 +13,14 @@ function App() {
         <TopBar />
         <PanelGroup direction="horizontal" className="flex-1">
           {/* Patient Panel */}
-          <Panel defaultSize={20} minSize={10} maxSize={50}>
+          <Panel defaultSize={20} minSize={5}>
             <PatientPanel />
           </Panel>
 
           <PanelResizeHandle
             style={{
-              width: '2px',
-              background: 'var(--border)',
+              width: '3px',
+              background: 'var(--border-md)',
               cursor: 'col-resize',
               transition: 'background 0.2s',
             }}
@@ -28,19 +28,19 @@ function App() {
               e.currentTarget.style.background = 'var(--teal)'
             }}
             onMouseLeave={(e: any) => {
-              e.currentTarget.style.background = 'var(--border)'
+              e.currentTarget.style.background = 'var(--border-md)'
             }}
           />
 
           {/* Reasoning Panel */}
-          <Panel defaultSize={50} minSize={20}>
+          <Panel defaultSize={50} minSize={10}>
             <ReasoningPanel />
           </Panel>
 
           <PanelResizeHandle
             style={{
-              width: '2px',
-              background: 'var(--border)',
+              width: '3px',
+              background: 'var(--border-md)',
               cursor: 'col-resize',
               transition: 'background 0.2s',
             }}
@@ -48,12 +48,12 @@ function App() {
               e.currentTarget.style.background = 'var(--teal)'
             }}
             onMouseLeave={(e: any) => {
-              e.currentTarget.style.background = 'var(--border)'
+              e.currentTarget.style.background = 'var(--border-md)'
             }}
           />
 
           {/* Diagram Panel */}
-          <Panel defaultSize={30} minSize={15} maxSize={70}>
+          <Panel defaultSize={30} minSize={5}>
             <DiagramPanel />
           </Panel>
         </PanelGroup>
