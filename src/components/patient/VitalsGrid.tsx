@@ -13,7 +13,7 @@ export default function VitalsGrid() {
           fontWeight: 600,
           textTransform: 'uppercase',
           letterSpacing: '0.14em',
-          color: 'var(--text-mute)',
+          color: 'var(--text-tertiary)',
           padding: '12px 16px 5px',
           display: 'flex',
           alignItems: 'center',
@@ -43,7 +43,7 @@ export default function VitalsGrid() {
               fontWeight: 500,
               textTransform: 'uppercase',
               letterSpacing: '0.08em',
-              color: 'var(--text-mute)',
+              color: 'var(--text-tertiary)',
               width: '80px',
               flexShrink: 0,
             }}
@@ -58,7 +58,7 @@ export default function VitalsGrid() {
               fontSize: '17px',
               fontWeight: 500,
               fontVariationSettings: '"opsz" 17',
-              color: 'var(--text)',
+              color: 'var(--text-primary)',
               flex: 1,
             }}
           >
@@ -71,7 +71,7 @@ export default function VitalsGrid() {
               fontFamily: '"DM Sans", sans-serif',
               fontSize: '11px',
               fontWeight: 300,
-              color: 'var(--text-mute)',
+              color: 'var(--text-tertiary)',
             }}
           >
             {vital.unit}
@@ -109,7 +109,7 @@ export default function VitalsGrid() {
           fontWeight: 600,
           textTransform: 'uppercase',
           letterSpacing: '0.14em',
-          color: 'var(--text-mute)',
+          color: 'var(--text-tertiary)',
           padding: '12px 16px 5px',
           display: 'flex',
           alignItems: 'center',
@@ -143,7 +143,7 @@ export default function VitalsGrid() {
               fontWeight: 600,
               textTransform: 'uppercase',
               letterSpacing: '0.1em',
-              color: 'var(--text-mute)',
+              color: 'var(--text-tertiary)',
             }}
           >
             {item.label}
@@ -155,7 +155,7 @@ export default function VitalsGrid() {
               fontFamily: '"DM Sans", sans-serif',
               fontSize: '12px',
               lineHeight: '1.5',
-              color: 'var(--text-dim)',
+              color: 'var(--text-secondary)',
             }}
             dangerouslySetInnerHTML={{ __html: item.text }}
           />

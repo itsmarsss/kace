@@ -112,7 +112,7 @@ export default function PatientSpeech() {
               height: '16px',
               border: 'none',
               background: 'transparent',
-              color: currentSpeechLine === 0 ? 'var(--border-md)' : 'var(--text-mute)',
+              color: currentSpeechLine === 0 ? 'var(--border-md)' : 'var(--text-tertiary)',
               cursor: currentSpeechLine === 0 ? 'not-allowed' : 'pointer',
               padding: 0,
               display: 'flex',
@@ -127,7 +127,7 @@ export default function PatientSpeech() {
             style={{
               fontFamily: '"DM Sans", sans-serif',
               fontSize: '10px',
-              color: 'var(--text-mute)',
+              color: 'var(--text-tertiary)',
             }}
           >
             {currentSpeechLine + 1} / {speechLines.length}
@@ -144,7 +144,7 @@ export default function PatientSpeech() {
               color:
                 currentSpeechLine === speechLines.length - 1
                   ? 'var(--border-md)'
-                  : 'var(--text-mute)',
+                  : 'var(--text-tertiary)',
               cursor:
                 currentSpeechLine === speechLines.length - 1 ? 'not-allowed' : 'pointer',
               padding: 0,
@@ -204,7 +204,7 @@ export default function PatientSpeech() {
             fontStyle: 'italic',
             fontVariationSettings: '"opsz" 14',
             lineHeight: '1.65',
-            color: 'var(--text-dim)',
+            color: 'var(--text-secondary)',
             margin: 0,
           }}
         >

@@ -17,12 +17,12 @@ export default function CalibrationBars() {
     <div className="space-y-3">
       {data.map((item, index) => (
         <div key={index}>
-          <div className="text-[11px] mb-1" style={{ color: 'var(--text-dim)' }}>
+          <div className="text-[11px] mb-1" style={{ color: 'var(--text-secondary)' }}>
             {item.category}
           </div>
 
           <div className="flex items-center gap-3 mb-[2px]">
-            <span className="text-[10px] w-[90px]" style={{ color: 'var(--text-mute)' }}>
+            <span className="text-[10px] w-[90px]" style={{ color: 'var(--text-tertiary)' }}>
               Your reasoning
             </span>
             <div
@@ -44,7 +44,7 @@ export default function CalibrationBars() {
           </div>
 
           <div className="flex items-center gap-3">
-            <span className="text-[10px] w-[90px]" style={{ color: 'var(--text-mute)' }}>
+            <span className="text-[10px] w-[90px]" style={{ color: 'var(--text-tertiary)' }}>
               Expert
             </span>
             <div
@@ -55,12 +55,12 @@ export default function CalibrationBars() {
                 className="h-full rounded-full transition-all duration-[1200ms]"
                 style={{
                   width: animated ? `${item.expert}%` : '0%',
-                  background: 'var(--text-dim)',
+                  background: 'var(--text-secondary)',
                   transitionTimingFunction: 'var(--ease-out)',
                 }}
               />
             </div>
-            <span className="text-[10px] w-[30px] text-right font-medium" style={{ color: 'var(--text-dim)' }}>
+            <span className="text-[10px] w-[30px] text-right font-medium" style={{ color: 'var(--text-secondary)' }}>
               {item.expert}%
             </span>
           </div>

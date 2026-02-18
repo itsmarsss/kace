@@ -24,12 +24,12 @@ export default function ExpertOverlay() {
             style={{
               fontFamily: '"Source Serif 4", serif',
               fontVariationSettings: '"opsz" 17',
-              color: 'var(--text)',
+              color: 'var(--text-primary)',
             }}
           >
             Expert Comparison
           </h2>
-          <p className="text-[11px]" style={{ color: 'var(--text-mute)' }}>
+          <p className="text-[11px]" style={{ color: 'var(--text-tertiary)' }}>
             See how your reasoning aligns with expert clinical thinking
           </p>
         </div>
@@ -40,7 +40,7 @@ export default function ExpertOverlay() {
           style={{
             background: 'transparent',
             border: '1px solid var(--border-md)',
-            color: 'var(--text-dim)',
+            color: 'var(--text-secondary)',
           }}
         >
           <X size={14} />
@@ -55,7 +55,7 @@ export default function ExpertOverlay() {
           className="flex-1 px-[26px] py-[22px] overflow-y-auto space-y-[10px]"
           style={{ borderRight: '1px solid var(--border)' }}
         >
-          <div className="label-caps mb-4" style={{ color: 'var(--text-mute)' }}>
+          <div className="label-caps mb-4" style={{ color: 'var(--text-tertiary)' }}>
             Your Reasoning
           </div>
 
@@ -72,7 +72,7 @@ export default function ExpertOverlay() {
 
         {/* Expert trace */}
         <div className="flex-1 px-[26px] py-[22px] overflow-y-auto space-y-[10px]">
-          <div className="label-caps mb-4" style={{ color: 'var(--text-mute)' }}>
+          <div className="label-caps mb-4" style={{ color: 'var(--text-tertiary)' }}>
             Expert Reasoning
           </div>
 
@@ -99,7 +99,7 @@ export default function ExpertOverlay() {
               fontSize: '14px',
               fontVariationSettings: '"opsz" 14',
               lineHeight: '1.78',
-              color: 'var(--text)',
+              color: 'var(--text-primary)',
             }}
           >
             Your reasoning captured the critical comorbidities. The key insight: in HFrEF + T2DM,

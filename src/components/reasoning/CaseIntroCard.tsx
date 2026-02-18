@@ -62,7 +62,7 @@ export default function CaseIntroCard() {
           fontSize: '16px',
           fontVariationSettings: '"opsz" 16',
           lineHeight: '1.7',
-          color: 'var(--text)',
+          color: 'var(--text-primary)',
         }}
       >
         {currentCase.introPrompt}

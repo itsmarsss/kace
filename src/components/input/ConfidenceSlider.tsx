@@ -5,7 +5,7 @@ export default function ConfidenceSlider() {
 
   return (
     <div className="flex items-center gap-3">
-      <div className="text-[10px]" style={{ color: 'var(--text-mute)' }}>
+      <div className="text-[10px]" style={{ color: 'var(--text-tertiary)' }}>
         Confidence
       </div>
 

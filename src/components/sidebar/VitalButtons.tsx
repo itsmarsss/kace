@@ -32,7 +32,7 @@ export default function VitalButtons() {
           unlocked: {
             background: 'transparent',
             border: '1px solid var(--border-md)',
-            color: 'var(--text-dim)',
+            color: 'var(--text-secondary)',
             cursor: 'pointer',
             badgeBg: 'rgba(58,110,168,0.1)',
             badgeColor: 'var(--blue)',
@@ -41,11 +41,11 @@ export default function VitalButtons() {
           locked: {
             background: 'transparent',
             border: '1px solid var(--border)',
-            color: 'var(--text-mute)',
+            color: 'var(--text-tertiary)',
             cursor: 'not-allowed',
             opacity: '0.35',
             badgeBg: 'var(--muted-bg)',
-            badgeColor: 'var(--text-mute)',
+            badgeColor: 'var(--text-tertiary)',
             badgeText: 'Locked',
           },
           revealed: {

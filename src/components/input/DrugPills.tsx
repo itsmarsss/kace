@@ -31,7 +31,7 @@ export default function DrugPills() {
               border: isSelected
                 ? '1px solid var(--teal-border)'
                 : '1px solid var(--border-md)',
-              color: isSelected ? 'var(--teal-dark)' : 'var(--text-dim)',
+              color: isSelected ? 'var(--teal-dark)' : 'var(--text-secondary)',
               cursor: isInputDisabled ? 'not-allowed' : 'pointer',
             }}
           >

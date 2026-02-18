@@ -17,9 +17,9 @@
     --border-strong: rgba(0, 0, 0, 0.22);
 
     /* ── Text ── */
-    --text: #1a1a1a;
-    --text-dim: #4a5568;
-    --text-mute: #8a9bab;
+    --text-primary: #1a1a1a;
+    --text-secondary: #4a5568;
+    --text-tertiary: #8a9bab;
 
     /* ── Brand: SHN Teal ── */
     --teal: #49c6b9;
@@ -72,7 +72,7 @@
 body {
     font-family: "DM Sans", sans-serif;
     background: var(--bg);
-    color: var(--text);
+    color: var(--text-primary);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }

@@ -3,7 +3,7 @@ import { X, Workflow, List } from 'lucide-react'
 import { useMode } from '../../context/ModeProvider'
 import DiagramBlock from './DiagramBlock'
 import DiagramArrows from './DiagramArrows'
-import DiagramLayout2D from './DiagramLayout2D'
+import DiagramFlow from './DiagramFlow'
 
 export default function DiagramPanel() {
   const { diagramBlocks, diagramOpen, diagramLayout, dispatch } = useMode()
@@ -53,7 +53,7 @@ export default function DiagramPanel() {
               fontWeight: 600,
               textTransform: 'uppercase',
               letterSpacing: '0.12em',
-              color: 'var(--text-mute)',
+              color: 'var(--text-tertiary)',
               marginBottom: '2px',
             }}
           >
@@ -63,7 +63,7 @@ export default function DiagramPanel() {
             style={{
               fontFamily: '"DM Sans", sans-serif',
               fontSize: '10px',
-              color: 'var(--text-mute)',
+              color: 'var(--text-tertiary)',
             }}
           >
             Your extracted reasoning
@@ -86,7 +86,7 @@ export default function DiagramPanel() {
               padding: '4px 8px',
               border: 'none',
               background: !is2D ? 'var(--surface)' : 'transparent',
-              color: !is2D ? 'var(--text)' : 'var(--text-mute)',
+              color: !is2D ? 'var(--text-primary)' : 'var(--text-tertiary)',
               borderRadius: 'var(--r-xs)',
               cursor: 'pointer',
               display: 'flex',
@@ -108,7 +108,7 @@ export default function DiagramPanel() {
               padding: '4px 8px',
               border: 'none',
               background: is2D ? 'var(--surface)' : 'transparent',
-              color: is2D ? 'var(--text)' : 'var(--text-mute)',
+              color: is2D ? 'var(--text-primary)' : 'var(--text-tertiary)',
               borderRadius: 'var(--r-xs)',
               cursor: 'pointer',
               display: 'flex',
@@ -136,18 +136,18 @@ export default function DiagramPanel() {
             justifyContent: 'center',
             border: 'none',
             background: 'transparent',
-            color: 'var(--text-mute)',
+            color: 'var(--text-tertiary)',
             cursor: 'pointer',
             borderRadius: 'var(--r-xs)',
             transition: 'all 0.15s',
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.background = 'var(--card-hover)'
-            e.currentTarget.style.color = 'var(--text)'
+            e.currentTarget.style.color = 'var(--text-primary)'
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.background = 'transparent'
-            e.currentTarget.style.color = 'var(--text-mute)'
+            e.currentTarget.style.color = 'var(--text-tertiary)'
           }}
         >
           <X size={14} />
@@ -174,7 +174,7 @@ export default function DiagramPanel() {
               height: '100%',
               fontFamily: '"DM Sans", sans-serif',
               fontSize: '13px',
-              color: 'var(--text-mute)',
+              color: 'var(--text-tertiary)',
               textAlign: 'center',
               padding: '20px',
             }}
@@ -183,8 +183,8 @@ export default function DiagramPanel() {
             comparison.
           </div>
         ) : is2D ? (
-          // 2D graph layout
-          <DiagramLayout2D blocks={diagramBlocks} blockRefs={blockRefs.current} />
+          // 2D interactive canvas with React Flow
+          <DiagramFlow blocks={diagramBlocks} />
         ) : (
           // 1D vertical layout
           <>

@@ -25,7 +25,7 @@ export default function Sidebar() {
         {/* Chief Complaint */}
         <div className="px-4 pt-5 pb-3">
           <div className="label-caps mb-2">Chief Complaint</div>
-          <p className="text-[11px] leading-[1.5]" style={{ color: 'var(--text-dim)' }}>
+          <p className="text-[11px] leading-[1.5]" style={{ color: 'var(--text-secondary)' }}>
             {currentCase.patient.chiefComplaint}
           </p>
         </div>
@@ -70,7 +70,7 @@ export default function Sidebar() {
                     />
                     <p
                       className="text-[11px] leading-[1.4]"
-                      style={{ color: 'var(--text-dim)' }}
+                      style={{ color: 'var(--text-secondary)' }}
                       dangerouslySetInnerHTML={{ __html: vital.sidebarEntry.text }}
                     />
                   </div>

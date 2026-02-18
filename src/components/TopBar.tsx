@@ -26,7 +26,7 @@ export default function TopBar() {
         </h1>
         <span
           className="text-[10px] font-normal ml-[6px]"
-          style={{ color: 'var(--text-mute)' }}
+          style={{ color: 'var(--text-tertiary)' }}
         >
           Clinical Reasoning Coach
         </span>
@@ -43,7 +43,7 @@ export default function TopBar() {
         className="text-[13px] font-medium"
         style={{
           fontFamily: '"DM Sans", sans-serif',
-          color: 'var(--text)',
+          color: 'var(--text-primary)',
         }}
       >
         {currentCase.patient.name}
@@ -55,7 +55,7 @@ export default function TopBar() {
         style={{
           background: 'var(--muted-bg)',
           border: '1px solid var(--border-md)',
-          color: 'var(--text-mute)',
+          color: 'var(--text-tertiary)',
           fontFamily: '"DM Sans", sans-serif',
         }}
       >

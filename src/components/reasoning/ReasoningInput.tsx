@@ -86,7 +86,7 @@ export default function ReasoningInput() {
             fontFamily: '"DM Sans", sans-serif',
             fontSize: '13px',
             fontWeight: 500,
-            color: 'var(--text-dim)',
+            color: 'var(--text-secondary)',
           }}
         >
           Analyzing your reasoning...
@@ -97,7 +97,7 @@ export default function ReasoningInput() {
           style={{
             fontFamily: '"DM Sans", sans-serif',
             fontSize: '11px',
-            color: 'var(--text-mute)',
+            color: 'var(--text-tertiary)',
           }}
         >
           Building your reasoning diagram
@@ -144,7 +144,7 @@ export default function ReasoningInput() {
             padding: '13px 16px',
             fontFamily: '"DM Sans", sans-serif',
             fontSize: '14px',
-            color: isSubmitted ? 'var(--text-dim)' : 'var(--text)',
+            color: isSubmitted ? 'var(--text-secondary)' : 'var(--text-primary)',
             lineHeight: '1.7',
             resize: 'none',
             boxShadow: 'var(--shadow-sm)',
@@ -189,7 +189,7 @@ export default function ReasoningInput() {
                 : 'var(--teal)',
             color:
               isSubmitted || selectedDrugs.length === 0 || !reasoningText.trim()
-                ? 'var(--text-mute)'
+                ? 'var(--text-tertiary)'
                 : 'white',
             fontFamily: '"DM Sans", sans-serif',
             fontSize: '13px',

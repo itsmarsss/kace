@@ -38,11 +38,11 @@ export default function DiffNode({ type, title, body, animationDelay = 0 }) {
         {style.label}
       </div>
 
-      <div className="text-[12px] font-medium mb-[3px]" style={{ color: 'var(--text)' }}>
+      <div className="text-[12px] font-medium mb-[3px]" style={{ color: 'var(--text-primary)' }}>
         {title}
       </div>
 
-      <div className="text-[11px]" style={{ color: 'var(--text-dim)' }}>
+      <div className="text-[11px]" style={{ color: 'var(--text-secondary)' }}>
         {body}
       </div>
     </div>

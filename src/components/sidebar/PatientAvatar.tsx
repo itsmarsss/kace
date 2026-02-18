@@ -35,12 +35,12 @@ const PatientAvatar = forwardRef(function PatientAvatar(
 
       <div
         className="mt-3 text-[15px] font-semibold"
-        style={{ color: 'var(--text)', fontFamily: '"DM Sans", sans-serif' }}
+        style={{ color: 'var(--text-primary)', fontFamily: '"DM Sans", sans-serif' }}
       >
         {caseId === 'james' ? 'James' : caseId}
       </div>
 
-      <div className="text-[11px] mt-[2px]" style={{ color: 'var(--text-mute)' }}>
+      <div className="text-[11px] mt-[2px]" style={{ color: 'var(--text-tertiary)' }}>
         61M
       </div>
     </div>

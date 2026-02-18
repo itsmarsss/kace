@@ -53,7 +53,7 @@ export default function InputArea() {
             background: 'var(--card)',
             border: '1px solid var(--border-md)',
             borderRadius: 'var(--r)',
-            color: 'var(--text)',
+            color: 'var(--text-primary)',
             boxShadow: 'var(--shadow-sm)',
             minHeight: '44px',
             maxHeight: '110px',
