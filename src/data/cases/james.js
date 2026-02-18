@@ -14,7 +14,7 @@ export const james = {
   // Patient speech lines for TTS navigation
   speechLines: [
     "I've been feeling really tired for the past few months, and I'm constantly thirsty. I'm up several times a night to use the bathroom.",
-    'My doctor told me I have diabetes now. I had a heart attack about eight months ago, so I'm a bit worried about adding more medications.',
+    "My doctor told me I have diabetes now. I had a heart attack about eight months ago, so I'm a bit worried about adding more medications.",
     "I get short of breath when I walk up stairs. It's gotten worse since my heart attack. I just want to make sure whatever medication we choose is safe for my heart.",
   ],
 
@@ -122,7 +122,7 @@ Symptoms:
 
   // Expert insight for overlay footer
   expertInsight:
-    'The key decision point here is recognizing that HFrEF is the dominant clinical problem, not diabetes. While metformin is standard first-line for T2DM, this patient's cardiac comorbidity requires prioritizing medications with proven cardiovascular mortality benefit. Empagliflozin from the EMPEROR-Reduced trial is the evidence-based choice for patients with HFrEF and T2DM.',
+    "The key decision point here is recognizing that HFrEF is the dominant clinical problem, not diabetes. While metformin is standard first-line for T2DM, this patient's cardiac comorbidity requires prioritizing medications with proven cardiovascular mortality benefit. Empagliflozin from the EMPEROR-Reduced trial is the evidence-based choice for patients with HFrEF and T2DM.",
 
   // Calibration data for overlay
   expertCalibration: {
