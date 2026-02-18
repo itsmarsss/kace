@@ -16,6 +16,7 @@ export function ModeProvider({ children }) {
   const [isPlaying, setIsPlaying] = useState(false)
   const [messages, setMessages] = useState([])
   const [revealedVitals, setRevealedVitals] = useState([])
+  const [unlockedVitals, setUnlockedVitals] = useState(['vitals']) // Start with vitals unlocked
   const [confidence, setConfidence] = useState(3)
   const [selectedDrugs, setSelectedDrugs] = useState([])
   const [showOverlay, setShowOverlay] = useState(false)
@@ -34,6 +35,7 @@ export function ModeProvider({ children }) {
     // Reset state
     setMessages([])
     setRevealedVitals([])
+    setUnlockedVitals(['vitals'])
     setConfidence(3)
     setSelectedDrugs([])
     setGraphNodes([])
@@ -46,28 +48,18 @@ export function ModeProvider({ children }) {
 
     setIsPlaying(true)
 
-    // Execute demo script
-    const executeStep = (stepIndex) => {
-      if (stepIndex >= james.demoScript.length) {
-        setIsPlaying(false)
-        return
-      }
+    // Execute demo script with cumulative delay
+    let cumulativeDelay = 0
 
-      const step = james.demoScript[stepIndex]
-
-      if (step.actor === 'Kace') {
-        setMessages(prev => [...prev, {
-          type: 'kace',
-          text: step.message,
-          timestamp: Date.now()
-        }])
-      } else if (step.actor === 'user') {
-        // Simulate typing delay
-        const typingDelay = step.typingDelay === 'proportional'
-          ? step.message.length * 30
-          : 800
-
-        const timer = setTimeout(() => {
+    james.demoScript.forEach((step, stepIndex) => {
+      const timer = setTimeout(() => {
+        if (step.actor === 'Kace') {
+          setMessages(prev => [...prev, {
+            type: 'kace',
+            text: step.message,
+            timestamp: Date.now()
+          }])
+        } else if (step.actor === 'user') {
           setMessages(prev => [...prev, {
             type: 'user',
             text: step.message,
@@ -77,45 +69,42 @@ export function ModeProvider({ children }) {
           if (step.confidence) {
             setConfidence(step.confidence)
           }
-        }, typingDelay)
-
-        demoTimersRef.current.push(timer)
-      } else if (step.actor === 'system') {
-        if (step.action === 'showCase') {
-          setMessages(prev => [...prev, {
-            type: 'case-reveal',
-            patient: james.patient,
-            timestamp: Date.now()
-          }])
-        } else if (step.action === 'requestVital') {
-          setRevealedVitals(prev => [...prev, step.key])
-          setMessages(prev => [...prev, {
-            type: 'vital-reveal',
-            vitalKey: step.key,
-            vitalData: james.vitals[step.key],
-            timestamp: Date.now()
-          }])
-        } else if (step.action === 'unlockVital') {
-          // Vital unlock logic handled in sidebar
-        } else if (step.action === 'showOverlay') {
-          const timer = setTimeout(() => {
+        } else if (step.actor === 'system') {
+          if (step.action === 'showCase') {
+            setMessages(prev => [...prev, {
+              type: 'case-reveal',
+              patient: james.patient,
+              timestamp: Date.now()
+            }])
+          } else if (step.action === 'requestVital') {
+            setRevealedVitals(prev => [...prev, step.key])
+            setMessages(prev => [...prev, {
+              type: 'vital-reveal',
+              vitalKey: step.key,
+              vitalData: james.vitals[step.key],
+              timestamp: Date.now()
+            }])
+            // Add graph node
+            const vital = james.vitals[step.key]
+            if (vital.graphNode) {
+              setGraphNodes(prev => [...prev, vital.graphNode])
+            }
+          } else if (step.action === 'unlockVital') {
+            setUnlockedVitals(prev => [...prev, step.key])
+          } else if (step.action === 'showOverlay') {
             setShowOverlay(true)
-          }, 1000)
-          demoTimersRef.current.push(timer)
+          }
         }
-      }
 
-      // Move to next step
-      const nextDelay = step.delay || 1200
-      const timer = setTimeout(() => {
-        currentStepRef.current = stepIndex + 1
-        executeStep(stepIndex + 1)
-      }, nextDelay)
+        // Check if this is the last step
+        if (stepIndex === james.demoScript.length - 1) {
+          setTimeout(() => setIsPlaying(false), 500)
+        }
+      }, cumulativeDelay)
 
       demoTimersRef.current.push(timer)
-    }
-
-    executeStep(0)
+      cumulativeDelay += step.delay || 1200
+    })
   }, [isPlaying])
 
   const stopDemo = useCallback(() => {
@@ -173,6 +162,7 @@ export function ModeProvider({ children }) {
     isPlaying,
     messages,
     revealedVitals,
+    unlockedVitals,
     confidence,
     setConfidence,
     selectedDrugs,

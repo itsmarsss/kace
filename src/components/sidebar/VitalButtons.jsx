@@ -2,14 +2,13 @@ import { Lock, CheckCircle2, ClipboardList } from 'lucide-react'
 import { useMode } from '../../context/ModeProvider'
 
 export default function VitalButtons() {
-  const { currentCase, revealedVitals, requestVital, isInputDisabled } = useMode()
+  const { currentCase, revealedVitals, unlockedVitals, requestVital, isInputDisabled } = useMode()
 
   const vitals = currentCase.vitals
 
   const getButtonState = (vitalKey) => {
-    const vital = vitals[vitalKey]
     const isRevealed = revealedVitals.includes(vitalKey)
-    const isUnlocked = vital.unlocked
+    const isUnlocked = unlockedVitals.includes(vitalKey)
 
     if (isRevealed) return 'revealed'
     if (!isUnlocked) return 'locked'
