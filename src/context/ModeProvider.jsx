@@ -1,7 +1,5 @@
-import { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react'
+import { createContext, useContext, useReducer, useCallback, useRef } from 'react'
 import { james } from '../data/cases/james'
-import { useKaceAPI } from '../hooks/useKaceAPI'
-import { extractKeywords } from '../utils/keywordExtract'
 
 const ModeContext = createContext()
 
@@ -13,217 +11,211 @@ export const useMode = () => {
   return context
 }
 
+// Session states: 'idle' | 'analyzing' | 'reviewed' | 'expert'
+const initialState = {
+  mode: 'demo', // 'demo' | 'live'
+  isPlaying: false,
+  reasoningText: '',
+  confidence: 3,
+  selectedDrugs: [],
+  sessionState: 'idle',
+  isAnalyzing: false,
+  isSubmitted: false,
+  diagramBlocks: [],
+  diagramOpen: false,
+  showOverlay: false,
+  currentSpeechLine: 0,
+}
+
+function modeReducer(state, action) {
+  switch (action.type) {
+    case 'SET_MODE':
+      return { ...state, mode: action.payload }
+
+    case 'SET_PLAYING':
+      return { ...state, isPlaying: action.payload }
+
+    case 'SET_REASONING_TEXT':
+      return { ...state, reasoningText: action.payload }
+
+    case 'SET_CONFIDENCE':
+      return { ...state, confidence: action.payload }
+
+    case 'SET_SELECTED_DRUGS':
+      return { ...state, selectedDrugs: action.payload }
+
+    case 'TOGGLE_DRUG':
+      const isSelected = state.selectedDrugs.includes(action.payload)
+      return {
+        ...state,
+        selectedDrugs: isSelected
+          ? state.selectedDrugs.filter((d) => d !== action.payload)
+          : [...state.selectedDrugs, action.payload],
+      }
+
+    case 'SET_SESSION_STATE':
+      return { ...state, sessionState: action.payload }
+
+    case 'SET_ANALYZING':
+      return {
+        ...state,
+        isAnalyzing: action.payload,
+        sessionState: action.payload ? 'analyzing' : state.sessionState,
+      }
+
+    case 'SUBMIT':
+      return {
+        ...state,
+        isSubmitted: true,
+        sessionState: 'analyzing',
+        isAnalyzing: true,
+      }
+
+    case 'DIAGRAM_READY':
+      return {
+        ...state,
+        isAnalyzing: false,
+        sessionState: 'reviewed',
+        diagramBlocks: action.payload,
+        diagramOpen: true,
+      }
+
+    case 'ANALYSIS_FAILED':
+      return {
+        ...state,
+        isAnalyzing: false,
+        sessionState: 'reviewed',
+        diagramBlocks: [],
+        diagramOpen: false,
+      }
+
+    case 'TOGGLE_DIAGRAM':
+      return { ...state, diagramOpen: !state.diagramOpen }
+
+    case 'SHOW_OVERLAY':
+      return { ...state, showOverlay: true, sessionState: 'expert' }
+
+    case 'HIDE_OVERLAY':
+      return { ...state, showOverlay: false, sessionState: 'reviewed' }
+
+    case 'SET_SPEECH_LINE':
+      return { ...state, currentSpeechLine: action.payload }
+
+    case 'NEXT_SPEECH_LINE':
+      return {
+        ...state,
+        currentSpeechLine: Math.min(
+          state.currentSpeechLine + 1,
+          james.speechLines.length - 1
+        ),
+      }
+
+    case 'PREV_SPEECH_LINE':
+      return {
+        ...state,
+        currentSpeechLine: Math.max(state.currentSpeechLine - 1, 0),
+      }
+
+    case 'RESET':
+      return {
+        ...initialState,
+        mode: state.mode, // Preserve mode
+      }
+
+    default:
+      return state
+  }
+}
+
 export function ModeProvider({ children }) {
-  const [mode, setMode] = useState('demo') // 'demo' | 'live'
-  const [isPlaying, setIsPlaying] = useState(false)
-  const [messages, setMessages] = useState([])
-  const [revealedVitals, setRevealedVitals] = useState([])
-  const [unlockedVitals, setUnlockedVitals] = useState(['vitals']) // Start with vitals unlocked
-  const [confidence, setConfidence] = useState(3)
-  const [selectedDrugs, setSelectedDrugs] = useState([])
-  const [showOverlay, setShowOverlay] = useState(false)
-  const [graphOpen, setGraphOpen] = useState(false)
-  const [captionsOpen, setCaptionsOpen] = useState(true)
-  const [graphNodes, setGraphNodes] = useState([])
-
+  const [state, dispatch] = useReducer(modeReducer, initialState)
   const demoTimersRef = useRef([])
-  const currentStepRef = useRef(0)
-  const { sendMessage: sendToAPI, loading: apiLoading } = useKaceAPI()
 
-  // Demo playback engine
+  // Demo playback engine for v3 workflow
   const playDemo = useCallback(() => {
-    if (isPlaying) return
+    if (state.isPlaying) return
 
     // Reset state
-    setMessages([])
-    setRevealedVitals([])
-    setUnlockedVitals(['vitals'])
-    setConfidence(3)
-    setSelectedDrugs([])
-    setGraphNodes([])
-    setShowOverlay(false)
-    currentStepRef.current = 0
+    dispatch({ type: 'RESET' })
 
     // Clear any existing timers
-    demoTimersRef.current.forEach(timer => clearTimeout(timer))
+    demoTimersRef.current.forEach((timer) => clearTimeout(timer))
     demoTimersRef.current = []
 
-    setIsPlaying(true)
+    dispatch({ type: 'SET_PLAYING', payload: true })
 
-    // Execute demo script with cumulative delay
+    // Execute demo script
     let cumulativeDelay = 0
 
     james.demoScript.forEach((step, stepIndex) => {
       const timer = setTimeout(() => {
-        if (step.actor === 'Kace') {
-          setMessages(prev => [...prev, {
-            type: 'kace',
-            text: step.message,
-            timestamp: Date.now()
-          }])
-        } else if (step.actor === 'user') {
-          setMessages(prev => [...prev, {
-            type: 'user',
-            text: step.message,
-            timestamp: Date.now()
-          }])
+        switch (step.action) {
+          case 'caseLoad':
+            // Case is loaded, panel visible
+            break
 
-          if (step.confidence) {
-            setConfidence(step.confidence)
-          }
-        } else if (step.actor === 'system') {
-          if (step.action === 'showCase') {
-            setMessages(prev => [...prev, {
-              type: 'case-reveal',
-              patient: james.patient,
-              timestamp: Date.now()
-            }])
-          } else if (step.action === 'requestVital') {
-            setRevealedVitals(prev => [...prev, step.key])
-            setMessages(prev => [...prev, {
-              type: 'vital-reveal',
-              vitalKey: step.key,
-              vitalData: james.vitals[step.key],
-              timestamp: Date.now()
-            }])
-            // Add graph node
-            const vital = james.vitals[step.key]
-            if (vital.graphNode) {
-              setGraphNodes(prev => [...prev, vital.graphNode])
-            }
-          } else if (step.action === 'unlockVital') {
-            setUnlockedVitals(prev => [...prev, step.key])
-          } else if (step.action === 'showOverlay') {
-            setShowOverlay(true)
-          }
+          case 'ttsAutoPlay':
+            // TTS will auto-play via PatientSpeech component
+            break
+
+          case 'startTyping':
+            // Signal to start typing animation
+            break
+
+          case 'typeText':
+            // Simulate typing in textarea
+            dispatch({ type: 'SET_REASONING_TEXT', payload: step.text })
+            break
+
+          case 'selectDrug':
+            dispatch({ type: 'TOGGLE_DRUG', payload: step.drug })
+            break
+
+          case 'setConfidence':
+            dispatch({ type: 'SET_CONFIDENCE', payload: step.value })
+            break
+
+          case 'submit':
+            dispatch({ type: 'SUBMIT' })
+            break
+
+          case 'buildDiagram':
+            // In demo mode, use expert blocks as scripted diagram
+            dispatch({ type: 'DIAGRAM_READY', payload: james.expertBlocks })
+            break
+
+          default:
+            break
         }
 
         // Check if this is the last step
         if (stepIndex === james.demoScript.length - 1) {
-          setTimeout(() => setIsPlaying(false), 500)
+          setTimeout(() => {
+            dispatch({ type: 'SET_PLAYING', payload: false })
+          }, 500)
         }
       }, cumulativeDelay)
 
       demoTimersRef.current.push(timer)
       cumulativeDelay += step.delay || 1200
     })
-  }, [isPlaying])
+  }, [state.isPlaying])
 
   const stopDemo = useCallback(() => {
-    demoTimersRef.current.forEach(timer => clearTimeout(timer))
+    demoTimersRef.current.forEach((timer) => clearTimeout(timer))
     demoTimersRef.current = []
-    setIsPlaying(false)
-    currentStepRef.current = 0
+    dispatch({ type: 'SET_PLAYING', payload: false })
+    // Cancel any TTS
+    if (window.speechSynthesis) {
+      window.speechSynthesis.cancel()
+    }
   }, [])
 
-  const sendMessage = useCallback(
-    async (text) => {
-      if (mode === 'demo') {
-        // In demo mode, do nothing (script controls messages)
-        return
-      }
-
-      // Extract keywords for graph
-      const keywords = extractKeywords(text)
-      setGraphNodes((prev) => {
-        const existingLabels = prev.map((n) => n.label)
-        const newNodes = keywords.filter((k) => !existingLabels.includes(k.label))
-        return [...prev, ...newNodes]
-      })
-
-      // Live mode: add user message and call API
-      setMessages((prev) => [
-        ...prev,
-        {
-          type: 'user',
-          text,
-          timestamp: Date.now(),
-        },
-      ])
-
-      try {
-        // Build conversation history for API
-        const conversationHistory = messages
-          .filter((m) => m.type === 'kace' || m.type === 'user')
-          .map((m) => ({
-            role: m.type === 'kace' ? 'assistant' : 'user',
-            content: m.text,
-          }))
-          .concat([{ role: 'user', content: text }])
-
-        const response = await sendToAPI(
-          conversationHistory,
-          james.systemContext,
-          revealedVitals
-        )
-
-        const kaceResponse = response.content[0].text
-
-        setMessages((prev) => [
-          ...prev,
-          {
-            type: 'kace',
-            text: kaceResponse,
-            timestamp: Date.now(),
-          },
-        ])
-      } catch (error) {
-        console.error('API error:', error)
-        setMessages((prev) => [
-          ...prev,
-          {
-            type: 'kace',
-            text: 'Sorry, I encountered an error. Please try again.',
-            timestamp: Date.now(),
-          },
-        ])
-      }
-    },
-    [mode, messages, revealedVitals, sendToAPI]
-  )
-
-  const requestVital = useCallback((key) => {
-    if (mode === 'demo') {
-      // Demo mode handles this via script
-      return
-    }
-
-    // Live mode: reveal vital immediately
-    if (!revealedVitals.includes(key)) {
-      setRevealedVitals(prev => [...prev, key])
-      setMessages(prev => [...prev, {
-        type: 'vital-reveal',
-        vitalKey: key,
-        vitalData: james.vitals[key],
-        timestamp: Date.now()
-      }])
-    }
-  }, [mode, revealedVitals])
-
   const value = {
-    mode,
-    setMode,
-    isPlaying,
-    messages,
-    revealedVitals,
-    unlockedVitals,
-    confidence,
-    setConfidence,
-    selectedDrugs,
-    setSelectedDrugs,
-    showOverlay,
-    setShowOverlay,
-    graphOpen,
-    setGraphOpen,
-    captionsOpen,
-    setCaptionsOpen,
-    graphNodes,
-    setGraphNodes,
-    sendMessage,
-    requestVital,
+    ...state,
+    dispatch,
     playDemo,
     stopDemo,
-    isInputDisabled: isPlaying,
     currentCase: james,
   }
 
