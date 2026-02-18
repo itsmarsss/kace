@@ -5,56 +5,52 @@
 /* ═══ CSS Custom Properties ═══ */
 :root {
     /* ── Backgrounds ── */
-    --bg: #f7f5f2;
-    --surface: #fdfcfa;
+    --bg: #f5fafa;
+    --surface: #ffffff;
     --card: #ffffff;
-    --card-hover: #f9f8f5;
-    --muted-bg: #efefec;
+    --card-hover: #f0fafa;
+    --muted-bg: #eef5f5;
 
     /* ── Borders ── */
     --border: rgba(0, 0, 0, 0.07);
     --border-md: rgba(0, 0, 0, 0.11);
-    --border-strong: rgba(0, 0, 0, 0.2);
+    --border-strong: rgba(0, 0, 0, 0.22);
 
     /* ── Text ── */
-    --text: #1a1814;
-    --text-dim: #6b6760;
-    --text-mute: #9e9b97;
+    --text: #1a1a1a;
+    --text-dim: #4a5568;
+    --text-mute: #8a9bab;
 
-    /* ── Brand ── */
-    --gold: #b8924a;
-    --gold-light: #f5edd9;
-    --gold-border: rgba(184, 146, 74, 0.25);
-    --gold-glow: rgba(184, 146, 74, 0.12);
+    /* ── Brand: SHN Teal ── */
+    --teal: #49c6b9;
+    --teal-dark: #35a89c;
+    --teal-light: #e8f9f8;
+    --teal-border: rgba(73, 198, 185, 0.28);
+    --teal-glow: rgba(73, 198, 185, 0.14);
 
     /* ── Semantic: Clinical ── */
-    --green: #2d9b6f;
-    --green-light: #ebf7f2;
-    --green-border: rgba(45, 155, 111, 0.2);
+    --green: #1e9e72;
+    --green-light: #e8f7f2;
+    --green-border: rgba(30, 158, 114, 0.22);
 
-    --red: #c94040;
-    --red-light: #fdf0f0;
-    --red-border: rgba(201, 64, 64, 0.2);
+    --crimson: #ae3435;
+    --crimson-dark: #3f0007;
+    --crimson-light: #faf0f0;
+    --crimson-border: rgba(174, 52, 53, 0.22);
 
-    --amber: #c07a1a;
-    --amber-light: #fdf4e8;
-    --amber-border: rgba(192, 122, 26, 0.2);
-
-    --blue: #3a6ea8;
-    --blue-light: #eff4fb;
-    --blue-border: rgba(58, 110, 168, 0.2);
-
-    --neutral: #8a8780;
+    --amber: #b8710e;
+    --amber-light: #fdf4e7;
+    --amber-border: rgba(184, 113, 14, 0.22);
 
     /* ── Shadows ── */
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
     --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
-    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.05);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.09), 0 2px 8px rgba(0, 0, 0, 0.05);
 
     /* ── Radius ── */
-    --r: 12px;
-    --r-sm: 7px;
-    --r-xs: 4px;
+    --r: 10px;
+    --r-sm: 6px;
+    --r-xs: 3px;
     --r-pill: 999px;
 
     /* ── Easing ── */
@@ -70,7 +66,7 @@
 }
 
 body {
-    font-family: "Sora", sans-serif;
+    font-family: "DM Sans", sans-serif;
     background: var(--bg);
     color: var(--text);
     -webkit-font-smoothing: antialiased;
@@ -102,10 +98,10 @@ body {
 
 /* ═══ Utility Classes ═══ */
 .label-caps {
-    font-family: "Sora", sans-serif;
+    font-family: "DM Sans", sans-serif;
     font-size: 10px;
     font-weight: 600;
-    letter-spacing: 0.13em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--text-mute);
 }
@@ -144,15 +140,23 @@ body {
     }
 }
 
-@keyframes avatarPulse {
-    0% {
-        box-shadow: 0 0 0 0 rgba(184, 146, 74, 0.5);
+@keyframes speakingPulse {
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 rgba(73, 198, 185, 0);
     }
     50% {
-        box-shadow: 0 0 0 7px rgba(184, 146, 74, 0.15);
+        box-shadow: 0 0 0 9px rgba(73, 198, 185, 0.28);
     }
+}
+
+@keyframes wavebar {
+    0%,
     100% {
-        box-shadow: 0 0 0 0 rgba(184, 146, 74, 0);
+        transform: scaleY(0.4);
+    }
+    50% {
+        transform: scaleY(1);
     }
 }
 
@@ -180,18 +184,18 @@ input[type="range"]::-webkit-slider-thumb {
     width: 11px;
     height: 11px;
     border-radius: 50%;
-    background: var(--gold);
+    background: var(--teal);
     cursor: pointer;
-    box-shadow: 0 0 0 2px var(--gold-light);
+    box-shadow: 0 0 0 2px var(--teal-light);
 }
 
 input[type="range"]::-moz-range-thumb {
     width: 11px;
     height: 11px;
     border-radius: 50%;
-    background: var(--gold);
+    background: var(--teal);
     cursor: pointer;
-    box-shadow: 0 0 0 2px var(--gold-light);
+    box-shadow: 0 0 0 2px var(--teal-light);
     border: none;
 }
 

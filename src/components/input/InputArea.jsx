@@ -58,7 +58,15 @@ export default function InputArea() {
             minHeight: '44px',
             maxHeight: '110px',
             outline: 'none',
-            fontFamily: '"Sora", sans-serif',
+            fontFamily: '"DM Sans", sans-serif',
+          }}
+          onFocus={(e) => {
+            e.target.style.borderColor = 'var(--teal)'
+            e.target.style.boxShadow = '0 0 0 3px var(--teal-glow), var(--shadow-sm)'
+          }}
+          onBlur={(e) => {
+            e.target.style.borderColor = 'var(--border-md)'
+            e.target.style.boxShadow = 'var(--shadow-sm)'
           }}
           rows={1}
         />
@@ -67,12 +75,24 @@ export default function InputArea() {
           <button
             onClick={handleSubmit}
             disabled={!input.trim() || isInputDisabled}
-            className="w-[44px] h-[44px] flex items-center justify-center rounded-[12px] transition-all"
+            className="w-[44px] h-[44px] flex items-center justify-center rounded-[10px] transition-all"
             style={{
-              background: 'var(--gold)',
+              background: 'var(--teal)',
               boxShadow: 'var(--shadow-md)',
               cursor: input.trim() && !isInputDisabled ? 'pointer' : 'not-allowed',
               opacity: input.trim() && !isInputDisabled ? 1 : 0.5,
+            }}
+            onMouseEnter={(e) => {
+              if (input.trim() && !isInputDisabled) {
+                e.currentTarget.style.background = 'var(--teal-dark)'
+                e.currentTarget.style.boxShadow = 'var(--shadow-lg)'
+                e.currentTarget.style.transform = 'translateY(-1px)'
+              }
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'var(--teal)'
+              e.currentTarget.style.boxShadow = 'var(--shadow-md)'
+              e.currentTarget.style.transform = 'translateY(0)'
             }}
           >
             <ArrowUp size={16} color="white" />

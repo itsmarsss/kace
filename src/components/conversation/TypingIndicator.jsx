@@ -1,4 +1,4 @@
-export default function TypingIndicator({ variant = 'Kace' }) {
+export default function TypingIndicator({ variant = 'kacee' }) {
   if (variant === 'user') {
     return (
       <div className="flex items-center justify-end gap-[6px] py-1 px-1">
@@ -28,7 +28,7 @@ export default function TypingIndicator({ variant = 'Kace' }) {
       style={{
         background: 'var(--card)',
         border: '1px solid var(--border)',
-        borderLeft: '2.5px solid var(--gold)',
+        borderLeft: '2.5px solid var(--teal)',
         borderRadius: '0 var(--r) var(--r) var(--r)',
         boxShadow: 'var(--shadow-sm)',
       }}
@@ -39,7 +39,7 @@ export default function TypingIndicator({ variant = 'Kace' }) {
             key={i}
             className="w-[4px] h-[4px] rounded-full"
             style={{
-              background: 'var(--gold)',
+              background: 'var(--teal)',
               animation: `tpulse 1.2s infinite`,
               animationDelay: `${i * 0.2}s`,
             }}

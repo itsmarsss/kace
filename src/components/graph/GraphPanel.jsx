@@ -28,10 +28,11 @@ export default function GraphPanel() {
       ctx.beginPath()
       ctx.arc(x, y, 12, 0, Math.PI * 2)
       const colorMap = {
-        blue: 'rgba(58, 110, 168, 0.1)',
-        amber: 'rgba(192, 122, 26, 0.1)',
-        red: 'rgba(201, 64, 64, 0.1)',
-        green: 'rgba(45, 155, 111, 0.1)',
+        blue: 'rgba(73, 198, 185, 0.1)', // teal
+        amber: 'rgba(184, 113, 14, 0.1)',
+        red: 'rgba(174, 52, 53, 0.1)', // crimson
+        green: 'rgba(30, 158, 114, 0.1)',
+        teal: 'rgba(73, 198, 185, 0.1)',
       }
       ctx.fillStyle = colorMap[node.color] || 'rgba(0,0,0,0.05)'
       ctx.fill()
@@ -40,17 +41,18 @@ export default function GraphPanel() {
       ctx.beginPath()
       ctx.arc(x, y, 5, 0, Math.PI * 2)
       const dotColorMap = {
-        blue: '#3A6EA8',
-        amber: '#C07A1A',
-        red: '#C94040',
-        green: '#2D9B6F',
+        blue: '#49C6B9', // teal
+        amber: '#B8710E',
+        red: '#AE3435', // crimson
+        green: '#1E9E72',
+        teal: '#49C6B9',
       }
-      ctx.fillStyle = dotColorMap[node.color] || '#8A8780'
+      ctx.fillStyle = dotColorMap[node.color] || '#8A9BAB'
       ctx.fill()
 
       // Label
-      ctx.fillStyle = '#6B6760'
-      ctx.font = '10.5px Sora, sans-serif'
+      ctx.fillStyle = '#4A5568' // text-dim
+      ctx.font = '10px "DM Sans", sans-serif'
       ctx.textAlign = 'center'
       ctx.fillText(node.label, x, y + 22)
     })
@@ -90,20 +92,20 @@ export default function GraphPanel() {
 
       <div className="px-[18px] py-3 text-[10px] space-y-1" style={{ color: 'var(--text-mute)' }}>
         <div className="flex items-center gap-2">
-          <div className="w-[6px] h-[6px] rounded-full" style={{ background: 'var(--blue)' }} />
-          Vitals
+          <div className="w-[6px] h-[6px] rounded-full" style={{ background: 'var(--teal)' }} />
+          Drug Nodes
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-[6px] h-[6px] rounded-full" style={{ background: 'var(--crimson)' }} />
+          Comorbidity
         </div>
         <div className="flex items-center gap-2">
           <div className="w-[6px] h-[6px] rounded-full" style={{ background: 'var(--amber)' }} />
-          Labs
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-[6px] h-[6px] rounded-full" style={{ background: 'var(--red)' }} />
-          Cardiac
+          Lab Findings
         </div>
         <div className="flex items-center gap-2">
           <div className="w-[6px] h-[6px] rounded-full" style={{ background: 'var(--green)' }} />
-          Drugs
+          Aligned
         </div>
       </div>
     </aside>

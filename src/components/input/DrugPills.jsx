@@ -27,11 +27,11 @@ export default function DrugPills() {
             disabled={isInputDisabled}
             className="text-[10px] px-[10px] py-[3px] rounded-full transition-all"
             style={{
-              background: isSelected ? 'var(--gold-light)' : 'transparent',
+              background: isSelected ? 'var(--teal-light)' : 'transparent',
               border: isSelected
-                ? '1px solid var(--gold-border)'
+                ? '1px solid var(--teal-border)'
                 : '1px solid var(--border-md)',
-              color: isSelected ? 'var(--gold)' : 'var(--text-dim)',
+              color: isSelected ? 'var(--teal-dark)' : 'var(--text-dim)',
               cursor: isInputDisabled ? 'not-allowed' : 'pointer',
             }}
           >

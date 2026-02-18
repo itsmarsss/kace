@@ -22,7 +22,6 @@ export function ModeProvider({ children }) {
   const [confidence, setConfidence] = useState(3)
   const [selectedDrugs, setSelectedDrugs] = useState([])
   const [showOverlay, setShowOverlay] = useState(false)
-  const [sidebarOpen, setSidebarOpen] = useState(true)
   const [graphOpen, setGraphOpen] = useState(false)
   const [captionsOpen, setCaptionsOpen] = useState(true)
   const [graphNodes, setGraphNodes] = useState([])
@@ -214,8 +213,6 @@ export function ModeProvider({ children }) {
     setSelectedDrugs,
     showOverlay,
     setShowOverlay,
-    sidebarOpen,
-    setSidebarOpen,
     graphOpen,
     setGraphOpen,
     captionsOpen,

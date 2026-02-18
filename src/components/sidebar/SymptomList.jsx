@@ -1,12 +1,13 @@
 export default function SymptomList({ symptoms }) {
   const getIconColor = (icon) => {
     const colorMap = {
-      neutral: 'var(--neutral)',
+      neutral: 'var(--text-mute)',
       amber: 'var(--amber)',
-      warning: 'var(--red)',
-      blue: 'var(--blue)',
+      warning: 'var(--crimson)',
+      teal: 'var(--teal)',
+      crimson: 'var(--crimson)',
     }
-    return colorMap[icon] || 'var(--neutral)'
+    return colorMap[icon] || 'var(--text-mute)'
   }
 
   return (

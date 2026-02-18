@@ -43,12 +43,12 @@ export const james = {
             ],
             graphNode: {
                 label: "HTN (148/92)",
-                color: "blue",
+                color: "teal",
                 x: 0.22,
                 y: 0.52,
             },
             sidebarEntry: {
-                icon: "blue",
+                icon: "teal",
                 text: "BP <strong>148/92 mmHg</strong>, HR 78",
             },
         },
@@ -79,12 +79,12 @@ export const james = {
                 "Patient had an <strong>NSTEMI 8 months ago</strong>. PCI performed, drug-eluting stent placed in LAD. Currently on aspirin + clopidogrel. No prior HF diagnosis at that time.",
             graphNode: {
                 label: "Post-MI (8mo)",
-                color: "red",
+                color: "crimson",
                 x: 0.72,
                 y: 0.48,
             },
             sidebarEntry: {
-                icon: "red",
+                icon: "crimson",
                 text: "MI 8mo ago — <strong>LAD stent</strong>. On DAPT.",
             },
         },
@@ -99,12 +99,12 @@ export const james = {
             ],
             graphNode: {
                 label: "HFrEF (EF 35%)",
-                color: "red",
+                color: "crimson",
                 x: 0.5,
                 y: 0.65,
             },
             sidebarEntry: {
-                icon: "red",
+                icon: "crimson",
                 text: "Echo: EF <strong>35%</strong> — <strong>HFrEF</strong> confirmed",
             },
         },

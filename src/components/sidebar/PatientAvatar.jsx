@@ -6,29 +6,26 @@ const AVATAR_MAP = {
 }
 
 const PatientAvatar = forwardRef(function PatientAvatar(
-  { caseId, size = 72, state = 'default' },
+  { caseId, size = 96, state = 'default', isSpeaking = false },
   ref
 ) {
-  const [pulsing, setPulsing] = useState(false)
-
   useImperativeHandle(ref, () => ({
     triggerPulse: () => {
-      setPulsing(true)
-      setTimeout(() => setPulsing(false), 1000)
+      // Pulse animation now handled by speaking state
     },
   }))
 
   const AvatarSVG = AVATAR_MAP[caseId]
 
   return (
-    <div className="flex flex-col items-center py-5 px-4 pb-[14px] border-b"
+    <div className="flex flex-col items-center px-4 pt-6 pb-4 border-b"
       style={{ borderColor: 'var(--border)' }}>
       <div
-        className={`w-[72px] h-[72px] rounded-full overflow-hidden relative transition-all ${
-          pulsing ? 'animate-[avatarPulse_1s_ease_forwards]' : ''
+        className={`w-[96px] h-[96px] rounded-full overflow-hidden relative transition-all duration-300 ${
+          isSpeaking ? 'animate-[speakingPulse_1.4s_ease-in-out_infinite]' : ''
         }`}
         style={{
-          border: '1.5px solid var(--border-md)',
+          border: `1.5px solid ${isSpeaking ? 'var(--teal-border)' : 'var(--border-md)'}`,
           background: 'var(--card)',
           boxShadow: 'var(--shadow-sm)',
         }}
@@ -37,8 +34,8 @@ const PatientAvatar = forwardRef(function PatientAvatar(
       </div>
 
       <div
-        className="mt-[10px] text-[14px] font-semibold"
-        style={{ color: 'var(--text)' }}
+        className="mt-3 text-[15px] font-semibold"
+        style={{ color: 'var(--text)', fontFamily: '"DM Sans", sans-serif' }}
       >
         {caseId === 'james' ? 'James' : caseId}
       </div>

@@ -8,26 +8,26 @@ export default function RevealCard({ variant, patient, vitalKey, vitalData }) {
         className="relative overflow-hidden px-5 py-4 animate-[revealIn_0.44s_var(--ease-out)]"
         style={{
           background:
-            'linear-gradient(135deg, rgba(184,146,74,0.06) 0%, rgba(184,146,74,0.02) 100%)',
-          border: '1px solid var(--gold-border)',
+            'linear-gradient(135deg, rgba(73,198,185,0.07) 0%, rgba(73,198,185,0.02) 100%)',
+          border: '1px solid var(--teal-border)',
           borderRadius: 'var(--r)',
         }}
       >
         <div
           className="absolute top-0 left-0 right-0 h-[1px]"
           style={{
-            background: 'linear-gradient(90deg, transparent, var(--gold), transparent)',
-            opacity: 0.4,
+            background: 'linear-gradient(90deg, transparent, var(--teal), transparent)',
+            opacity: 0.5,
           }}
         />
 
-        <div className="label-caps flex items-center gap-2 mb-3" style={{ color: 'var(--gold)' }}>
+        <div className="label-caps flex items-center gap-2 mb-3" style={{ color: 'var(--teal-dark)' }}>
           Case Presented
-          <div className="flex-1 h-[1px]" style={{ background: 'var(--gold-border)' }} />
+          <div className="flex-1 h-[1px]" style={{ background: 'var(--teal-border)' }} />
         </div>
 
         <div className="text-[13px] leading-[1.7]" style={{ color: 'var(--text)' }}>
-          <strong style={{ color: 'var(--gold)', fontWeight: 600 }}>{patient.name}</strong>,{' '}
+          <strong style={{ color: 'var(--teal-dark)', fontWeight: 600 }}>{patient.name}</strong>,{' '}
           {patient.age}M — {patient.chiefComplaint}
         </div>
       </div>
@@ -43,22 +43,22 @@ export default function RevealCard({ variant, patient, vitalKey, vitalData }) {
         className="relative overflow-hidden px-5 py-4 animate-[revealIn_0.44s_var(--ease-out)]"
         style={{
           background:
-            'linear-gradient(135deg, rgba(58,110,168,0.06), rgba(58,110,168,0.02))',
-          border: '1px solid var(--blue-border)',
+            'linear-gradient(135deg, rgba(73,198,185,0.07), rgba(73,198,185,0.02))',
+          border: '1px solid var(--teal-border)',
           borderRadius: 'var(--r)',
         }}
       >
         <div
           className="absolute top-0 left-0 right-0 h-[1px]"
           style={{
-            background: 'linear-gradient(90deg, transparent, var(--blue), transparent)',
-            opacity: 0.4,
+            background: 'linear-gradient(90deg, transparent, var(--teal), transparent)',
+            opacity: 0.5,
           }}
         />
 
-        <div className="label-caps flex items-center gap-2 mb-2" style={{ color: 'var(--blue)' }}>
+        <div className="label-caps flex items-center gap-2 mb-2" style={{ color: 'var(--teal-dark)' }}>
           {vitalData.label} Revealed
-          <div className="flex-1 h-[1px]" style={{ background: 'var(--blue-border)' }} />
+          <div className="flex-1 h-[1px]" style={{ background: 'var(--teal-border)' }} />
         </div>
 
         {hasItems && (
@@ -73,16 +73,17 @@ export default function RevealCard({ variant, patient, vitalKey, vitalData }) {
                 </div>
                 <div className="flex items-baseline gap-1">
                   <span
-                    className="text-[22px] font-semibold"
+                    className="text-[20px] font-medium"
                     style={{
-                      fontFamily: '"Playfair Display", serif',
-                      color: 'var(--blue)',
+                      fontFamily: '"Source Serif 4", serif',
+                      fontVariationSettings: '"opsz" 20',
+                      color: 'var(--text)',
                     }}
                   >
                     {item.value}
                   </span>
                   {item.unit && (
-                    <span className="text-[10px] font-light" style={{ color: 'var(--text-mute)' }}>
+                    <span className="text-[9px] font-light" style={{ color: 'var(--text-mute)' }}>
                       {item.unit}
                     </span>
                   )}

@@ -24,18 +24,18 @@ export default function TopBar() {
       }}
     >
       {/* Logo */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-[6px]">
         <h1
-          className="text-[16px] font-semibold tracking-wide"
+          className="text-[17px] font-bold tracking-[-0.01em]"
           style={{
-            fontFamily: '"Playfair Display", serif',
-            color: 'var(--gold)',
+            fontFamily: '"DM Sans", sans-serif',
+            color: 'var(--teal-dark)',
           }}
         >
-          Kace
+          Kacee
         </h1>
         <span
-          className="text-[10px] font-light"
+          className="text-[10px] font-normal"
           style={{ color: 'var(--text-mute)' }}
         >
           Clinical Reasoning Coach
@@ -70,29 +70,14 @@ export default function TopBar() {
 
       {/* Toggle buttons */}
       <button
-        onClick={() => setSidebarOpen(!sidebarOpen)}
-        className="flex items-center gap-[5px] px-3 py-[6px] text-[11px] rounded-[7px] transition-all"
-        style={{
-          background: sidebarOpen ? 'var(--gold-light)' : 'transparent',
-          border: sidebarOpen
-            ? '1px solid var(--gold-border)'
-            : '1px solid var(--border-md)',
-          color: sidebarOpen ? 'var(--gold)' : 'var(--text-dim)',
-        }}
-      >
-        <PanelLeft size={13} />
-        Symptoms
-      </button>
-
-      <button
         onClick={() => setCaptionsOpen(!captionsOpen)}
-        className="flex items-center gap-[5px] px-3 py-[6px] text-[11px] rounded-[7px] transition-all"
+        className="flex items-center gap-[5px] px-3 py-[6px] text-[11px] rounded-[6px] transition-all"
         style={{
-          background: captionsOpen ? 'var(--gold-light)' : 'transparent',
+          background: captionsOpen ? 'var(--teal-light)' : 'transparent',
           border: captionsOpen
-            ? '1px solid var(--gold-border)'
+            ? '1px solid var(--teal-border)'
             : '1px solid var(--border-md)',
-          color: captionsOpen ? 'var(--gold)' : 'var(--text-dim)',
+          color: captionsOpen ? 'var(--teal-dark)' : 'var(--text-dim)',
         }}
       >
         <Eye size={13} />
@@ -101,13 +86,13 @@ export default function TopBar() {
 
       <button
         onClick={() => setGraphOpen(!graphOpen)}
-        className="flex items-center gap-[5px] px-3 py-[6px] text-[11px] rounded-[7px] transition-all"
+        className="flex items-center gap-[5px] px-3 py-[6px] text-[11px] rounded-[6px] transition-all"
         style={{
-          background: graphOpen ? 'var(--gold-light)' : 'transparent',
+          background: graphOpen ? 'var(--teal-light)' : 'transparent',
           border: graphOpen
-            ? '1px solid var(--gold-border)'
+            ? '1px solid var(--teal-border)'
             : '1px solid var(--border-md)',
-          color: graphOpen ? 'var(--gold)' : 'var(--text-dim)',
+          color: graphOpen ? 'var(--teal-dark)' : 'var(--text-dim)',
         }}
       >
         <BarChart3 size={13} />
@@ -123,13 +108,13 @@ export default function TopBar() {
       {/* Demo button */}
       <button
         onClick={isPlaying ? stopDemo : playDemo}
-        className="flex items-center gap-[5px] px-3 py-[6px] text-[11px] font-semibold rounded-[7px] tracking-wide transition-all"
+        className="flex items-center gap-[5px] px-3 py-[6px] text-[11px] font-semibold rounded-[6px] tracking-wide transition-all"
         style={{
-          background: isPlaying ? 'var(--red-light)' : '#EEFAF4',
+          background: isPlaying ? 'var(--crimson-light)' : '#EDFAF8',
           border: isPlaying
-            ? '1px solid var(--red-border)'
-            : '1px solid rgba(45,155,111,0.3)',
-          color: isPlaying ? 'var(--red)' : 'var(--green)',
+            ? '1px solid var(--crimson-border)'
+            : '1px solid rgba(73, 198, 185, 0.35)',
+          color: isPlaying ? 'var(--crimson)' : 'var(--teal-dark)',
         }}
       >
         {isPlaying ? (

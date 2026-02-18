@@ -20,9 +20,10 @@ export default function ExpertOverlay() {
       >
         <div>
           <h2
-            className="text-[18px] mb-1"
+            className="text-[17px] font-semibold mb-1"
             style={{
-              fontFamily: '"Playfair Display", serif',
+              fontFamily: '"Source Serif 4", serif',
+              fontVariationSettings: '"opsz" 17',
               color: 'var(--text)',
             }}
           >
@@ -35,7 +36,7 @@ export default function ExpertOverlay() {
 
         <button
           onClick={() => setShowOverlay(false)}
-          className="px-[14px] py-[6px] text-[11px] rounded-[7px] flex items-center gap-2 transition-all"
+          className="px-[14px] py-[6px] text-[11px] rounded-[6px] flex items-center gap-2 transition-all"
           style={{
             background: 'transparent',
             border: '1px solid var(--border-md)',
@@ -89,14 +90,15 @@ export default function ExpertOverlay() {
 
           {/* Insight block */}
           <div
-            className="mt-6 px-[18px] py-4 rounded-[12px]"
+            className="mt-6 px-[18px] py-4 rounded-[10px]"
             style={{
-              background: 'var(--gold-light)',
-              border: '1px solid var(--gold-border)',
-              borderLeft: '2.5px solid var(--gold)',
-              fontFamily: '"Playfair Display", serif',
+              background: 'var(--teal-light)',
+              border: '1px solid var(--teal-border)',
+              borderLeft: '2.5px solid var(--teal)',
+              fontFamily: '"Source Serif 4", serif',
               fontSize: '14px',
-              lineHeight: '1.82',
+              fontVariationSettings: '"opsz" 14',
+              lineHeight: '1.78',
               color: 'var(--text)',
             }}
           >

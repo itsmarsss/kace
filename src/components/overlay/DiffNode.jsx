@@ -13,9 +13,9 @@ export default function DiffNode({ type, title, body, animationDelay = 0 }) {
       label: 'Missed',
     },
     wrong: {
-      bg: 'var(--red-light)',
-      border: 'var(--red-border)',
-      labelColor: 'var(--red)',
+      bg: 'var(--crimson-light)',
+      border: 'var(--crimson-border)',
+      labelColor: 'var(--crimson)',
       label: 'Diverged',
     },
   }
@@ -24,7 +24,7 @@ export default function DiffNode({ type, title, body, animationDelay = 0 }) {
 
   return (
     <div
-      className="px-[14px] py-[11px] rounded-[7px] animate-[fadeUp_0.4s_both]"
+      className="px-[14px] py-[11px] rounded-[6px] animate-[fadeUp_0.4s_both]"
       style={{
         background: style.bg,
         border: `1px solid ${style.border}`,

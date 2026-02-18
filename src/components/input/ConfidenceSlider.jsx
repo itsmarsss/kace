@@ -20,12 +20,12 @@ export default function ConfidenceSlider() {
         style={{
           background: `linear-gradient(to right,
             var(--border-strong) 0%,
-            var(--gold) ${((confidence - 1) / 4) * 100}%,
+            var(--teal) ${((confidence - 1) / 4) * 100}%,
             var(--muted-bg) ${((confidence - 1) / 4) * 100}%)`,
         }}
       />
 
-      <div className="text-[11px] font-semibold w-[12px]" style={{ color: 'var(--gold)' }}>
+      <div className="text-[11px] font-semibold w-[12px]" style={{ color: 'var(--teal-dark)' }}>
         {confidence}
       </div>
     </div>

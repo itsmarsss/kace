@@ -5,21 +5,21 @@ import SymptomList from './SymptomList'
 import VitalButtons from './VitalButtons'
 
 export default function Sidebar() {
-  const { sidebarOpen, currentCase, revealedVitals } = useMode()
+  const { currentCase, revealedVitals } = useMode()
   const avatarRef = useRef()
 
   return (
     <aside
-      className="flex flex-col overflow-hidden transition-all duration-[380ms]"
+      className="flex flex-col overflow-hidden"
       style={{
-        width: sidebarOpen ? '240px' : '0',
+        width: '260px', // Fixed width, never collapses
         flexShrink: 0,
         background: 'var(--surface)',
         borderRight: '1px solid var(--border)',
-        transitionTimingFunction: 'var(--ease-out)',
+        height: '100%',
       }}
     >
-      <PatientAvatar ref={avatarRef} caseId={currentCase.id} />
+      <PatientAvatar ref={avatarRef} caseId={currentCase.id} isSpeaking={false} />
 
       <div className="flex-1 overflow-y-auto">
         {/* Chief Complaint */}
@@ -45,10 +45,18 @@ export default function Sidebar() {
                 const vital = currentCase.vitals[vitalKey]
                 if (!vital?.sidebarEntry) return null
 
+                // Map old color system to new
+                const colorMap = {
+                  blue: 'teal',
+                  amber: 'amber',
+                  red: 'crimson',
+                }
+                const iconColor = colorMap[vital.sidebarEntry.icon] || vital.sidebarEntry.icon
+
                 return (
                   <div
                     key={vitalKey}
-                    className="flex items-start gap-2 py-[6px] px-3 rounded-[7px] animate-[symIn_0.3s_ease_both]"
+                    className="flex items-start gap-2 py-[6px] px-3 rounded-[6px] animate-[symIn_0.3s_ease_both]"
                     style={{
                       background: 'var(--card)',
                       border: '1px solid var(--border)',
@@ -57,7 +65,7 @@ export default function Sidebar() {
                     <div
                       className="w-[6px] h-[6px] rounded-full mt-[5px] flex-shrink-0"
                       style={{
-                        background: `var(--${vital.sidebarEntry.icon})`,
+                        background: `var(--${iconColor})`,
                       }}
                     />
                     <p

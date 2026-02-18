@@ -33,12 +33,12 @@ export default function CalibrationBars() {
                 className="h-full rounded-full transition-all duration-[1200ms]"
                 style={{
                   width: animated ? `${item.yours}%` : '0%',
-                  background: 'var(--gold)',
+                  background: 'var(--teal)',
                   transitionTimingFunction: 'var(--ease-out)',
                 }}
               />
             </div>
-            <span className="text-[10px] w-[30px] text-right font-medium" style={{ color: 'var(--gold)' }}>
+            <span className="text-[10px] w-[30px] text-right font-medium" style={{ color: 'var(--teal-dark)' }}>
               {item.yours}%
             </span>
           </div>
@@ -55,12 +55,12 @@ export default function CalibrationBars() {
                 className="h-full rounded-full transition-all duration-[1200ms]"
                 style={{
                   width: animated ? `${item.expert}%` : '0%',
-                  background: 'var(--green)',
+                  background: 'var(--text-dim)',
                   transitionTimingFunction: 'var(--ease-out)',
                 }}
               />
             </div>
-            <span className="text-[10px] w-[30px] text-right font-medium" style={{ color: 'var(--green)' }}>
+            <span className="text-[10px] w-[30px] text-right font-medium" style={{ color: 'var(--text-dim)' }}>
               {item.expert}%
             </span>
           </div>
