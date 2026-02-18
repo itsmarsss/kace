@@ -1,5 +1,5 @@
 import { ModeProvider } from './context/ModeProvider'
-import { Panel, Group as PanelGroup, Handle as PanelResizeHandle } from 'react-resizable-panels'
+import { Panel, Group as PanelGroup, Separator as PanelResizeHandle } from 'react-resizable-panels'
 import TopBar from './components/TopBar'
 import PatientPanel from './components/patient/PatientPanel'
 import ReasoningPanel from './components/reasoning/ReasoningPanel'
