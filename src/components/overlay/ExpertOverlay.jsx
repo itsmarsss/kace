@@ -4,7 +4,7 @@ import DiffNode from './DiffNode'
 import CalibrationBars from './CalibrationBars'
 
 export default function ExpertOverlay() {
-  const { showOverlay, setShowOverlay, currentCase } = useMode()
+  const { showOverlay, dispatch, currentCase } = useMode()
 
   if (!showOverlay) return null
 
@@ -35,7 +35,7 @@ export default function ExpertOverlay() {
         </div>
 
         <button
-          onClick={() => setShowOverlay(false)}
+          onClick={() => dispatch({ type: 'HIDE_OVERLAY' })}
           className="px-[14px] py-[6px] text-[11px] rounded-[6px] flex items-center gap-2 transition-all"
           style={{
             background: 'transparent',
