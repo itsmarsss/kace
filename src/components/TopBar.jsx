@@ -1,19 +1,9 @@
-import { Play, Square, PanelLeft, Eye, BarChart3 } from 'lucide-react'
+import { Play, Square } from 'lucide-react'
 import { useMode } from '../context/ModeProvider'
 
 export default function TopBar() {
-  const {
-    isPlaying,
-    playDemo,
-    stopDemo,
-    sidebarOpen,
-    setSidebarOpen,
-    graphOpen,
-    setGraphOpen,
-    captionsOpen,
-    setCaptionsOpen,
-    currentCase,
-  } = useMode()
+  const { isPlaying, playDemo, stopDemo, sessionState, dispatch, currentCase } =
+    useMode()
 
   return (
     <header
@@ -32,10 +22,10 @@ export default function TopBar() {
             color: 'var(--teal-dark)',
           }}
         >
-          Kacee
+          KaCE
         </h1>
         <span
-          className="text-[10px] font-normal"
+          className="text-[10px] font-normal ml-[6px]"
           style={{ color: 'var(--text-mute)' }}
         >
           Clinical Reasoning Coach
@@ -49,7 +39,13 @@ export default function TopBar() {
       />
 
       {/* Patient name */}
-      <span className="text-[13px] font-medium" style={{ color: 'var(--text)' }}>
+      <span
+        className="text-[13px] font-medium"
+        style={{
+          fontFamily: '"DM Sans", sans-serif',
+          color: 'var(--text)',
+        }}
+      >
         {currentCase.patient.name}
       </span>
 
@@ -60,6 +56,7 @@ export default function TopBar() {
           background: 'var(--muted-bg)',
           border: '1px solid var(--border-md)',
           color: 'var(--text-mute)',
+          fontFamily: '"DM Sans", sans-serif',
         }}
       >
         {currentCase.patient.age}M
@@ -68,42 +65,34 @@ export default function TopBar() {
       {/* Spacer */}
       <div className="flex-1" />
 
-      {/* Toggle buttons */}
-      <button
-        onClick={() => setCaptionsOpen(!captionsOpen)}
-        className="flex items-center gap-[5px] px-3 py-[6px] text-[11px] rounded-[6px] transition-all"
-        style={{
-          background: captionsOpen ? 'var(--teal-light)' : 'transparent',
-          border: captionsOpen
-            ? '1px solid var(--teal-border)'
-            : '1px solid var(--border-md)',
-          color: captionsOpen ? 'var(--teal-dark)' : 'var(--text-dim)',
-        }}
-      >
-        <Eye size={13} />
-        Captions
-      </button>
+      {/* View Expert Analysis button (appears after diagram builds) */}
+      {sessionState === 'reviewed' && (
+        <>
+          <button
+            onClick={() => dispatch({ type: 'SHOW_OVERLAY' })}
+            className="text-[11px] font-semibold px-[14px] py-[7px] rounded-[6px] transition-all"
+            style={{
+              background: 'var(--teal)',
+              color: 'white',
+              border: 'none',
+              fontFamily: '"DM Sans", sans-serif',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'var(--teal-dark)'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'var(--teal)'
+            }}
+          >
+            View Expert Analysis
+          </button>
 
-      <button
-        onClick={() => setGraphOpen(!graphOpen)}
-        className="flex items-center gap-[5px] px-3 py-[6px] text-[11px] rounded-[6px] transition-all"
-        style={{
-          background: graphOpen ? 'var(--teal-light)' : 'transparent',
-          border: graphOpen
-            ? '1px solid var(--teal-border)'
-            : '1px solid var(--border-md)',
-          color: graphOpen ? 'var(--teal-dark)' : 'var(--text-dim)',
-        }}
-      >
-        <BarChart3 size={13} />
-        Thought Process
-      </button>
-
-      {/* Divider */}
-      <div
-        className="w-[1px] h-[18px]"
-        style={{ background: 'var(--border-md)' }}
-      />
+          <div
+            className="w-[1px] h-[18px]"
+            style={{ background: 'var(--border-md)' }}
+          />
+        </>
+      )}
 
       {/* Demo button */}
       <button
@@ -115,6 +104,7 @@ export default function TopBar() {
             ? '1px solid var(--crimson-border)'
             : '1px solid rgba(73, 198, 185, 0.35)',
           color: isPlaying ? 'var(--crimson)' : 'var(--teal-dark)',
+          fontFamily: '"DM Sans", sans-serif',
         }}
       >
         {isPlaying ? (
