@@ -168,18 +168,23 @@ export default function DiagramFlow({ blocks }: DiagramFlowProps) {
     // Create edges
     const flowEdges: Edge[] = []
     blocks.forEach((block) => {
-      if (block.connects_to) {
+      if (block.connects_to && block.connects_to.length > 0) {
         block.connects_to.forEach((targetId: string) => {
           flowEdges.push({
             id: `${block.id}-${targetId}`,
             source: block.id,
             target: targetId,
-            type: 'smoothstep',
-            animated: false,
-            style: { stroke: 'rgba(0,0,0,0.22)', strokeWidth: 2 },
+            type: 'default',
+            animated: true,
+            style: {
+              stroke: 'var(--teal)',
+              strokeWidth: 2.5,
+            },
             markerEnd: {
               type: MarkerType.ArrowClosed,
-              color: 'rgba(0,0,0,0.22)',
+              width: 20,
+              height: 20,
+              color: 'var(--teal)',
             },
           })
         })

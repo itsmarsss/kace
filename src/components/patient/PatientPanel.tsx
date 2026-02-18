@@ -2,6 +2,7 @@ import { useMode } from '../../context/ModeProvider'
 import PatientAvatar from '../sidebar/PatientAvatar'
 import VitalsGrid from './VitalsGrid'
 import PatientSpeech from './PatientSpeech'
+import { PatientFullscreenButton } from './PatientFullscreen'
 import { useTTS } from '../../hooks/useTTS'
 
 export default function PatientPanel() {
@@ -17,8 +18,10 @@ export default function PatientPanel() {
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
+        position: 'relative',
       }}
     >
+      <PatientFullscreenButton />
       {/* Zone 1: Avatar */}
       <PatientAvatar
         caseId={currentCase.id}

@@ -25,6 +25,8 @@ const initialState = {
   diagramOpen: false,
   diagramLayout: '1d', // '1d' | '2d'
   showOverlay: false,
+  showPatientFullscreen: false,
+  showDiagramFullscreen: false,
   currentSpeechLine: 0,
 }
 
@@ -101,6 +103,12 @@ function modeReducer(state, action) {
 
     case 'HIDE_OVERLAY':
       return { ...state, showOverlay: false, sessionState: 'reviewed' }
+
+    case 'TOGGLE_PATIENT_FULLSCREEN':
+      return { ...state, showPatientFullscreen: !state.showPatientFullscreen }
+
+    case 'TOGGLE_DIAGRAM_FULLSCREEN':
+      return { ...state, showDiagramFullscreen: !state.showDiagramFullscreen }
 
     case 'SET_SPEECH_LINE':
       return { ...state, currentSpeechLine: action.payload }

@@ -5,6 +5,8 @@ import PatientPanel from './components/patient/PatientPanel'
 import ReasoningPanel from './components/reasoning/ReasoningPanel'
 import DiagramPanel from './components/diagram/DiagramPanel'
 import ExpertOverlay from './components/overlay/ExpertOverlay'
+import { PatientFullscreen } from './components/patient/PatientFullscreen'
+import { DiagramFullscreen } from './components/diagram/DiagramFullscreen'
 
 function App() {
   return (
@@ -59,6 +61,8 @@ function App() {
         </PanelGroup>
       </div>
       <ExpertOverlay />
+      <PatientFullscreen />
+      <DiagramFullscreen />
     </ModeProvider>
   )
 }

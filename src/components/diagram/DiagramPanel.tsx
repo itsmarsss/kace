@@ -4,6 +4,7 @@ import { useMode } from '../../context/ModeProvider'
 import DiagramBlock from './DiagramBlock'
 import DiagramArrows from './DiagramArrows'
 import DiagramFlow from './DiagramFlow'
+import { DiagramFullscreenButton } from './DiagramFullscreen'
 
 export default function DiagramPanel() {
   const { diagramBlocks, diagramOpen, diagramLayout, dispatch } = useMode()
@@ -139,6 +140,8 @@ export default function DiagramPanel() {
             Graph
           </button>
         </div>
+
+        <DiagramFullscreenButton />
 
         <button
           onClick={() => dispatch({ type: 'TOGGLE_DIAGRAM' })}
