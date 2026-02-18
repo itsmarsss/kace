@@ -35,7 +35,7 @@ const DiagramBlock = forwardRef(({ block, index, diffState }, ref) => {
         className="block-title"
         style={{
           fontFamily: '"DM Sans", sans-serif',
-          fontSize: '13px',
+          fontSize: '14px',
           fontWeight: 600,
           color: 'var(--text)',
           lineHeight: '1.35',
@@ -50,7 +50,7 @@ const DiagramBlock = forwardRef(({ block, index, diffState }, ref) => {
         className="block-body"
         style={{
           fontFamily: '"DM Sans", sans-serif',
-          fontSize: '11px',
+          fontSize: '12px',
           fontWeight: 400,
           color: 'var(--text-dim)',
           lineHeight: '1.55',

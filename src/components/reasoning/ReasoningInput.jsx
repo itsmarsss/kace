@@ -143,7 +143,7 @@ export default function ReasoningInput() {
             borderRadius: 'var(--r)',
             padding: '13px 16px',
             fontFamily: '"DM Sans", sans-serif',
-            fontSize: '13px',
+            fontSize: '14px',
             color: isSubmitted ? 'var(--text-dim)' : 'var(--text)',
             lineHeight: '1.7',
             resize: 'none',

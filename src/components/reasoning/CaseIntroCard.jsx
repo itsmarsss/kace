@@ -59,9 +59,9 @@ export default function CaseIntroCard() {
       <p
         style={{
           fontFamily: '"Source Serif 4", serif',
-          fontSize: '14px',
-          fontVariationSettings: '"opsz" 14',
-          lineHeight: '1.78',
+          fontSize: '16px',
+          fontVariationSettings: '"opsz" 16',
+          lineHeight: '1.7',
           color: 'var(--text)',
         }}
       >

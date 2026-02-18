@@ -39,12 +39,12 @@ export default function VitalsGrid() {
           <div
             style={{
               fontFamily: '"DM Sans", sans-serif',
-              fontSize: '9px',
+              fontSize: '11px',
               fontWeight: 500,
               textTransform: 'uppercase',
-              letterSpacing: '0.1em',
+              letterSpacing: '0.08em',
               color: 'var(--text-mute)',
-              width: '72px',
+              width: '80px',
               flexShrink: 0,
             }}
           >
@@ -55,9 +55,9 @@ export default function VitalsGrid() {
           <div
             style={{
               fontFamily: '"Source Serif 4", serif',
-              fontSize: '15px',
+              fontSize: '17px',
               fontWeight: 500,
-              fontVariationSettings: '"opsz" 15',
+              fontVariationSettings: '"opsz" 17',
               color: 'var(--text)',
               flex: 1,
             }}
@@ -69,7 +69,7 @@ export default function VitalsGrid() {
           <div
             style={{
               fontFamily: '"DM Sans", sans-serif',
-              fontSize: '9px',
+              fontSize: '11px',
               fontWeight: 300,
               color: 'var(--text-mute)',
             }}
@@ -139,7 +139,7 @@ export default function VitalsGrid() {
           <div
             style={{
               fontFamily: '"DM Sans", sans-serif',
-              fontSize: '9px',
+              fontSize: '10px',
               fontWeight: 600,
               textTransform: 'uppercase',
               letterSpacing: '0.1em',
@@ -153,7 +153,7 @@ export default function VitalsGrid() {
           <div
             style={{
               fontFamily: '"DM Sans", sans-serif',
-              fontSize: '11px',
+              fontSize: '12px',
               lineHeight: '1.5',
               color: 'var(--text-dim)',
             }}

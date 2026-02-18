@@ -200,10 +200,10 @@ export default function PatientSpeech() {
         <p
           style={{
             fontFamily: '"Source Serif 4", serif',
-            fontSize: '12px',
+            fontSize: '14px',
             fontStyle: 'italic',
-            fontVariationSettings: '"opsz" 12',
-            lineHeight: '1.72',
+            fontVariationSettings: '"opsz" 14',
+            lineHeight: '1.65',
             color: 'var(--text-dim)',
             margin: 0,
           }}
