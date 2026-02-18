@@ -15,23 +15,37 @@ export default function DiagramPanel() {
     blockRefs.current = blockRefs.current.slice(0, diagramBlocks.length)
   }, [diagramBlocks])
 
-  if (!diagramOpen) {
-    return null
-  }
-
   const is2D = diagramLayout === '2d'
+
+  if (!diagramOpen) {
+    return (
+      <div
+        style={{
+          width: '100%',
+          height: '100%',
+          background: 'var(--surface)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontFamily: '"DM Sans", sans-serif',
+          fontSize: '13px',
+          color: 'var(--text-tertiary)',
+        }}
+      >
+        Submit your reasoning to view the diagram
+      </div>
+    )
+  }
 
   return (
     <div
       style={{
-        width: diagramOpen ? '380px' : '0',
-        transition: 'width 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+        width: '100%',
+        height: '100%',
         background: 'var(--surface)',
-        borderLeft: '1px solid var(--border)',
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
-        flexShrink: 0,
       }}
     >
       {/* Panel header */}

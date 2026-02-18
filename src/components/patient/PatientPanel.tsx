@@ -11,13 +11,11 @@ export default function PatientPanel() {
   return (
     <div
       style={{
-        width: '260px',
-        flexShrink: 0,
+        width: '100%',
+        height: '100%',
         background: 'var(--surface)',
-        borderRight: '1px solid var(--border)',
         display: 'flex',
         flexDirection: 'column',
-        height: '100%',
         overflow: 'hidden',
       }}
     >
