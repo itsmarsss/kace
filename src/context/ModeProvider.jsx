@@ -1,5 +1,7 @@
 import { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react'
 import { james } from '../data/cases/james'
+import { useKaceAPI } from '../hooks/useKaceAPI'
+import { extractKeywords } from '../utils/keywordExtract'
 
 const ModeContext = createContext()
 
@@ -27,6 +29,7 @@ export function ModeProvider({ children }) {
 
   const demoTimersRef = useRef([])
   const currentStepRef = useRef(0)
+  const { sendMessage: sendToAPI, loading: apiLoading } = useKaceAPI()
 
   // Demo playback engine
   const playDemo = useCallback(() => {
@@ -114,29 +117,71 @@ export function ModeProvider({ children }) {
     currentStepRef.current = 0
   }, [])
 
-  const sendMessage = useCallback((text) => {
-    if (mode === 'demo') {
-      // In demo mode, do nothing (script controls messages)
-      return
-    }
+  const sendMessage = useCallback(
+    async (text) => {
+      if (mode === 'demo') {
+        // In demo mode, do nothing (script controls messages)
+        return
+      }
 
-    // Live mode: add user message and call API
-    setMessages(prev => [...prev, {
-      type: 'user',
-      text,
-      timestamp: Date.now()
-    }])
+      // Extract keywords for graph
+      const keywords = extractKeywords(text)
+      setGraphNodes((prev) => {
+        const existingLabels = prev.map((n) => n.label)
+        const newNodes = keywords.filter((k) => !existingLabels.includes(k.label))
+        return [...prev, ...newNodes]
+      })
 
-    // TODO: Call Claude API
-    // For now, just echo back
-    setTimeout(() => {
-      setMessages(prev => [...prev, {
-        type: 'kace',
-        text: 'This is a placeholder response. API integration coming soon.',
-        timestamp: Date.now()
-      }])
-    }, 1000)
-  }, [mode])
+      // Live mode: add user message and call API
+      setMessages((prev) => [
+        ...prev,
+        {
+          type: 'user',
+          text,
+          timestamp: Date.now(),
+        },
+      ])
+
+      try {
+        // Build conversation history for API
+        const conversationHistory = messages
+          .filter((m) => m.type === 'kace' || m.type === 'user')
+          .map((m) => ({
+            role: m.type === 'kace' ? 'assistant' : 'user',
+            content: m.text,
+          }))
+          .concat([{ role: 'user', content: text }])
+
+        const response = await sendToAPI(
+          conversationHistory,
+          james.systemContext,
+          revealedVitals
+        )
+
+        const kaceResponse = response.content[0].text
+
+        setMessages((prev) => [
+          ...prev,
+          {
+            type: 'kace',
+            text: kaceResponse,
+            timestamp: Date.now(),
+          },
+        ])
+      } catch (error) {
+        console.error('API error:', error)
+        setMessages((prev) => [
+          ...prev,
+          {
+            type: 'kace',
+            text: 'Sorry, I encountered an error. Please try again.',
+            timestamp: Date.now(),
+          },
+        ])
+      }
+    },
+    [mode, messages, revealedVitals, sendToAPI]
+  )
 
   const requestVital = useCallback((key) => {
     if (mode === 'demo') {
