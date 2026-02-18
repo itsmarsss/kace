@@ -1,4 +1,4 @@
-import { Play, Square, SidebarLeft, Eye, BarChart3 } from 'lucide-react'
+import { Play, Square, PanelLeft, Eye, BarChart3 } from 'lucide-react'
 import { useMode } from '../context/ModeProvider'
 
 export default function TopBar() {
@@ -80,7 +80,7 @@ export default function TopBar() {
           color: sidebarOpen ? 'var(--gold)' : 'var(--text-dim)',
         }}
       >
-        <SidebarLeft size={13} />
+        <PanelLeft size={13} />
         Symptoms
       </button>
 
