@@ -53,7 +53,7 @@ export default function HighlightedTextarea({
 
   const renderHighlightedText = () => {
     if (!hoveredBlock || hoveredBlock.sourceStart === undefined || hoveredBlock.sourceEnd === undefined) {
-      // No highlighting, just render the text
+      // No highlighting - render text (will be transparent via parent style)
       return <span>{value}&nbsp;</span>
     }
 
@@ -65,7 +65,7 @@ export default function HighlightedTextarea({
     return (
       <>
         <span>{before}</span>
-        <mark className="bg-[var(--teal-light)] text-[var(--text-primary)]">{highlighted}</mark>
+        <mark className="bg-[var(--teal-light)]">{highlighted}</mark>
         <span>{after}&nbsp;</span>
       </>
     )
@@ -76,13 +76,14 @@ export default function HighlightedTextarea({
       {/* Background layer with highlighted text */}
       <div
         ref={highlightRef}
-        className={`absolute inset-0 overflow-hidden whitespace-pre-wrap break-words rounded-[var(--r)] p-[13px_16px] font-['DM_Sans',sans-serif] text-[14px] leading-[1.7] text-transparent ${className}`}
+        className={`absolute inset-0 overflow-hidden whitespace-pre-wrap break-words rounded-[var(--r)] p-[13px_16px] font-['DM_Sans',sans-serif] text-[14px] leading-[1.7] ${className}`}
         style={{
           pointerEvents: 'none',
           wordWrap: 'break-word',
           overflowWrap: 'break-word',
           scrollbarWidth: 'none',
           msOverflowStyle: 'none',
+          color: 'transparent',
         }}
       >
         {renderHighlightedText()}
