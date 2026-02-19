@@ -128,11 +128,36 @@ function modeReducer(state: ModeState, action: ModeAction): ModeState {
       }
 
     case 'DIAGRAM_READY':
+      // Merge feedback into existing blocks instead of replacing them
+      // This preserves the original structure (connections, etc.) from Gemini
+      let updatedDiagramBlocks = state.diagramBlocks
+
+      if (action.payload.studentBlocks && state.mode === 'live') {
+        // In live mode, merge feedback from Claude's response into existing blocks
+        updatedDiagramBlocks = state.diagramBlocks.map((block) => {
+          // Find matching block in Claude's response by ID or title
+          const feedbackBlock = action.payload.studentBlocks.find(
+            (fb: any) => fb.id === block.id || fb.title === block.title
+          )
+          if (feedbackBlock?.feedback) {
+            // Merge feedback into existing block, preserving all original properties
+            return { ...block, feedback: feedbackBlock.feedback }
+          }
+          return block
+        })
+      } else if (action.payload.studentBlocks) {
+        // Demo mode or legacy format - use the blocks as provided
+        updatedDiagramBlocks = action.payload.studentBlocks
+      } else if (action.payload.length) {
+        // Legacy format - array of blocks
+        updatedDiagramBlocks = action.payload
+      }
+
       return {
         ...state,
         isAnalyzing: false,
         sessionState: 'reviewed',
-        diagramBlocks: action.payload.studentBlocks || action.payload, // Handle both new and legacy format
+        diagramBlocks: updatedDiagramBlocks,
         expertBlocks: action.payload.expertBlocks || [],
         overallFeedback: action.payload.overallFeedback || '',
         score: action.payload.score || 0,
