@@ -8,6 +8,11 @@ export default function BlockDetailModal() {
 
   const style = getBlockStyle(selectedBlock.type)
 
+  // Find blocks that connect TO this block (incoming connections)
+  const connectsFrom = diagramBlocks.filter((block) =>
+    block.connects_to?.includes(selectedBlock.id)
+  )
+
   const bgClass =
     selectedBlock.type === 'OBSERVATION'
       ? 'bg-[var(--teal-light)]'
@@ -103,7 +108,70 @@ export default function BlockDetailModal() {
           </div>
         )}
 
-        {/* Connections */}
+        {/* Incoming connections (connects from) */}
+        {connectsFrom.length > 0 && (
+          <div className="mt-4 border-t border-[var(--border)] pt-4">
+            <div className="mb-2 font-['DM_Sans',sans-serif] text-[9px] font-semibold uppercase tracking-[0.12em] text-[var(--text-tertiary)]">
+              Connects from
+            </div>
+            <div className="flex flex-col gap-2">
+              {connectsFrom.map((block) => {
+                const blockStyle = getBlockStyle(block.type)
+
+                // Get colors for the block
+                const blockBgClass =
+                  block.type === 'OBSERVATION'
+                    ? 'bg-[var(--teal-light)]'
+                    : block.type === 'INTERPRETATION'
+                      ? 'bg-[var(--slate-light)]'
+                      : block.type === 'CONSIDERATION'
+                        ? 'bg-[var(--amber-light)]'
+                        : block.type === 'CONTRAINDICATION'
+                          ? 'bg-[var(--crimson-light)]'
+                          : 'bg-[var(--green-light)]'
+
+                const blockBorderClass =
+                  block.type === 'OBSERVATION'
+                    ? 'border-[var(--teal-border)]'
+                    : block.type === 'INTERPRETATION'
+                      ? 'border-[var(--slate-border)]'
+                      : block.type === 'CONSIDERATION'
+                        ? 'border-[var(--amber-border)]'
+                        : block.type === 'CONTRAINDICATION'
+                          ? 'border-[var(--crimson-border)]'
+                          : 'border-[var(--green-border)]'
+
+                const blockColorClass =
+                  block.type === 'OBSERVATION'
+                    ? 'text-[var(--teal)]'
+                    : block.type === 'INTERPRETATION'
+                      ? 'text-[var(--slate)]'
+                      : block.type === 'CONSIDERATION'
+                        ? 'text-[var(--amber)]'
+                        : block.type === 'CONTRAINDICATION'
+                          ? 'text-[var(--crimson)]'
+                          : 'text-[var(--green)]'
+
+                return (
+                  <button
+                    key={block.id}
+                    onClick={() => dispatch({ type: 'SET_SELECTED_BLOCK', payload: block })}
+                    className={`w-full cursor-pointer rounded-[var(--r-sm)] border p-[8px_12px] text-left transition-all duration-150 hover:shadow-[var(--shadow-md)] ${blockBgClass} ${blockBorderClass}`}
+                  >
+                    <div className={`mb-1 font-['DM_Sans',sans-serif] text-[9px] font-semibold uppercase tracking-[0.12em] ${blockColorClass}`}>
+                      {blockStyle.label}
+                    </div>
+                    <div className="font-['DM_Sans',sans-serif] text-[13px] font-medium text-[var(--text-primary)]">
+                      {block.title}
+                    </div>
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Outgoing connections (connects to) */}
         {selectedBlock.connects_to && selectedBlock.connects_to.length > 0 && (
           <div className="mt-4 border-t border-[var(--border)] pt-4">
             <div className="mb-2 font-['DM_Sans',sans-serif] text-[9px] font-semibold uppercase tracking-[0.12em] text-[var(--text-tertiary)]">
