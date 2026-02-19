@@ -67,15 +67,13 @@ export default function DiagramPanel() {
       </div>
 
       {/* Diagram scroll area */}
-      <div
-        className={`relative flex-1 p-4 ${is2D ? 'overflow-auto' : 'overflow-y-auto overflow-x-hidden'}`}
-      >
+      <div className={`relative flex-1 ${is2D ? '' : 'overflow-y-auto overflow-x-hidden p-4'}`}>
         {diagramBlocks.length === 0 ? (
           <div className="flex h-full items-center justify-center p-5 text-center font-['DM_Sans',sans-serif] text-[13px] text-[var(--text-tertiary)]">
             Analysis could not be completed. You can still view the expert comparison.
           </div>
         ) : is2D ? (
-          // 2D interactive canvas with React Flow
+          // 2D interactive canvas with React Flow - no padding, full height
           <DiagramFlow blocks={diagramBlocks} />
         ) : (
           // 1D vertical layout (no arrows, just stacked blocks)

@@ -9,6 +9,8 @@ import {
   useNodesState,
   useEdgesState,
   MarkerType,
+  Handle,
+  Position,
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 import { getBlockStyle } from './blockTypes'
@@ -66,6 +68,10 @@ function DiagramNode({ data }: { data: any }) {
     <div
       className={`min-w-[280px] max-w-[350px] rounded-[var(--r)] border border-t-[3px] p-[12px_14px] shadow-[var(--shadow-md)] ${bgClass} ${borderClass} ${borderTopClass}`}
     >
+      {/* Connection handles for edges */}
+      <Handle type="target" position={Position.Top} style={{ opacity: 0 }} />
+      <Handle type="source" position={Position.Bottom} style={{ opacity: 0 }} />
+
       {/* Type label */}
       <div
         className={`mb-1 font-['DM_Sans',sans-serif] text-[9px] font-semibold uppercase tracking-[0.12em] ${colorClass}`}
@@ -185,13 +191,14 @@ export default function DiagramFlow({ blocks }: DiagramFlowProps) {
             id: `${block.id}-${targetId}`,
             source: block.id,
             target: targetId,
-            type: 'default',
+            type: 'smoothstep',
             animated: true,
-            style: { stroke: '#49c6b9', strokeWidth: 2.5 },
+            style: {
+              stroke: '#49c6b9',
+              strokeWidth: 3,
+            },
             markerEnd: {
               type: MarkerType.ArrowClosed,
-              width: 20,
-              height: 20,
               color: '#49c6b9',
             },
           })
@@ -212,9 +219,16 @@ export default function DiagramFlow({ blocks }: DiagramFlowProps) {
         onEdgesChange={onEdgesChange}
         nodeTypes={nodeTypes}
         fitView
+        fitViewOptions={{ padding: 0.2 }}
         minZoom={0.2}
         maxZoom={1.5}
         defaultViewport={{ x: 0, y: 0, zoom: 0.8 }}
+        defaultEdgeOptions={{
+          type: 'smoothstep',
+          animated: true,
+          style: { strokeWidth: 3, stroke: '#49c6b9' },
+        }}
+        elevateEdgesOnSelect={false}
         proOptions={{ hideAttribution: true }}
       >
         <Background color="#e5e5e5" gap={16} />
