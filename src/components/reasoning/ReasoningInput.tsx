@@ -26,7 +26,7 @@ export default function ReasoningInput() {
     [isSubmitted, dispatch, reasoningText]
   )
 
-  const { isListening, toggleListening } = useSTT(handleFinalTranscript)
+  const { isListening, interimTranscript, toggleListening } = useSTT(handleFinalTranscript)
 
   // Auto-resize textarea - disabled since we want it to fill container
   // useEffect(() => {
@@ -97,7 +97,7 @@ export default function ReasoningInput() {
           )}
         </div>
         <HighlightedTextarea
-          value={reasoningText}
+          value={reasoningText + (interimTranscript ? interimTranscript : '')}
           onChange={(value) =>
             dispatch({
               type: 'SET_REASONING_TEXT',
