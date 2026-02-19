@@ -72,7 +72,7 @@ export default function BlockDetailModal() {
       onClick={handleClose}
     >
       <div
-        className={`mx-5 w-full max-w-[600px] rounded-[var(--r-lg)] border border-t-[4px] p-[20px_24px] shadow-[var(--shadow-xl)] ${bgClass} ${borderClass} ${borderTopClass}`}
+        className={`mx-5 max-h-[90vh] w-full max-w-[600px] overflow-y-auto rounded-[var(--r-lg)] border border-t-[4px] p-[20px_24px] shadow-[var(--shadow-xl)] ${bgClass} ${borderClass} ${borderTopClass}`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
