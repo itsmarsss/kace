@@ -1,5 +1,6 @@
 import { useEffect, useRef, useCallback } from 'react'
 import { useMode } from '../context/ModeProvider'
+import { updateDiagramIncremental } from '../services/api'
 
 interface DiagramSnapshot {
   text: string
@@ -11,9 +12,19 @@ interface DiagramSnapshot {
 /**
  * Hook for live diagram generation as user types
  * Captures snapshots every 10-15 seconds and sends to Claude API
+ * Only active in live mode before submission
  */
 export function useLiveDiagram() {
-  const { reasoningText, selectedDrugs, confidence, diagramBlocks, dispatch } = useMode()
+  const {
+    reasoningText,
+    selectedDrugs,
+    confidence,
+    diagramBlocks,
+    currentCase,
+    mode,
+    isSubmitted,
+    dispatch,
+  } = useMode()
 
   const lastSnapshotRef = useRef<DiagramSnapshot | null>(null)
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
@@ -37,39 +48,42 @@ export function useLiveDiagram() {
         // Compute what changed
         const textDiff = computeTextDiff(previousSnapshot?.text || '', snapshot.text)
 
-        // Prepare context for Claude
-        const context = {
+        console.log('[Live Diagram] Generating update:', {
+          previousLength: previousSnapshot?.text.length || 0,
+          newLength: snapshot.text.length,
+          diff: textDiff,
+        })
+
+        // Call Claude API to update diagram
+        const result = await updateDiagramIncremental({
           previousText: previousSnapshot?.text || '',
           newText: snapshot.text,
           textDiff,
-          currentDiagram: diagramBlocks,
-          selectedDrugs: snapshot.drugs,
-          confidence: snapshot.confidence,
-          timestamp: snapshot.timestamp,
-        }
+          currentBlocks: diagramBlocks,
+          caseContext: currentCase.systemContext,
+        })
 
-        // TODO: Call Claude API
-        // const updatedBlocks = await callClaudeAPI(context)
-        console.log('[Live Diagram] Generating with context:', context)
-
-        // For now, simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 1000))
-
-        // TODO: Update diagram with new blocks
-        // dispatch({ type: 'UPDATE_DIAGRAM', payload: updatedBlocks })
+        // Update diagram with new blocks
+        dispatch({ type: 'DIAGRAM_READY', payload: result.blocks })
 
         lastSnapshotRef.current = snapshot
       } catch (error) {
         console.error('[Live Diagram] Generation failed:', error)
+        // Don't show error to user for live updates - just log it
       } finally {
         isGeneratingRef.current = false
       }
     },
-    [diagramBlocks, dispatch]
+    [diagramBlocks, currentCase, dispatch]
   )
 
   // Throttle snapshot capture to every 10-15 seconds
   useEffect(() => {
+    // Only run in live mode and before submission
+    if (mode !== 'live' || isSubmitted) {
+      return
+    }
+
     // Clear existing timeout
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current)
@@ -97,7 +111,7 @@ export function useLiveDiagram() {
         clearTimeout(timeoutRef.current)
       }
     }
-  }, [reasoningText, selectedDrugs, confidence, generateDiagram])
+  }, [reasoningText, selectedDrugs, confidence, mode, isSubmitted, generateDiagram])
 
   // Cleanup on unmount
   useEffect(() => {

@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { useMode } from '../../context/ModeProvider'
 import { useAnalysis } from '../../hooks/useAnalysis'
+import { useLiveDiagram } from '../../hooks/useLiveDiagram'
 import ConfidenceSlider from '../input/ConfidenceSlider'
 import TreatmentReference from './TreatmentReference'
 
@@ -9,6 +10,9 @@ export default function ReasoningInput() {
   const { submitReasoning } = useAnalysis()
 
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+
+  // Enable live diagram generation in live mode (before submission)
+  useLiveDiagram()
 
   // Auto-resize textarea - disabled since we want it to fill container
   // useEffect(() => {
