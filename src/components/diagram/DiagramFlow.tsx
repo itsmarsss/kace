@@ -102,11 +102,15 @@ interface DiagramFlowProps {
   blocks: any[]
 }
 
+interface FlowContentProps {
+  blocks: any[]
+  setNodes: (nodes: Node[]) => void
+  setEdges: (edges: Edge[]) => void
+}
+
 // Inner component that has access to ReactFlow context
-function FlowContent({ blocks }: DiagramFlowProps) {
-  const [nodes, setNodes, onNodesChange] = useNodesState<Node>([])
-  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([])
-  const { fitView } = useReactFlow()
+function FlowContent({ blocks, setNodes, setEdges }: FlowContentProps) {
+  const { fitView, getNodes, getEdges } = useReactFlow()
 
   // Convert blocks to React Flow nodes and edges
   useEffect(() => {
@@ -213,16 +217,17 @@ function FlowContent({ blocks }: DiagramFlowProps) {
     setEdges(flowEdges)
   }, [blocks, setNodes, setEdges])
 
-  // Auto-fit view whenever nodes/edges change
+  // Auto-fit view whenever blocks change
   useEffect(() => {
-    if (nodes.length > 0) {
+    const currentNodes = getNodes()
+    if (currentNodes.length > 0) {
       // Small delay to ensure nodes are rendered before fitting
       const timer = setTimeout(() => {
         fitView({ padding: 0.2, duration: 400 })
       }, 100)
       return () => clearTimeout(timer)
     }
-  }, [nodes, edges, fitView])
+  }, [blocks, getNodes, fitView])
 
   return (
     <>
@@ -234,9 +239,16 @@ function FlowContent({ blocks }: DiagramFlowProps) {
 
 // Outer wrapper component
 export default function DiagramFlow({ blocks }: DiagramFlowProps) {
+  const [nodes, setNodes, onNodesChange] = useNodesState<Node>([])
+  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([])
+
   return (
     <div className="h-full w-full">
       <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
         nodeTypes={nodeTypes}
         minZoom={0.2}
         maxZoom={1.5}
@@ -249,7 +261,7 @@ export default function DiagramFlow({ blocks }: DiagramFlowProps) {
         elevateEdgesOnSelect={false}
         proOptions={{ hideAttribution: true }}
       >
-        <FlowContent blocks={blocks} />
+        <FlowContent blocks={blocks} setNodes={setNodes} setEdges={setEdges} />
       </ReactFlow>
     </div>
   )
