@@ -1,12 +1,12 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 
 /**
  * Custom hook for Speech-to-Text using Web Speech API
  * @returns {Object} STT controls and state
  */
-export function useSTT() {
+export function useSTT(onFinalTranscript?: (text: string) => void) {
   const [isListening, setIsListening] = useState(false)
-  const [transcript, setTranscript] = useState('')
+  const [interimTranscript, setInterimTranscript] = useState('')
   const recognitionRef = useRef<SpeechRecognition | null>(null)
 
   useEffect(() => {
@@ -23,19 +23,22 @@ export function useSTT() {
     recognition.lang = 'en-US'
 
     recognition.onresult = (event) => {
-      let interimTranscript = ''
-      let finalTranscript = ''
+      let interim = ''
+      let final = ''
 
       for (let i = event.resultIndex; i < event.results.length; i++) {
         const transcriptPiece = event.results[i][0].transcript
         if (event.results[i].isFinal) {
-          finalTranscript += transcriptPiece + ' '
+          final += transcriptPiece + ' '
         } else {
-          interimTranscript += transcriptPiece
+          interim += transcriptPiece
         }
       }
 
-      setTranscript(finalTranscript || interimTranscript)
+      if (final && onFinalTranscript) {
+        onFinalTranscript(final)
+      }
+      setInterimTranscript(interim)
     }
 
     recognition.onerror = (event) => {
@@ -45,6 +48,7 @@ export function useSTT() {
 
     recognition.onend = () => {
       setIsListening(false)
+      setInterimTranscript('')
     }
 
     recognitionRef.current = recognition
@@ -54,34 +58,35 @@ export function useSTT() {
         recognitionRef.current.stop()
       }
     }
-  }, [])
+  }, [onFinalTranscript])
 
-  const startListening = () => {
+  const startListening = useCallback(() => {
     if (recognitionRef.current && !isListening) {
-      setTranscript('')
+      setInterimTranscript('')
       recognitionRef.current.start()
       setIsListening(true)
     }
-  }
+  }, [isListening])
 
-  const stopListening = () => {
+  const stopListening = useCallback(() => {
     if (recognitionRef.current && isListening) {
       recognitionRef.current.stop()
       setIsListening(false)
+      setInterimTranscript('')
     }
-  }
+  }, [isListening])
 
-  const toggleListening = () => {
+  const toggleListening = useCallback(() => {
     if (isListening) {
       stopListening()
     } else {
       startListening()
     }
-  }
+  }, [isListening, startListening, stopListening])
 
   return {
     isListening,
-    transcript,
+    interimTranscript,
     startListening,
     stopListening,
     toggleListening,

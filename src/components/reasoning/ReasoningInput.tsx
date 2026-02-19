@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useCallback } from 'react'
 import { Mic, MicOff } from 'lucide-react'
 import { useMode } from '../../context/ModeProvider'
 import { useAnalysis } from '../../hooks/useAnalysis'
@@ -12,17 +12,21 @@ export default function ReasoningInput() {
   const { reasoningText, selectedDrugs, isSubmitted, isAnalyzing, mode, dispatch } = useMode()
   const { submitReasoning } = useAnalysis()
   const { triggerNow, isGenerating, countdown } = useLiveDiagram()
-  const { isListening, transcript, toggleListening } = useSTT()
 
-  // Append speech transcript to reasoning text
-  useEffect(() => {
-    if (transcript && !isSubmitted) {
-      dispatch({
-        type: 'SET_REASONING_TEXT',
-        payload: reasoningText + transcript,
-      })
-    }
-  }, [transcript, isSubmitted, dispatch, reasoningText])
+  // Handle final speech transcript
+  const handleFinalTranscript = useCallback(
+    (text: string) => {
+      if (!isSubmitted) {
+        dispatch({
+          type: 'SET_REASONING_TEXT',
+          payload: reasoningText + text,
+        })
+      }
+    },
+    [isSubmitted, dispatch, reasoningText]
+  )
+
+  const { isListening, toggleListening } = useSTT(handleFinalTranscript)
 
   // Auto-resize textarea - disabled since we want it to fill container
   // useEffect(() => {
