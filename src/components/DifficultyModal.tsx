@@ -1,13 +1,18 @@
 import { useMode } from '../context/ModeProvider'
 
 export default function DifficultyModal() {
-  const { showDifficultyModal, dispatch } = useMode()
+  const { showDifficultyModal, mode, dispatch, playDemo } = useMode()
 
   if (!showDifficultyModal) return null
 
   const selectDifficulty = (difficulty: 'easy' | 'medium' | 'hard') => {
     dispatch({ type: 'SET_DIFFICULTY', payload: difficulty })
     dispatch({ type: 'HIDE_DIFFICULTY_MODAL' })
+
+    // Auto-start demo if in demo mode
+    if (mode === 'demo') {
+      setTimeout(() => playDemo(), 300)
+    }
   }
 
   return (

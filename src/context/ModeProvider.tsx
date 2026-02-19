@@ -8,6 +8,7 @@ interface ModeState {
   difficulty: 'easy' | 'medium' | 'hard' | null
   showDifficultyModal: boolean
   isPlaying: boolean
+  demoFinished: boolean
   reasoningText: string
   confidence: number
   selectedDrugs: string[]
@@ -59,6 +60,7 @@ const initialState: ModeState = {
   difficulty: null, // Show difficulty modal after mode selection
   showDifficultyModal: false, // Will be shown after mode selection
   isPlaying: false,
+  demoFinished: false,
   reasoningText: '',
   confidence: 3,
   selectedDrugs: [],
@@ -103,6 +105,9 @@ function modeReducer(state: ModeState, action: ModeAction): ModeState {
 
     case 'SET_PLAYING':
       return { ...state, isPlaying: action.payload }
+
+    case 'SET_DEMO_FINISHED':
+      return { ...state, demoFinished: action.payload }
 
     case 'SET_REASONING_TEXT':
       return { ...state, reasoningText: action.payload }
@@ -271,6 +276,9 @@ function modeReducer(state: ModeState, action: ModeAction): ModeState {
       return {
         ...initialState,
         mode: state.mode, // Preserve mode
+        difficulty: state.difficulty, // Preserve difficulty
+        showModeModal: false, // Don't show modals on reset
+        showDifficultyModal: false,
       }
 
     default:
@@ -294,6 +302,7 @@ export function ModeProvider({ children }: { children: React.ReactNode }) {
     demoTimersRef.current = []
 
     dispatch({ type: 'SET_PLAYING', payload: true })
+    dispatch({ type: 'SET_DEMO_FINISHED', payload: false })
 
     // Execute demo script
     let cumulativeDelay = 0
@@ -369,6 +378,7 @@ export function ModeProvider({ children }: { children: React.ReactNode }) {
         if (stepIndex === james.demoScript.length - 1) {
           setTimeout(() => {
             dispatch({ type: 'SET_PLAYING', payload: false })
+            dispatch({ type: 'SET_DEMO_FINISHED', payload: true })
           }, 500)
         }
       }, cumulativeDelay)

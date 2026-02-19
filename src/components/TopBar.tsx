@@ -1,8 +1,9 @@
-import { Play, Square } from 'lucide-react'
+import { Play, Square, RotateCcw } from 'lucide-react'
 import { useMode } from '../context/ModeProvider'
 
 export default function TopBar() {
-  const { isPlaying, playDemo, stopDemo, dispatch, currentCase, mode, sessionState, score } = useMode()
+  const { isPlaying, demoFinished, playDemo, stopDemo, dispatch, currentCase, mode, sessionState, score } =
+    useMode()
 
   return (
     <header className="flex h-[52px] items-center gap-3 border-b border-[var(--border)] bg-[var(--surface)] px-5">
@@ -84,6 +85,11 @@ export default function TopBar() {
             <>
               <Square size={12} fill="currentColor" />
               Stop Demo
+            </>
+          ) : demoFinished ? (
+            <>
+              <RotateCcw size={12} />
+              Restart Demo
             </>
           ) : (
             <>
