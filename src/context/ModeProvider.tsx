@@ -123,6 +123,8 @@ function modeReducer(state: ModeState, action: ModeAction): ModeState {
         isSubmitted: true,
         sessionState: 'analyzing',
         isAnalyzing: true,
+        // Show feedback modal in live mode to display analyzing loader
+        showFeedbackModal: state.mode === 'live',
       }
 
     case 'DIAGRAM_READY':

@@ -7,15 +7,22 @@ import CalibrationBars from './CalibrationBars'
 import { compareDiagrams } from '../../utils/diffBlocks'
 
 export default function FeedbackView() {
-  const { diagramBlocks, expertBlocks, overallFeedback, score, showFeedbackModal, comparisonResult, dispatch } =
-    useMode()
+  const {
+    diagramBlocks,
+    expertBlocks,
+    overallFeedback,
+    score,
+    showFeedbackModal,
+    comparisonResult,
+    isAnalyzing,
+    dispatch,
+  } = useMode()
   const [studentLayout, setStudentLayout] = useState<'1d' | '2d'>('1d')
   const [expertLayout, setExpertLayout] = useState<'1d' | '2d'>('1d')
   const [studentLayoutKey, setStudentLayoutKey] = useState(0)
   const [expertLayoutKey, setExpertLayoutKey] = useState(0)
 
-  if (!showFeedbackModal) return null
-
+  // All hooks must be called before any conditional returns!
   // Calculate comparison using diffBlocks utility
   const comparison = useMemo(() => {
     return compareDiagrams(diagramBlocks, expertBlocks)
@@ -53,6 +60,26 @@ export default function FeedbackView() {
       }
     })
   }, [expertBlocks, comparison])
+
+  // Early returns AFTER all hooks
+  if (!showFeedbackModal) return null
+
+  // Show analyzing loader
+  if (isAnalyzing) {
+    return (
+      <div className="fixed inset-0 z-[300] flex items-center justify-center bg-[var(--surface)]">
+        <div className="text-center">
+          <div className="mb-4 inline-block h-12 w-12 animate-spin rounded-full border-4 border-[var(--border)] border-t-[var(--teal)]" />
+          <div className="font-['DM_Sans',sans-serif] text-[16px] font-semibold text-[var(--text-primary)]">
+            Analyzing your reasoning...
+          </div>
+          <div className="mt-2 font-['DM_Sans',sans-serif] text-[12px] text-[var(--text-tertiary)]">
+            Comparing with expert clinical thinking
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   const handleClose = () => {
     dispatch({ type: 'HIDE_FEEDBACK_MODAL' })
