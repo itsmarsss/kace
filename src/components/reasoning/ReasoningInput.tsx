@@ -8,7 +8,7 @@ import TreatmentReference from './TreatmentReference'
 export default function ReasoningInput() {
   const { reasoningText, selectedDrugs, isSubmitted, isAnalyzing, mode, dispatch } = useMode()
   const { submitReasoning } = useAnalysis()
-  const { triggerNow, isGenerating } = useLiveDiagram()
+  const { triggerNow, isGenerating, countdown } = useLiveDiagram()
 
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
@@ -112,7 +112,11 @@ export default function ReasoningInput() {
               }`}
               title="Manually update diagram (or wait for auto-update)"
             >
-              {isGenerating ? 'Updating...' : 'Update Diagram'}
+              {isGenerating
+                ? 'Updating...'
+                : countdown > 0
+                  ? `Update Diagram (${countdown}s)`
+                  : 'Update Diagram'}
             </button>
           )}
 

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from 'react'
+import { useEffect, useRef, useCallback, useState } from 'react'
 import { useMode } from '../context/ModeProvider'
 import { updateDiagramWithGemini } from '../services/gemini'
 
@@ -28,12 +28,16 @@ export function useLiveDiagram() {
 
   const lastSnapshotRef = useRef<DiagramSnapshot | null>(null)
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
-  const isGeneratingRef = useRef(false)
+  const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null)
+  const scheduledTimeRef = useRef<number>(0) // When the next trigger is scheduled
   const stepCounterRef = useRef(0)
+
+  const [isGenerating, setIsGenerating] = useState(false)
+  const [countdown, setCountdown] = useState(0) // Seconds until next auto-trigger
 
   const generateDiagram = useCallback(
     async (snapshot: DiagramSnapshot) => {
-      if (isGeneratingRef.current) return
+      if (isGenerating) return
 
       const previousSnapshot = lastSnapshotRef.current
       const previousText = previousSnapshot?.text || ''
@@ -53,7 +57,8 @@ export function useLiveDiagram() {
 
       if (!snapshot.text.trim()) return
 
-      isGeneratingRef.current = true
+      setIsGenerating(true)
+      setCountdown(0) // Clear countdown while generating
 
       try {
         // Increment step counter
@@ -89,26 +94,36 @@ export function useLiveDiagram() {
         console.error('[Live Diagram] Generation failed:', error)
         // Don't show error to user for live updates - just log it
       } finally {
-        isGeneratingRef.current = false
+        setIsGenerating(false)
       }
     },
-    [diagramBlocks, currentCase, dispatch]
+    [isGenerating, diagramBlocks, currentCase, dispatch]
   )
 
-  // Throttle snapshot capture to every 10-15 seconds
+  // Throttle snapshot capture to every 8-15 seconds
   useEffect(() => {
     // Only run in live mode and before submission
     if (mode !== 'live' || isSubmitted) {
+      setCountdown(0)
       return
     }
 
-    // Clear existing timeout
+    // Clear existing timeout and countdown
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current)
+    }
+    if (countdownIntervalRef.current) {
+      clearInterval(countdownIntervalRef.current)
     }
 
     // Don't generate if text is empty or too short
     if (!reasoningText.trim() || reasoningText.length < 100) {
+      setCountdown(0)
+      return
+    }
+
+    // Don't schedule if already generating
+    if (isGenerating) {
       return
     }
 
@@ -119,6 +134,9 @@ export function useLiveDiagram() {
 
     // Use shorter delay if at natural break, longer otherwise
     const delay = hasNaturalBreak ? 8000 : 15000 // 8s or 15s
+
+    // Track when the next trigger is scheduled
+    scheduledTimeRef.current = Date.now() + delay
 
     // Schedule snapshot after period of inactivity
     timeoutRef.current = setTimeout(() => {
@@ -132,18 +150,39 @@ export function useLiveDiagram() {
       generateDiagram(snapshot)
     }, delay)
 
+    // Update countdown every second
+    countdownIntervalRef.current = setInterval(() => {
+      const remaining = Math.max(0, Math.ceil((scheduledTimeRef.current - Date.now()) / 1000))
+      setCountdown(remaining)
+
+      if (remaining === 0) {
+        if (countdownIntervalRef.current) {
+          clearInterval(countdownIntervalRef.current)
+        }
+      }
+    }, 1000)
+
+    // Set initial countdown
+    setCountdown(Math.ceil(delay / 1000))
+
     return () => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current)
       }
+      if (countdownIntervalRef.current) {
+        clearInterval(countdownIntervalRef.current)
+      }
     }
-  }, [reasoningText, selectedDrugs, confidence, mode, isSubmitted, generateDiagram])
+  }, [reasoningText, selectedDrugs, confidence, mode, isSubmitted, isGenerating, generateDiagram])
 
   // Cleanup on unmount
   useEffect(() => {
     return () => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current)
+      }
+      if (countdownIntervalRef.current) {
+        clearInterval(countdownIntervalRef.current)
       }
     }
   }, [])
@@ -153,6 +192,15 @@ export function useLiveDiagram() {
     if (mode !== 'live' || isSubmitted || !reasoningText.trim()) {
       return
     }
+
+    // Clear scheduled auto-update
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+    }
+    if (countdownIntervalRef.current) {
+      clearInterval(countdownIntervalRef.current)
+    }
+    setCountdown(0)
 
     const snapshot: DiagramSnapshot = {
       text: reasoningText,
@@ -164,7 +212,7 @@ export function useLiveDiagram() {
     generateDiagram(snapshot)
   }, [mode, isSubmitted, reasoningText, selectedDrugs, confidence, generateDiagram])
 
-  return { triggerNow, isGenerating: isGeneratingRef.current }
+  return { triggerNow, isGenerating, countdown }
 }
 
 /**
