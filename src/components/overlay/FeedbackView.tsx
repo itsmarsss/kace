@@ -30,7 +30,7 @@ export default function FeedbackView() {
     return Math.round((matches / Math.max(diagramBlocks.length, expertBlocks.length)) * 100)
   }, [comparison, diagramBlocks.length, expertBlocks.length])
 
-  // Map blocks to include diff state
+  // Map blocks to include diff state and feedback flags
   const studentBlocksWithDiff = useMemo(() => {
     return diagramBlocks.map((block) => {
       const isMatch = comparison.match.some((m) => m.id === block.id)
@@ -38,6 +38,7 @@ export default function FeedbackView() {
       return {
         ...block,
         diffState: isMatch ? 'match' : isWrong ? 'wrong' : null,
+        showFeedback: true, // Student blocks show feedback
       }
     })
   }, [diagramBlocks, comparison])
@@ -48,6 +49,7 @@ export default function FeedbackView() {
       return {
         ...block,
         diffState: isMissed ? 'miss' : 'match',
+        showFeedback: false, // Expert blocks don't show feedback
       }
     })
   }, [expertBlocks, comparison])

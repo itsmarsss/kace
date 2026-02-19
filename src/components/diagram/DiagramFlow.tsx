@@ -17,6 +17,7 @@ import {
 import '@xyflow/react/dist/style.css'
 import { getBlockStyle } from './blockTypes'
 import { useMode } from '../../context/ModeProvider'
+import BlockFeedback from './BlockFeedback'
 
 // Custom node component for diagram blocks
 function DiagramNode({ data }: { data: any }) {
@@ -80,9 +81,19 @@ function DiagramNode({ data }: { data: any }) {
     dispatch({ type: 'SET_SELECTED_BLOCK', payload: data.block })
   }
 
+  // Diff state styling
+  const diffStateClass =
+    data.diffState === 'match'
+      ? 'ring-2 ring-[var(--green)]'
+      : data.diffState === 'miss'
+        ? 'opacity-60 border-dashed'
+        : data.diffState === 'wrong'
+          ? 'ring-2 ring-[var(--crimson)]'
+          : ''
+
   return (
     <div
-      className={`min-w-[280px] max-w-[350px] rounded-[var(--r)] border border-t-[3px] p-[12px_14px] shadow-[var(--shadow-md)] transition-all duration-150 hover:shadow-[var(--shadow-lg)] ${bgClass} ${borderClass} ${borderTopClass}`}
+      className={`min-w-[280px] max-w-[350px] rounded-[var(--r)] border border-t-[3px] p-[12px_14px] shadow-[var(--shadow-md)] transition-all duration-150 hover:shadow-[var(--shadow-lg)] ${bgClass} ${borderClass} ${borderTopClass} ${diffStateClass}`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onDoubleClick={handleDoubleClick}
@@ -108,6 +119,9 @@ function DiagramNode({ data }: { data: any }) {
       <div className="font-['DM_Sans',sans-serif] text-[12px] font-normal leading-[1.55] text-[var(--text-secondary)]">
         {data.body}
       </div>
+
+      {/* Feedback */}
+      {data.showFeedback && data.block?.feedback && <BlockFeedback feedback={data.block.feedback} />}
     </div>
   )
 }
@@ -157,6 +171,8 @@ function FlowContent({ blocks, setNodes, setEdges }: FlowContentProps) {
         title: block.title,
         body: block.body,
         block: block, // Pass full block for hover/click handlers
+        diffState: block.diffState, // Pass diff state for visual indicators
+        showFeedback: block.showFeedback, // Pass whether to show feedback
       },
     }))
 
