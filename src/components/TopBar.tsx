@@ -1,8 +1,18 @@
 import { Play, Square } from 'lucide-react'
 import { useMode } from '../context/ModeProvider'
+import { compareReasoning } from '../utils/compareReasoning'
 
 export default function TopBar() {
-  const { isPlaying, playDemo, stopDemo, sessionState, dispatch, currentCase } = useMode()
+  const { isPlaying, playDemo, stopDemo, sessionState, dispatch, currentCase, diagramBlocks } =
+    useMode()
+
+  const handleShowExpertAnalysis = () => {
+    // Compute comparison between user's reasoning and expert reasoning
+    const comparison = compareReasoning(diagramBlocks, currentCase.expertBlocks)
+
+    // Show overlay with comparison result
+    dispatch({ type: 'SHOW_OVERLAY', payload: comparison })
+  }
 
   return (
     <header className="flex h-[52px] items-center gap-3 border-b border-[var(--border)] bg-[var(--surface)] px-5">
@@ -36,7 +46,7 @@ export default function TopBar() {
       {sessionState === 'reviewed' && (
         <>
           <button
-            onClick={() => dispatch({ type: 'SHOW_OVERLAY' })}
+            onClick={handleShowExpertAnalysis}
             className="rounded-[6px] border-none bg-[var(--teal)] px-[14px] py-[7px] font-['DM_Sans',sans-serif] text-[11px] font-semibold text-white transition-all hover:bg-[var(--teal-dark)]"
           >
             View Expert Analysis

@@ -4,9 +4,9 @@ import DiffNode from './DiffNode'
 import CalibrationBars from './CalibrationBars'
 
 export default function ExpertOverlay() {
-  const { showOverlay, dispatch, currentCase } = useMode()
+  const { showOverlay, comparisonResult, currentCase, dispatch } = useMode()
 
-  if (!showOverlay) return null
+  if (!showOverlay || !comparisonResult) return null
 
   return (
     <div className="fixed inset-0 z-[200] animate-[fadeUp_0.45s_var(--ease-in-out)] bg-[var(--bg)]">
@@ -32,11 +32,13 @@ export default function ExpertOverlay() {
 
       {/* Main content */}
       <div className="flex h-[calc(100%-80px)] overflow-hidden">
-        {/* Learner trace */}
+        {/* User trace */}
         <div className="flex-1 space-y-[10px] overflow-y-auto border-r border-[var(--border)] px-[26px] py-[22px]">
-          <div className="label-caps mb-4 text-[var(--text-tertiary)]">Your Reasoning</div>
+          <div className="label-caps mb-4 text-[var(--text-tertiary)]">
+            Your Reasoning ({comparisonResult.alignment}% alignment)
+          </div>
 
-          {currentCase.expertTrace.map((item, index) => (
+          {comparisonResult.userTrace.map((item, index) => (
             <DiffNode
               key={index}
               type={item.type}
@@ -51,23 +53,29 @@ export default function ExpertOverlay() {
         <div className="flex-1 space-y-[10px] overflow-y-auto px-[26px] py-[22px]">
           <div className="label-caps mb-4 text-[var(--text-tertiary)]">Expert Reasoning</div>
 
-          {currentCase.expertTrace
-            .filter((item) => item.type === 'match')
-            .map((item, index) => (
-              <DiffNode
-                key={index}
-                type="match"
-                title={item.title}
-                body={item.body}
-                animationDelay={index * 100 + 50}
-              />
-            ))}
+          {comparisonResult.expertTrace.map((item, index) => (
+            <DiffNode
+              key={index}
+              type={item.type}
+              title={item.title}
+              body={item.body}
+              animationDelay={index * 100 + 50}
+            />
+          ))}
 
-          {/* Insight block */}
-          <div className="mt-6 rounded-[10px] border border-l-[2.5px] border-[var(--teal-border)] border-l-[var(--teal)] bg-[var(--teal-light)] px-[18px] py-4 font-['Source_Serif_4',serif] text-[14px] leading-[1.78] text-[var(--text-primary)] [font-variation-settings:'opsz'_14]">
-            Your reasoning captured the critical comorbidities. The key insight: in HFrEF + T2DM,
-            cardiovascular benefit supersedes glycemic control as the primary treatment goal.
-          </div>
+          {/* Insight blocks */}
+          {comparisonResult.insights.length > 0 && (
+            <div className="mt-6 space-y-3">
+              {comparisonResult.insights.map((insight, index) => (
+                <div
+                  key={index}
+                  className="rounded-[10px] border border-l-[2.5px] border-[var(--teal-border)] border-l-[var(--teal)] bg-[var(--teal-light)] px-[18px] py-4 font-['Source_Serif_4',serif] text-[14px] leading-[1.78] text-[var(--text-primary)] [font-variation-settings:'opsz'_14]"
+                >
+                  {insight}
+                </div>
+              ))}
+            </div>
+          )}
 
           {/* Calibration */}
           <div className="mt-6">

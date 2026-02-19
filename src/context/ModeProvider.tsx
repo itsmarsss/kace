@@ -1,5 +1,6 @@
 import { createContext, useContext, useReducer, useCallback, useRef, Dispatch } from 'react'
 import { james } from '../data/cases/james'
+import { ComparisonResult } from '../utils/compareReasoning'
 
 interface ModeState {
   mode: 'demo' | 'live'
@@ -17,6 +18,7 @@ interface ModeState {
   showPatientFullscreen: boolean
   showDiagramFullscreen: boolean
   currentSpeechLine: number
+  comparisonResult: ComparisonResult | null
 }
 
 interface ModeAction {
@@ -42,7 +44,7 @@ export const useMode = () => {
 }
 
 // Session states: 'idle' | 'analyzing' | 'reviewed' | 'expert'
-const initialState = {
+const initialState: ModeState = {
   mode: 'demo', // 'demo' | 'live'
   isPlaying: false,
   reasoningText: '',
@@ -58,6 +60,7 @@ const initialState = {
   showPatientFullscreen: false,
   showDiagramFullscreen: false,
   currentSpeechLine: 0,
+  comparisonResult: null,
 }
 
 function modeReducer(state, action) {
@@ -149,7 +152,12 @@ function modeReducer(state, action) {
       return { ...state, diagramLayout: action.payload }
 
     case 'SHOW_OVERLAY':
-      return { ...state, showOverlay: true, sessionState: 'expert' }
+      return {
+        ...state,
+        showOverlay: true,
+        sessionState: 'expert',
+        comparisonResult: action.payload || null,
+      }
 
     case 'HIDE_OVERLAY':
       return { ...state, showOverlay: false, sessionState: 'reviewed' }
