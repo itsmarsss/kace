@@ -1,11 +1,14 @@
-import { useState } from 'react'
-import { X, Workflow, List, RefreshCw, AlertTriangle } from 'lucide-react'
+import { useState, useMemo } from 'react'
+import { X, Workflow, List, RefreshCw, AlertTriangle, CheckCircle, XCircle } from 'lucide-react'
 import { useMode } from '../../context/ModeProvider'
 import DiagramBlock from '../diagram/DiagramBlock'
 import DiagramFlow from '../diagram/DiagramFlow'
+import CalibrationBars from './CalibrationBars'
+import { compareDiagrams } from '../../utils/diffBlocks'
 
 export default function FeedbackView() {
-  const { diagramBlocks, expertBlocks, overallFeedback, score, showFeedbackModal, dispatch } = useMode()
+  const { diagramBlocks, expertBlocks, overallFeedback, score, showFeedbackModal, comparisonResult, dispatch } =
+    useMode()
   const [studentLayout, setStudentLayout] = useState<'1d' | '2d'>('1d')
   const [expertLayout, setExpertLayout] = useState<'1d' | '2d'>('1d')
   const [studentLayoutKey, setStudentLayoutKey] = useState(0)
@@ -13,16 +16,41 @@ export default function FeedbackView() {
 
   if (!showFeedbackModal) return null
 
-  // Find missing blocks
-  const missingBlocks = expertBlocks.filter((expertBlock) => {
-    const hasMatch = diagramBlocks.some(
-      (studentBlock) =>
-        studentBlock.type === expertBlock.type &&
-        (studentBlock.title.toLowerCase().includes(expertBlock.title.toLowerCase().substring(0, 15)) ||
-          expertBlock.title.toLowerCase().includes(studentBlock.title.toLowerCase().substring(0, 15)))
-    )
-    return !hasMatch
-  })
+  // Calculate comparison using diffBlocks utility
+  const comparison = useMemo(() => {
+    return compareDiagrams(diagramBlocks, expertBlocks)
+  }, [diagramBlocks, expertBlocks])
+
+  // Calculate alignment percentage
+  const alignmentPercent = useMemo(() => {
+    const total = diagramBlocks.length + expertBlocks.length
+    if (total === 0) return 0
+    const matches = comparison.match.length
+    // Calculate based on matched blocks vs total unique blocks
+    return Math.round((matches / Math.max(diagramBlocks.length, expertBlocks.length)) * 100)
+  }, [comparison, diagramBlocks.length, expertBlocks.length])
+
+  // Map blocks to include diff state
+  const studentBlocksWithDiff = useMemo(() => {
+    return diagramBlocks.map((block) => {
+      const isMatch = comparison.match.some((m) => m.id === block.id)
+      const isWrong = comparison.wrong.some((w) => w.id === block.id)
+      return {
+        ...block,
+        diffState: isMatch ? 'match' : isWrong ? 'wrong' : null,
+      }
+    })
+  }, [diagramBlocks, comparison])
+
+  const expertBlocksWithDiff = useMemo(() => {
+    return expertBlocks.map((block) => {
+      const isMissed = comparison.miss.some((m) => m.id === block.id)
+      return {
+        ...block,
+        diffState: isMissed ? 'miss' : 'match',
+      }
+    })
+  }, [expertBlocks, comparison])
 
   const handleClose = () => {
     dispatch({ type: 'HIDE_FEEDBACK_MODAL' })
@@ -113,7 +141,13 @@ export default function FeedbackView() {
           ) : (
             <div className="flex flex-col gap-4">
               {blocks.map((block, index) => (
-                <DiagramBlock key={block.id} block={block} index={index} showFeedback={showFeedback} />
+                <DiagramBlock
+                  key={block.id}
+                  block={block}
+                  index={index}
+                  showFeedback={showFeedback}
+                  diffState={block.diffState}
+                />
               ))}
             </div>
           )}
@@ -151,6 +185,56 @@ export default function FeedbackView() {
           </button>
         </div>
 
+        {/* Comparison Statistics */}
+        <div className="mx-6 mb-4 flex gap-3">
+          <div className="flex flex-1 items-center gap-3 rounded-[var(--r)] border border-[var(--green-border)] bg-[var(--green-light)] p-3">
+            <CheckCircle size={18} className="text-[var(--green)]" />
+            <div>
+              <div className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--green)]">
+                Correct
+              </div>
+              <div className="font-['DM_Sans',sans-serif] text-[16px] font-bold text-[var(--text-primary)]">
+                {comparison.match.length}
+              </div>
+            </div>
+          </div>
+          <div className="flex flex-1 items-center gap-3 rounded-[var(--r)] border border-[var(--amber-border)] bg-[var(--amber-light)] p-3">
+            <AlertTriangle size={18} className="text-[var(--amber)]" />
+            <div>
+              <div className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--amber)]">
+                Missed
+              </div>
+              <div className="font-['DM_Sans',sans-serif] text-[16px] font-bold text-[var(--text-primary)]">
+                {comparison.miss.length}
+              </div>
+            </div>
+          </div>
+          <div className="flex flex-1 items-center gap-3 rounded-[var(--r)] border border-[var(--crimson-border)] bg-[var(--crimson-light)] p-3">
+            <XCircle size={18} className="text-[var(--crimson)]" />
+            <div>
+              <div className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--crimson)]">
+                Incorrect
+              </div>
+              <div className="font-['DM_Sans',sans-serif] text-[16px] font-bold text-[var(--text-primary)]">
+                {comparison.wrong.length}
+              </div>
+            </div>
+          </div>
+          <div className="flex flex-1 items-center gap-3 rounded-[var(--r)] border border-[var(--border)] bg-[var(--surface)] p-3">
+            <div className="flex h-[18px] w-[18px] items-center justify-center rounded-full bg-[var(--teal-light)] text-[10px] font-bold text-[var(--teal)]">
+              %
+            </div>
+            <div>
+              <div className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--text-tertiary)]">
+                Alignment
+              </div>
+              <div className="font-['DM_Sans',sans-serif] text-[16px] font-bold text-[var(--text-primary)]">
+                {alignmentPercent}%
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Overall feedback */}
         {overallFeedback && (
           <div className="mx-6 mb-4 rounded-[var(--r)] border border-[var(--teal-border)] bg-[var(--teal-light)] p-4">
@@ -163,14 +247,17 @@ export default function FeedbackView() {
           </div>
         )}
 
-        {/* Missing blocks warning */}
-        {missingBlocks.length > 0 && (
-          <div className="mx-6 mb-4 rounded-[var(--r)] border border-[var(--amber-border)] bg-[var(--amber-light)] p-3">
-            <div className="flex items-center gap-2 text-[12px] font-semibold text-[var(--amber)]">
-              <AlertTriangle size={14} />
-              {missingBlocks.length} critical consideration{missingBlocks.length !== 1 ? 's' : ''} missing from
-              your reasoning
-            </div>
+        {/* Insights from comparison */}
+        {comparisonResult?.insights && comparisonResult.insights.length > 0 && (
+          <div className="mx-6 mb-4 space-y-2">
+            {comparisonResult.insights.map((insight, index) => (
+              <div
+                key={index}
+                className="rounded-[var(--r)] border border-l-[3px] border-[var(--teal-border)] border-l-[var(--teal)] bg-[var(--teal-light)] p-3 font-['DM_Sans',sans-serif] text-[13px] leading-[1.7] text-[var(--text-primary)]"
+              >
+                {insight}
+              </div>
+            ))}
           </div>
         )}
       </div>
@@ -181,7 +268,7 @@ export default function FeedbackView() {
         <div className="flex w-1/2 flex-col border-r border-[var(--border)]">
           {renderDiagramSection(
             'Your Reasoning',
-            diagramBlocks,
+            studentBlocksWithDiff,
             studentLayout,
             setStudentLayout,
             studentLayoutKey,
@@ -194,7 +281,7 @@ export default function FeedbackView() {
         <div className="flex w-1/2 flex-col">
           {renderDiagramSection(
             'Ideal Reasoning',
-            expertBlocks,
+            expertBlocksWithDiff,
             expertLayout,
             setExpertLayout,
             expertLayoutKey,
@@ -203,6 +290,16 @@ export default function FeedbackView() {
           )}
         </div>
       </div>
+
+      {/* Confidence Calibration at bottom */}
+      {comparisonResult && (
+        <div className="border-t border-[var(--border)] bg-[var(--surface)] px-6 py-4">
+          <div className="mb-3 font-['DM_Sans',sans-serif] text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--text-tertiary)]">
+            Confidence Calibration
+          </div>
+          <CalibrationBars />
+        </div>
+      )}
     </div>
   )
 }

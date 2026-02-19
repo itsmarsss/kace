@@ -4,7 +4,6 @@ import TopBar from './components/TopBar'
 import PatientPanel from './components/patient/PatientPanel'
 import ReasoningPanel from './components/reasoning/ReasoningPanel'
 import DiagramPanel from './components/diagram/DiagramPanel'
-import ExpertOverlay from './components/overlay/ExpertOverlay'
 import FeedbackView from './components/overlay/FeedbackView'
 import { PatientFullscreen } from './components/patient/PatientFullscreen'
 import { DiagramFullscreen } from './components/diagram/DiagramFullscreen'
@@ -39,7 +38,6 @@ function App() {
           </Panel>
         </PanelGroup>
       </div>
-      <ExpertOverlay />
       <FeedbackView />
       <PatientFullscreen />
       <DiagramFullscreen />
