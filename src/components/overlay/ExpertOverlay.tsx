@@ -9,39 +9,21 @@ export default function ExpertOverlay() {
   if (!showOverlay) return null
 
   return (
-    <div
-      className="fixed inset-0 z-[200] animate-[fadeUp_0.45s_var(--ease-in-out)]"
-      style={{ background: 'var(--bg)' }}
-    >
+    <div className="fixed inset-0 z-[200] animate-[fadeUp_0.45s_var(--ease-in-out)] bg-[var(--bg)]">
       {/* Header */}
-      <header
-        className="px-7 py-[18px] flex items-center justify-between"
-        style={{ borderBottom: '1px solid var(--border)' }}
-      >
+      <header className="flex items-center justify-between border-b border-[var(--border)] px-7 py-[18px]">
         <div>
-          <h2
-            className="text-[17px] font-semibold mb-1"
-            style={{
-              fontFamily: '"Source Serif 4", serif',
-              fontVariationSettings: '"opsz" 17',
-              color: 'var(--text-primary)',
-            }}
-          >
+          <h2 className="mb-1 font-['Source_Serif_4',serif] text-[17px] font-semibold text-[var(--text-primary)] [font-variation-settings:'opsz'_17]">
             Expert Comparison
           </h2>
-          <p className="text-[11px]" style={{ color: 'var(--text-tertiary)' }}>
+          <p className="text-[11px] text-[var(--text-tertiary)]">
             See how your reasoning aligns with expert clinical thinking
           </p>
         </div>
 
         <button
           onClick={() => dispatch({ type: 'HIDE_OVERLAY' })}
-          className="px-[14px] py-[6px] text-[11px] rounded-[6px] flex items-center gap-2 transition-all"
-          style={{
-            background: 'transparent',
-            border: '1px solid var(--border-md)',
-            color: 'var(--text-secondary)',
-          }}
+          className="flex items-center gap-2 rounded-[6px] border border-[var(--border-md)] bg-transparent px-[14px] py-[6px] text-[11px] text-[var(--text-secondary)] transition-all"
         >
           <X size={14} />
           Return to case
@@ -51,13 +33,8 @@ export default function ExpertOverlay() {
       {/* Main content */}
       <div className="flex h-[calc(100%-80px)] overflow-hidden">
         {/* Learner trace */}
-        <div
-          className="flex-1 px-[26px] py-[22px] overflow-y-auto space-y-[10px]"
-          style={{ borderRight: '1px solid var(--border)' }}
-        >
-          <div className="label-caps mb-4" style={{ color: 'var(--text-tertiary)' }}>
-            Your Reasoning
-          </div>
+        <div className="flex-1 space-y-[10px] overflow-y-auto border-r border-[var(--border)] px-[26px] py-[22px]">
+          <div className="label-caps mb-4 text-[var(--text-tertiary)]">Your Reasoning</div>
 
           {currentCase.expertTrace.map((item, index) => (
             <DiffNode
@@ -71,10 +48,8 @@ export default function ExpertOverlay() {
         </div>
 
         {/* Expert trace */}
-        <div className="flex-1 px-[26px] py-[22px] overflow-y-auto space-y-[10px]">
-          <div className="label-caps mb-4" style={{ color: 'var(--text-tertiary)' }}>
-            Expert Reasoning
-          </div>
+        <div className="flex-1 space-y-[10px] overflow-y-auto px-[26px] py-[22px]">
+          <div className="label-caps mb-4 text-[var(--text-tertiary)]">Expert Reasoning</div>
 
           {currentCase.expertTrace
             .filter((item) => item.type === 'match')
@@ -89,19 +64,7 @@ export default function ExpertOverlay() {
             ))}
 
           {/* Insight block */}
-          <div
-            className="mt-6 px-[18px] py-4 rounded-[10px]"
-            style={{
-              background: 'var(--teal-light)',
-              border: '1px solid var(--teal-border)',
-              borderLeft: '2.5px solid var(--teal)',
-              fontFamily: '"Source Serif 4", serif',
-              fontSize: '14px',
-              fontVariationSettings: '"opsz" 14',
-              lineHeight: '1.78',
-              color: 'var(--text-primary)',
-            }}
-          >
+          <div className="mt-6 rounded-[10px] border border-l-[2.5px] border-[var(--teal-border)] border-l-[var(--teal)] bg-[var(--teal-light)] px-[18px] py-4 font-['Source_Serif_4',serif] text-[14px] leading-[1.78] text-[var(--text-primary)] [font-variation-settings:'opsz'_14]">
             Your reasoning captured the critical comorbidities. The key insight: in HFrEF + T2DM,
             cardiovascular benefit supersedes glycemic control as the primary treatment goal.
           </div>

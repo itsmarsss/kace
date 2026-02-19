@@ -1,66 +1,56 @@
 import { forwardRef } from 'react'
 import { getBlockStyle, getBlockTypeClass } from './blockTypes'
 
-const DiagramBlock = forwardRef(({ block, index, diffState }, ref) => {
-  const style = getBlockStyle(block.type)
-  const typeClass = getBlockTypeClass(block.type)
+interface DiagramBlockProps {
+  block: any
+  index: number
+  diffState?: string | null
+}
 
-  return (
-    <div
-      ref={ref}
-      className={`diagram-block ${typeClass} ${diffState ? `block--${diffState}` : ''}`}
-      style={{
-        animationDelay: `${index * 150}ms`,
-      }}
-    >
-      {/* Type label */}
-      <div
-        className="block-type-label"
-        style={{
-          fontFamily: '"DM Sans", sans-serif',
-          fontSize: '9px',
-          fontWeight: 600,
-          letterSpacing: '0.12em',
-          textTransform: 'uppercase',
-          color: style.color,
-          marginBottom: '4px',
-        }}
-      >
-        {style.label}
-        {block.type === 'DECISION' && ' ✓'}
-      </div>
+const DiagramBlock = forwardRef<HTMLDivElement, DiagramBlockProps>(
+  ({ block, index, diffState }, ref) => {
+    const style = getBlockStyle(block.type)
+    const typeClass = getBlockTypeClass(block.type)
 
-      {/* Title */}
-      <div
-        className="block-title"
-        style={{
-          fontFamily: '"DM Sans", sans-serif',
-          fontSize: '14px',
-          fontWeight: 600,
-          color: 'var(--text-primary)',
-          lineHeight: '1.35',
-          marginBottom: '5px',
-        }}
-      >
-        {block.title}
-      </div>
+    // Get color class based on block type
+    const colorClass =
+      block.type === 'OBSERVATION'
+        ? 'text-[var(--teal)]'
+        : block.type === 'INTERPRETATION'
+          ? 'text-[var(--slate)]'
+          : block.type === 'CONSIDERATION'
+            ? 'text-[var(--amber)]'
+            : block.type === 'CONTRAINDICATION'
+              ? 'text-[var(--crimson)]'
+              : 'text-[var(--green)]' // DECISION
 
-      {/* Body */}
+    return (
       <div
-        className="block-body"
-        style={{
-          fontFamily: '"DM Sans", sans-serif',
-          fontSize: '12px',
-          fontWeight: 400,
-          color: 'var(--text-secondary)',
-          lineHeight: '1.55',
-        }}
+        ref={ref}
+        className={`diagram-block ${typeClass} ${diffState ? `block--${diffState}` : ''}`}
+        style={{ animationDelay: `${index * 150}ms` }}
       >
-        {block.body}
+        {/* Type label */}
+        <div
+          className={`block-type-label mb-1 font-['DM_Sans',sans-serif] text-[9px] font-semibold uppercase tracking-[0.12em] ${colorClass}`}
+        >
+          {style.label}
+          {block.type === 'DECISION' && ' ✓'}
+        </div>
+
+        {/* Title */}
+        <div className="block-title mb-[5px] font-['DM_Sans',sans-serif] text-[14px] font-semibold leading-[1.35] text-[var(--text-primary)]">
+          {block.title}
+        </div>
+
+        {/* Body */}
+        <div className="block-body font-['DM_Sans',sans-serif] text-[12px] font-normal leading-[1.55] text-[var(--text-secondary)]">
+          {block.body}
+        </div>
       </div>
-    </div>
-  )
-})
+    )
+  }
+)
 
 DiagramBlock.displayName = 'DiagramBlock'
 

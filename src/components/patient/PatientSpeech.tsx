@@ -22,80 +22,23 @@ export default function PatientSpeech() {
   }, [isPlaying]) // Only run when isPlaying changes
 
   return (
-    <div
-      style={{
-        padding: '12px 14px 14px',
-        borderTop: '1px solid var(--border)',
-        background: 'var(--teal-light)',
-        flexShrink: 0,
-      }}
-    >
+    <div className="flex-shrink-0 border-t border-[var(--border)] bg-[var(--teal-light)] px-[14px] pb-[14px] pt-3">
       {/* TTS control row */}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: '8px',
-        }}
-      >
+      <div className="mb-2 flex items-center justify-between">
         {/* Speaker button with waveform */}
         <button
           onClick={() => toggle(currentText)}
           disabled={!currentText}
-          style={{
-            width: '24px',
-            height: '24px',
-            borderRadius: 'var(--r-sm)',
-            background: 'transparent',
-            color: 'var(--teal-dark)',
-            border: '1px solid var(--teal-border)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: currentText ? 'pointer' : 'not-allowed',
-            transition: 'all 0.15s',
-            padding: 0,
-          }}
-          onMouseEnter={(e) => {
-            if (currentText) {
-              e.currentTarget.style.background = 'var(--card)'
-            }
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = 'transparent'
-          }}
+          className={`flex h-6 w-6 items-center justify-center rounded-[var(--r-sm)] border border-[var(--teal-border)] bg-transparent p-0 text-[var(--teal-dark)] transition-all duration-150 ${
+            currentText ? 'cursor-pointer hover:bg-[var(--card)]' : 'cursor-not-allowed'
+          }`}
         >
           {isSpeaking ? (
             // Waveform animation
-            <div style={{ display: 'flex', gap: '2px', alignItems: 'center', height: '12px' }}>
-              <div
-                style={{
-                  width: '2px',
-                  height: '12px',
-                  background: 'var(--teal-dark)',
-                  borderRadius: '2px',
-                  animation: 'wavebar 0.8s ease-in-out infinite',
-                }}
-              />
-              <div
-                style={{
-                  width: '2px',
-                  height: '12px',
-                  background: 'var(--teal-dark)',
-                  borderRadius: '2px',
-                  animation: 'wavebar 0.8s ease-in-out 0.15s infinite',
-                }}
-              />
-              <div
-                style={{
-                  width: '2px',
-                  height: '12px',
-                  background: 'var(--teal-dark)',
-                  borderRadius: '2px',
-                  animation: 'wavebar 0.8s ease-in-out 0.30s infinite',
-                }}
-              />
+            <div className="flex h-3 items-center gap-[2px]">
+              <div className="h-3 w-[2px] animate-[wavebar_0.8s_ease-in-out_infinite] rounded-[2px] bg-[var(--teal-dark)]" />
+              <div className="h-3 w-[2px] animate-[wavebar_0.8s_ease-in-out_0.15s_infinite] rounded-[2px] bg-[var(--teal-dark)]" />
+              <div className="h-3 w-[2px] animate-[wavebar_0.8s_ease-in-out_0.30s_infinite] rounded-[2px] bg-[var(--teal-dark)]" />
             </div>
           ) : (
             <Volume2 size={12} />
@@ -103,55 +46,31 @@ export default function PatientSpeech() {
         </button>
 
         {/* Line counter and navigation */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div className="flex items-center gap-2">
           <button
             onClick={() => dispatch({ type: 'PREV_SPEECH_LINE' })}
             disabled={currentSpeechLine === 0}
-            style={{
-              width: '16px',
-              height: '16px',
-              border: 'none',
-              background: 'transparent',
-              color: currentSpeechLine === 0 ? 'var(--border-md)' : 'var(--text-tertiary)',
-              cursor: currentSpeechLine === 0 ? 'not-allowed' : 'pointer',
-              padding: 0,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
+            className={`flex h-4 w-4 items-center justify-center border-none bg-transparent p-0 ${
+              currentSpeechLine === 0
+                ? 'cursor-not-allowed text-[var(--border-md)]'
+                : 'cursor-pointer text-[var(--text-tertiary)]'
+            }`}
           >
             <ChevronLeft size={14} />
           </button>
 
-          <span
-            style={{
-              fontFamily: '"DM Sans", sans-serif',
-              fontSize: '10px',
-              color: 'var(--text-tertiary)',
-            }}
-          >
+          <span className="font-['DM_Sans',sans-serif] text-[10px] text-[var(--text-tertiary)]">
             {currentSpeechLine + 1} / {speechLines.length}
           </span>
 
           <button
             onClick={() => dispatch({ type: 'NEXT_SPEECH_LINE' })}
             disabled={currentSpeechLine === speechLines.length - 1}
-            style={{
-              width: '16px',
-              height: '16px',
-              border: 'none',
-              background: 'transparent',
-              color:
-                currentSpeechLine === speechLines.length - 1
-                  ? 'var(--border-md)'
-                  : 'var(--text-tertiary)',
-              cursor:
-                currentSpeechLine === speechLines.length - 1 ? 'not-allowed' : 'pointer',
-              padding: 0,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
+            className={`flex h-4 w-4 items-center justify-center border-none bg-transparent p-0 ${
+              currentSpeechLine === speechLines.length - 1
+                ? 'cursor-not-allowed text-[var(--border-md)]'
+                : 'cursor-pointer text-[var(--text-tertiary)]'
+            }`}
           >
             <ChevronRight size={14} />
           </button>
@@ -159,55 +78,13 @@ export default function PatientSpeech() {
       </div>
 
       {/* Speech bubble */}
-      <div
-        style={{
-          background: 'var(--card)',
-          border: '1px solid var(--teal-border)',
-          borderRadius: 'var(--r) var(--r) var(--r) 4px', // Flat bottom-left for tail
-          padding: '10px 13px',
-          position: 'relative',
-        }}
-      >
+      <div className="relative rounded-[var(--r)_var(--r)_var(--r)_4px] border border-[var(--teal-border)] bg-[var(--card)] p-[10px_13px]">
         {/* Tail pointing up (::before and ::after for bordered tail) */}
-        <div
-          style={{
-            position: 'absolute',
-            bottom: '-8px',
-            left: '18px',
-            width: 0,
-            height: 0,
-            border: '8px solid transparent',
-            borderTopColor: 'var(--teal-border)',
-            borderBottom: 0,
-            borderLeft: 0,
-          }}
-        />
-        <div
-          style={{
-            position: 'absolute',
-            bottom: '-6px',
-            left: '19px',
-            width: 0,
-            height: 0,
-            border: '7px solid transparent',
-            borderTopColor: 'var(--card)',
-            borderBottom: 0,
-            borderLeft: 0,
-          }}
-        />
+        <div className="absolute bottom-[-8px] left-[18px] h-0 w-0 border-[8px] border-b-0 border-l-0 border-transparent border-t-[var(--teal-border)]" />
+        <div className="absolute bottom-[-6px] left-[19px] h-0 w-0 border-[7px] border-b-0 border-l-0 border-transparent border-t-[var(--card)]" />
 
         {/* Speech text */}
-        <p
-          style={{
-            fontFamily: '"Source Serif 4", serif',
-            fontSize: '14px',
-            fontStyle: 'italic',
-            fontVariationSettings: '"opsz" 14',
-            lineHeight: '1.65',
-            color: 'var(--text-secondary)',
-            margin: 0,
-          }}
-        >
+        <p className="m-0 font-['Source_Serif_4',serif] text-[14px] italic leading-[1.65] text-[var(--text-secondary)] [font-variation-settings:'opsz'_14]">
           {currentText}
         </p>
       </div>

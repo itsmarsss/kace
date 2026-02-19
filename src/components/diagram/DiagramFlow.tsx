@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import {
   ReactFlow,
   Background,
@@ -17,59 +17,70 @@ import { getBlockStyle } from './blockTypes'
 function DiagramNode({ data }: { data: any }) {
   const style = getBlockStyle(data.type)
 
+  // Get Tailwind classes based on block type
+  const bgClass =
+    data.type === 'OBSERVATION'
+      ? 'bg-[var(--teal-light)]'
+      : data.type === 'INTERPRETATION'
+        ? 'bg-[var(--slate-light)]'
+        : data.type === 'CONSIDERATION'
+          ? 'bg-[var(--amber-light)]'
+          : data.type === 'CONTRAINDICATION'
+            ? 'bg-[var(--crimson-light)]'
+            : 'bg-[var(--green-light)]' // DECISION
+
+  const borderClass =
+    data.type === 'OBSERVATION'
+      ? 'border-[var(--teal-border)]'
+      : data.type === 'INTERPRETATION'
+        ? 'border-[var(--slate-border)]'
+        : data.type === 'CONSIDERATION'
+          ? 'border-[var(--amber-border)]'
+          : data.type === 'CONTRAINDICATION'
+            ? 'border-[var(--crimson-border)]'
+            : 'border-[var(--green-border)]' // DECISION
+
+  const borderTopClass =
+    data.type === 'OBSERVATION'
+      ? 'border-t-[var(--teal)]'
+      : data.type === 'INTERPRETATION'
+        ? 'border-t-[var(--slate)]'
+        : data.type === 'CONSIDERATION'
+          ? 'border-t-[var(--amber)]'
+          : data.type === 'CONTRAINDICATION'
+            ? 'border-t-[var(--crimson)]'
+            : 'border-t-[var(--green)]' // DECISION
+
+  const colorClass =
+    data.type === 'OBSERVATION'
+      ? 'text-[var(--teal)]'
+      : data.type === 'INTERPRETATION'
+        ? 'text-[var(--slate)]'
+        : data.type === 'CONSIDERATION'
+          ? 'text-[var(--amber)]'
+          : data.type === 'CONTRAINDICATION'
+            ? 'text-[var(--crimson)]'
+            : 'text-[var(--green)]' // DECISION
+
   return (
     <div
-      style={{
-        background: style.bgVar,
-        border: `1px solid ${style.borderVar}`,
-        borderTop: `3px solid ${style.color}`,
-        borderRadius: 'var(--r)',
-        padding: '12px 14px',
-        minWidth: '280px',
-        maxWidth: '350px',
-        boxShadow: 'var(--shadow-md)',
-      }}
+      className={`min-w-[280px] max-w-[350px] rounded-[var(--r)] border border-t-[3px] p-[12px_14px] shadow-[var(--shadow-md)] ${bgClass} ${borderClass} ${borderTopClass}`}
     >
       {/* Type label */}
       <div
-        style={{
-          fontFamily: '"DM Sans", sans-serif',
-          fontSize: '9px',
-          fontWeight: 600,
-          letterSpacing: '0.12em',
-          textTransform: 'uppercase' as const,
-          color: style.color,
-          marginBottom: '4px',
-        }}
+        className={`mb-1 font-['DM_Sans',sans-serif] text-[9px] font-semibold uppercase tracking-[0.12em] ${colorClass}`}
       >
         {style.label}
         {data.type === 'DECISION' && ' ✓'}
       </div>
 
       {/* Title */}
-      <div
-        style={{
-          fontFamily: '"DM Sans", sans-serif',
-          fontSize: '14px',
-          fontWeight: 600,
-          color: 'var(--text-primary)',
-          lineHeight: '1.35',
-          marginBottom: '5px',
-        }}
-      >
+      <div className="mb-[5px] font-['DM_Sans',sans-serif] text-[14px] font-semibold leading-[1.35] text-[var(--text-primary)]">
         {data.title}
       </div>
 
       {/* Body */}
-      <div
-        style={{
-          fontFamily: '"DM Sans", sans-serif',
-          fontSize: '12px',
-          fontWeight: 400,
-          color: 'var(--text-secondary)',
-          lineHeight: '1.55',
-        }}
-      >
+      <div className="font-['DM_Sans',sans-serif] text-[12px] font-normal leading-[1.55] text-[var(--text-secondary)]">
         {data.body}
       </div>
     </div>
@@ -85,8 +96,8 @@ interface DiagramFlowProps {
 }
 
 export default function DiagramFlow({ blocks }: DiagramFlowProps) {
-  const [nodes, setNodes, onNodesChange] = useNodesState([])
-  const [edges, setEdges, onEdgesChange] = useEdgesState([])
+  const [nodes, setNodes, onNodesChange] = useNodesState<Node>([])
+  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([])
 
   // Convert blocks to React Flow nodes and edges
   useEffect(() => {
@@ -165,7 +176,7 @@ export default function DiagramFlow({ blocks }: DiagramFlowProps) {
       })
     })
 
-    // Create edges
+    // Create edges with teal arrows
     const flowEdges: Edge[] = []
     blocks.forEach((block) => {
       if (block.connects_to && block.connects_to.length > 0) {
@@ -176,15 +187,12 @@ export default function DiagramFlow({ blocks }: DiagramFlowProps) {
             target: targetId,
             type: 'default',
             animated: true,
-            style: {
-              stroke: 'var(--teal)',
-              strokeWidth: 2.5,
-            },
+            style: { stroke: '#49c6b9', strokeWidth: 2.5 },
             markerEnd: {
               type: MarkerType.ArrowClosed,
               width: 20,
               height: 20,
-              color: 'var(--teal)',
+              color: '#49c6b9',
             },
           })
         })
@@ -196,7 +204,7 @@ export default function DiagramFlow({ blocks }: DiagramFlowProps) {
   }, [blocks, setNodes, setEdges])
 
   return (
-    <div style={{ width: '100%', height: '100%' }}>
+    <div className="h-full w-full">
       <ReactFlow
         nodes={nodes}
         edges={edges}

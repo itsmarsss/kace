@@ -17,50 +17,30 @@ export default function CalibrationBars() {
     <div className="space-y-3">
       {data.map((item, index) => (
         <div key={index}>
-          <div className="text-[11px] mb-1" style={{ color: 'var(--text-secondary)' }}>
-            {item.category}
-          </div>
+          <div className="mb-1 text-[11px] text-[var(--text-secondary)]">{item.category}</div>
 
-          <div className="flex items-center gap-3 mb-[2px]">
-            <span className="text-[10px] w-[90px]" style={{ color: 'var(--text-tertiary)' }}>
-              Your reasoning
-            </span>
-            <div
-              className="h-[3px] flex-1 rounded-full overflow-hidden"
-              style={{ background: 'var(--muted-bg)' }}
-            >
+          <div className="mb-[2px] flex items-center gap-3">
+            <span className="w-[90px] text-[10px] text-[var(--text-tertiary)]">Your reasoning</span>
+            <div className="h-[3px] flex-1 overflow-hidden rounded-full bg-[var(--muted-bg)]">
               <div
-                className="h-full rounded-full transition-all duration-[1200ms]"
-                style={{
-                  width: animated ? `${item.yours}%` : '0%',
-                  background: 'var(--teal)',
-                  transitionTimingFunction: 'var(--ease-out)',
-                }}
+                className="h-full rounded-full bg-[var(--teal)] transition-all duration-[1200ms] [transition-timing-function:var(--ease-out)]"
+                style={{ width: animated ? `${item.yours}%` : '0%' }}
               />
             </div>
-            <span className="text-[10px] w-[30px] text-right font-medium" style={{ color: 'var(--teal-dark)' }}>
+            <span className="w-[30px] text-right text-[10px] font-medium text-[var(--teal-dark)]">
               {item.yours}%
             </span>
           </div>
 
           <div className="flex items-center gap-3">
-            <span className="text-[10px] w-[90px]" style={{ color: 'var(--text-tertiary)' }}>
-              Expert
-            </span>
-            <div
-              className="h-[3px] flex-1 rounded-full overflow-hidden"
-              style={{ background: 'var(--muted-bg)' }}
-            >
+            <span className="w-[90px] text-[10px] text-[var(--text-tertiary)]">Expert</span>
+            <div className="h-[3px] flex-1 overflow-hidden rounded-full bg-[var(--muted-bg)]">
               <div
-                className="h-full rounded-full transition-all duration-[1200ms]"
-                style={{
-                  width: animated ? `${item.expert}%` : '0%',
-                  background: 'var(--text-secondary)',
-                  transitionTimingFunction: 'var(--ease-out)',
-                }}
+                className="h-full rounded-full bg-[var(--text-secondary)] transition-all duration-[1200ms] [transition-timing-function:var(--ease-out)]"
+                style={{ width: animated ? `${item.expert}%` : '0%' }}
               />
             </div>
-            <span className="text-[10px] w-[30px] text-right font-medium" style={{ color: 'var(--text-secondary)' }}>
+            <span className="w-[30px] text-right text-[10px] font-medium text-[var(--text-secondary)]">
               {item.expert}%
             </span>
           </div>

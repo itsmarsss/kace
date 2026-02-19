@@ -2,63 +2,30 @@ import { Play, Square } from 'lucide-react'
 import { useMode } from '../context/ModeProvider'
 
 export default function TopBar() {
-  const { isPlaying, playDemo, stopDemo, sessionState, dispatch, currentCase } =
-    useMode()
+  const { isPlaying, playDemo, stopDemo, sessionState, dispatch, currentCase } = useMode()
 
   return (
-    <header
-      className="h-[52px] flex items-center px-5 gap-3"
-      style={{
-        background: 'var(--surface)',
-        borderBottom: '1px solid var(--border)',
-      }}
-    >
+    <header className="flex h-[52px] items-center gap-3 border-b border-[var(--border)] bg-[var(--surface)] px-5">
       {/* Logo */}
       <div className="flex items-center gap-[6px]">
-        <h1
-          className="text-[17px] font-bold tracking-[-0.01em]"
-          style={{
-            fontFamily: '"DM Sans", sans-serif',
-            color: 'var(--teal-dark)',
-          }}
-        >
+        <h1 className="font-['DM_Sans',sans-serif] text-[17px] font-bold tracking-[-0.01em] text-[var(--teal-dark)]">
           KaCE
         </h1>
-        <span
-          className="text-[10px] font-normal ml-[6px]"
-          style={{ color: 'var(--text-tertiary)' }}
-        >
+        <span className="ml-[6px] text-[10px] font-normal text-[var(--text-tertiary)]">
           Clinical Reasoning Coach
         </span>
       </div>
 
       {/* Divider */}
-      <div
-        className="w-[1px] h-[18px]"
-        style={{ background: 'var(--border-md)' }}
-      />
+      <div className="h-[18px] w-[1px] bg-[var(--border-md)]" />
 
       {/* Patient name */}
-      <span
-        className="text-[13px] font-medium"
-        style={{
-          fontFamily: '"DM Sans", sans-serif',
-          color: 'var(--text-primary)',
-        }}
-      >
+      <span className="font-['DM_Sans',sans-serif] text-[13px] font-medium text-[var(--text-primary)]">
         {currentCase.patient.name}
       </span>
 
       {/* Patient badge */}
-      <span
-        className="text-[10px] px-[10px] py-[2px] rounded-full"
-        style={{
-          background: 'var(--muted-bg)',
-          border: '1px solid var(--border-md)',
-          color: 'var(--text-tertiary)',
-          fontFamily: '"DM Sans", sans-serif',
-        }}
-      >
+      <span className="rounded-full border border-[var(--border-md)] bg-[var(--muted-bg)] px-[10px] py-[2px] font-['DM_Sans',sans-serif] text-[10px] text-[var(--text-tertiary)]">
         {currentCase.patient.age}M
       </span>
 
@@ -70,42 +37,23 @@ export default function TopBar() {
         <>
           <button
             onClick={() => dispatch({ type: 'SHOW_OVERLAY' })}
-            className="text-[11px] font-semibold px-[14px] py-[7px] rounded-[6px] transition-all"
-            style={{
-              background: 'var(--teal)',
-              color: 'white',
-              border: 'none',
-              fontFamily: '"DM Sans", sans-serif',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'var(--teal-dark)'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'var(--teal)'
-            }}
+            className="rounded-[6px] border-none bg-[var(--teal)] px-[14px] py-[7px] font-['DM_Sans',sans-serif] text-[11px] font-semibold text-white transition-all hover:bg-[var(--teal-dark)]"
           >
             View Expert Analysis
           </button>
 
-          <div
-            className="w-[1px] h-[18px]"
-            style={{ background: 'var(--border-md)' }}
-          />
+          <div className="h-[18px] w-[1px] bg-[var(--border-md)]" />
         </>
       )}
 
       {/* Demo button */}
       <button
         onClick={isPlaying ? stopDemo : playDemo}
-        className="flex items-center gap-[5px] px-3 py-[6px] text-[11px] font-semibold rounded-[6px] tracking-wide transition-all"
-        style={{
-          background: isPlaying ? 'var(--crimson-light)' : '#EDFAF8',
-          border: isPlaying
-            ? '1px solid var(--crimson-border)'
-            : '1px solid rgba(73, 198, 185, 0.35)',
-          color: isPlaying ? 'var(--crimson)' : 'var(--teal-dark)',
-          fontFamily: '"DM Sans", sans-serif',
-        }}
+        className={`flex items-center gap-[5px] rounded-[6px] px-3 py-[6px] font-['DM_Sans',sans-serif] text-[11px] font-semibold tracking-wide transition-all ${
+          isPlaying
+            ? 'border border-[var(--crimson-border)] bg-[var(--crimson-light)] text-[var(--crimson)]'
+            : 'border border-[rgba(73,198,185,0.35)] bg-[#EDFAF8] text-[var(--teal-dark)]'
+        }`}
       >
         {isPlaying ? (
           <>

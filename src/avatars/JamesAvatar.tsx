@@ -29,9 +29,27 @@ export function JamesAvatar({ state = 'default', size = 96 }) {
       <circle cx="60.2" cy="38.8" r="1.1" fill="white" />
       <circle cx="45" cy="50" r="1.6" fill="#C4855A" opacity="0.6" />
       <circle cx="51" cy="50" r="1.6" fill="#C4855A" opacity="0.6" />
-      <path d="M40 58 Q48 61 56 58" stroke="#B8754A" strokeWidth="1.8" strokeLinecap="round" fill="none" />
-      <path d="M31 55 Q34 57 35 60" stroke="#C4855A" strokeWidth="1" strokeLinecap="round" opacity="0.4" />
-      <path d="M61 55 Q62 57 65 60" stroke="#C4855A" strokeWidth="1" strokeLinecap="round" opacity="0.4" />
+      <path
+        d="M40 58 Q48 61 56 58"
+        stroke="#B8754A"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        fill="none"
+      />
+      <path
+        d="M31 55 Q34 57 35 60"
+        stroke="#C4855A"
+        strokeWidth="1"
+        strokeLinecap="round"
+        opacity="0.4"
+      />
+      <path
+        d="M61 55 Q62 57 65 60"
+        stroke="#C4855A"
+        strokeWidth="1"
+        strokeLinecap="round"
+        opacity="0.4"
+      />
     </svg>
   )
 }

@@ -10,18 +10,7 @@ export function DiagramFullscreenButton() {
   return (
     <button
       onClick={() => dispatch({ type: 'TOGGLE_DIAGRAM_FULLSCREEN' })}
-      style={{
-        width: '28px',
-        height: '28px',
-        borderRadius: 'var(--r-sm)',
-        background: 'transparent',
-        border: 'none',
-        color: 'var(--text-tertiary)',
-        cursor: 'pointer',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
+      className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-[var(--r-sm)] border-none bg-transparent text-[var(--text-tertiary)]"
     >
       <Maximize2 size={14} />
     </button>
@@ -34,55 +23,22 @@ export function DiagramFullscreen() {
   if (!showDiagramFullscreen) return null
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 300,
-        background: 'var(--bg)',
-      }}
-    >
-      <div
-        style={{
-          height: '60px',
-          background: 'var(--surface)',
-          borderBottom: '1px solid var(--border)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '0 24px',
-        }}
-      >
-        <div
-          style={{
-            fontFamily: '"DM Sans", sans-serif',
-            fontSize: '16px',
-            fontWeight: 600,
-            color: 'var(--text-primary)',
-          }}
-        >
+    <div className="fixed inset-0 z-[300] bg-[var(--bg)]">
+      <div className="flex h-[60px] items-center justify-between border-b border-[var(--border)] bg-[var(--surface)] px-6">
+        <div className="font-['DM_Sans',sans-serif] text-base font-semibold text-[var(--text-primary)]">
           Reasoning Diagram — Fullscreen
         </div>
 
         <button
           onClick={() => dispatch({ type: 'TOGGLE_DIAGRAM_FULLSCREEN' })}
-          style={{
-            padding: '8px 16px',
-            borderRadius: 'var(--r-sm)',
-            background: 'var(--card)',
-            border: '1px solid var(--border)',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-          }}
+          className="flex cursor-pointer items-center gap-2 rounded-[var(--r-sm)] border border-[var(--border)] bg-[var(--card)] px-4 py-2"
         >
           <X size={14} />
           Close
         </button>
       </div>
 
-      <div style={{ height: 'calc(100vh - 60px)' }}>
+      <div className="h-[calc(100vh-60px)]">
         <DiagramFlow blocks={diagramBlocks} />
       </div>
     </div>

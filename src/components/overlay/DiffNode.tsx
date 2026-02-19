@@ -1,50 +1,46 @@
 export default function DiffNode({ type, title, body, animationDelay = 0 }) {
-  const styles = {
-    match: {
-      bg: 'var(--green-light)',
-      border: 'var(--green-border)',
-      labelColor: 'var(--green)',
-      label: 'Match',
-    },
-    miss: {
-      bg: 'var(--amber-light)',
-      border: 'var(--amber-border)',
-      labelColor: 'var(--amber)',
-      label: 'Missed',
-    },
-    wrong: {
-      bg: 'var(--crimson-light)',
-      border: 'var(--crimson-border)',
-      labelColor: 'var(--crimson)',
-      label: 'Diverged',
-    },
+  const labels = {
+    match: 'Match',
+    miss: 'Missed',
+    wrong: 'Diverged',
   }
 
-  const style = styles[type] || styles.match
+  const label = labels[type] || labels.match
+
+  // Define Tailwind classes for each type
+  const bgClass =
+    type === 'match'
+      ? 'bg-[var(--green-light)]'
+      : type === 'miss'
+        ? 'bg-[var(--amber-light)]'
+        : 'bg-[var(--crimson-light)]'
+  const borderClass =
+    type === 'match'
+      ? 'border-[var(--green-border)]'
+      : type === 'miss'
+        ? 'border-[var(--amber-border)]'
+        : 'border-[var(--crimson-border)]'
+  const labelColorClass =
+    type === 'match'
+      ? 'text-[var(--green)]'
+      : type === 'miss'
+        ? 'text-[var(--amber)]'
+        : 'text-[var(--crimson)]'
 
   return (
     <div
-      className="px-[14px] py-[11px] rounded-[6px] animate-[fadeUp_0.4s_both]"
-      style={{
-        background: style.bg,
-        border: `1px solid ${style.border}`,
-        animationDelay: `${animationDelay}ms`,
-      }}
+      className={`animate-[fadeUp_0.4s_both] rounded-[6px] border px-[14px] py-[11px] ${bgClass} ${borderClass}`}
+      style={{ animationDelay: `${animationDelay}ms` }}
     >
       <div
-        className="text-[9px] font-semibold uppercase tracking-[0.1em] mb-1"
-        style={{ color: style.labelColor }}
+        className={`mb-1 text-[9px] font-semibold uppercase tracking-[0.1em] ${labelColorClass}`}
       >
-        {style.label}
+        {label}
       </div>
 
-      <div className="text-[12px] font-medium mb-[3px]" style={{ color: 'var(--text-primary)' }}>
-        {title}
-      </div>
+      <div className="mb-[3px] text-[12px] font-medium text-[var(--text-primary)]">{title}</div>
 
-      <div className="text-[11px]" style={{ color: 'var(--text-secondary)' }}>
-        {body}
-      </div>
+      <div className="text-[11px] text-[var(--text-secondary)]">{body}</div>
     </div>
   )
 }

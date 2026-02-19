@@ -18,31 +18,21 @@ const PatientAvatar = forwardRef(function PatientAvatar(
   const AvatarSVG = AVATAR_MAP[caseId]
 
   return (
-    <div className="flex flex-col items-center px-4 pt-6 pb-4 border-b"
-      style={{ borderColor: 'var(--border)' }}>
+    <div className="flex flex-col items-center border-b border-[var(--border)] px-4 pb-4 pt-6">
       <div
-        className={`w-[96px] h-[96px] rounded-full overflow-hidden relative transition-all duration-300 ${
+        className={`relative h-[96px] w-[96px] overflow-hidden rounded-full bg-[var(--card)] shadow-[var(--shadow-sm)] transition-all duration-300 ${
           isSpeaking ? 'animate-[speakingPulse_1.4s_ease-in-out_infinite]' : ''
         }`}
-        style={{
-          border: `1.5px solid ${isSpeaking ? 'var(--teal-border)' : 'var(--border-md)'}`,
-          background: 'var(--card)',
-          boxShadow: 'var(--shadow-sm)',
-        }}
+        style={{ border: `1.5px solid ${isSpeaking ? 'var(--teal-border)' : 'var(--border-md)'}` }}
       >
         {AvatarSVG && <AvatarSVG state={state} size={size} />}
       </div>
 
-      <div
-        className="mt-3 text-[15px] font-semibold"
-        style={{ color: 'var(--text-primary)', fontFamily: '"DM Sans", sans-serif' }}
-      >
+      <div className="mt-3 font-['DM_Sans',sans-serif] text-[15px] font-semibold text-[var(--text-primary)]">
         {caseId === 'james' ? 'James' : caseId}
       </div>
 
-      <div className="text-[11px] mt-[2px]" style={{ color: 'var(--text-tertiary)' }}>
-        61M
-      </div>
+      <div className="mt-[2px] text-[11px] text-[var(--text-tertiary)]">61M</div>
     </div>
   )
 })

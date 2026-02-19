@@ -20,121 +20,45 @@ export default function DiagramPanel() {
 
   if (!diagramOpen) {
     return (
-      <div
-        style={{
-          width: '100%',
-          height: '100%',
-          background: 'var(--surface)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontFamily: '"DM Sans", sans-serif',
-          fontSize: '13px',
-          color: 'var(--text-tertiary)',
-        }}
-      >
+      <div className="flex h-full w-full items-center justify-center bg-[var(--surface)] font-['DM_Sans',sans-serif] text-[13px] text-[var(--text-tertiary)]">
         Submit your reasoning to view the diagram
       </div>
     )
   }
 
   return (
-    <div
-      style={{
-        width: '100%',
-        height: '100%',
-        background: 'var(--surface)',
-        display: 'flex',
-        flexDirection: 'column',
-        overflow: 'hidden',
-      }}
-    >
+    <div className="flex h-full w-full flex-col overflow-hidden bg-[var(--surface)]">
       {/* Panel header */}
-      <div
-        style={{
-          padding: '16px 18px 12px',
-          borderBottom: '1px solid var(--border)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '12px',
-        }}
-      >
-        <div style={{ flex: 1 }}>
-          <div
-            style={{
-              fontFamily: '"DM Sans", sans-serif',
-              fontSize: '11px',
-              fontWeight: 600,
-              textTransform: 'uppercase',
-              letterSpacing: '0.12em',
-              color: 'var(--text-tertiary)',
-              marginBottom: '2px',
-            }}
-          >
+      <div className="flex items-center justify-between gap-3 border-b border-[var(--border)] px-[18px] pb-3 pt-4">
+        <div className="flex-1">
+          <div className="mb-[2px] font-['DM_Sans',sans-serif] text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--text-tertiary)]">
             REASONING DIAGRAM
           </div>
-          <div
-            style={{
-              fontFamily: '"DM Sans", sans-serif',
-              fontSize: '10px',
-              color: 'var(--text-tertiary)',
-            }}
-          >
+          <div className="font-['DM_Sans',sans-serif] text-[10px] text-[var(--text-tertiary)]">
             Your extracted reasoning
           </div>
         </div>
 
         {/* Layout toggle */}
-        <div
-          style={{
-            display: 'flex',
-            gap: '4px',
-            background: 'var(--muted-bg)',
-            padding: '2px',
-            borderRadius: 'var(--r-sm)',
-          }}
-        >
+        <div className="flex gap-1 rounded-[var(--r-sm)] bg-[var(--muted-bg)] p-[2px]">
           <button
             onClick={() => dispatch({ type: 'SET_DIAGRAM_LAYOUT', payload: '1d' })}
-            style={{
-              padding: '4px 8px',
-              border: 'none',
-              background: !is2D ? 'var(--surface)' : 'transparent',
-              color: !is2D ? 'var(--text-primary)' : 'var(--text-tertiary)',
-              borderRadius: 'var(--r-xs)',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px',
-              fontSize: '10px',
-              fontFamily: '"DM Sans", sans-serif',
-              fontWeight: 500,
-              transition: 'all 0.15s',
-              boxShadow: !is2D ? 'var(--shadow-sm)' : 'none',
-            }}
+            className={`flex cursor-pointer items-center gap-1 rounded-[var(--r-xs)] border-none px-2 py-1 font-['DM_Sans',sans-serif] text-[10px] font-medium transition-all duration-150 ${
+              !is2D
+                ? 'bg-[var(--surface)] text-[var(--text-primary)] shadow-[var(--shadow-sm)]'
+                : 'bg-transparent text-[var(--text-tertiary)]'
+            }`}
           >
             <List size={12} />
             Linear
           </button>
           <button
             onClick={() => dispatch({ type: 'SET_DIAGRAM_LAYOUT', payload: '2d' })}
-            style={{
-              padding: '4px 8px',
-              border: 'none',
-              background: is2D ? 'var(--surface)' : 'transparent',
-              color: is2D ? 'var(--text-primary)' : 'var(--text-tertiary)',
-              borderRadius: 'var(--r-xs)',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px',
-              fontSize: '10px',
-              fontFamily: '"DM Sans", sans-serif',
-              fontWeight: 500,
-              transition: 'all 0.15s',
-              boxShadow: is2D ? 'var(--shadow-sm)' : 'none',
-            }}
+            className={`flex cursor-pointer items-center gap-1 rounded-[var(--r-xs)] border-none px-2 py-1 font-['DM_Sans',sans-serif] text-[10px] font-medium transition-all duration-150 ${
+              is2D
+                ? 'bg-[var(--surface)] text-[var(--text-primary)] shadow-[var(--shadow-sm)]'
+                : 'bg-transparent text-[var(--text-tertiary)]'
+            }`}
           >
             <Workflow size={12} />
             Graph
@@ -145,27 +69,7 @@ export default function DiagramPanel() {
 
         <button
           onClick={() => dispatch({ type: 'TOGGLE_DIAGRAM' })}
-          style={{
-            width: '20px',
-            height: '20px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            border: 'none',
-            background: 'transparent',
-            color: 'var(--text-tertiary)',
-            cursor: 'pointer',
-            borderRadius: 'var(--r-xs)',
-            transition: 'all 0.15s',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = 'var(--card-hover)'
-            e.currentTarget.style.color = 'var(--text-primary)'
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = 'transparent'
-            e.currentTarget.style.color = 'var(--text-tertiary)'
-          }}
+          className="flex h-5 w-5 cursor-pointer items-center justify-center rounded-[var(--r-xs)] border-none bg-transparent text-[var(--text-tertiary)] transition-all duration-150 hover:bg-[var(--card-hover)] hover:text-[var(--text-primary)]"
         >
           <X size={14} />
         </button>
@@ -174,30 +78,11 @@ export default function DiagramPanel() {
       {/* Diagram scroll area */}
       <div
         ref={containerRef}
-        style={{
-          flex: 1,
-          overflowY: 'auto',
-          overflowX: is2D ? 'auto' : 'hidden',
-          padding: '16px',
-          position: 'relative',
-        }}
+        className={`relative flex-1 p-4 ${is2D ? 'overflow-auto' : 'overflow-y-auto overflow-x-hidden'}`}
       >
         {diagramBlocks.length === 0 ? (
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              height: '100%',
-              fontFamily: '"DM Sans", sans-serif',
-              fontSize: '13px',
-              color: 'var(--text-tertiary)',
-              textAlign: 'center',
-              padding: '20px',
-            }}
-          >
-            Analysis could not be completed. You can still view the expert
-            comparison.
+          <div className="flex h-full items-center justify-center p-5 text-center font-['DM_Sans',sans-serif] text-[13px] text-[var(--text-tertiary)]">
+            Analysis could not be completed. You can still view the expert comparison.
           </div>
         ) : is2D ? (
           // 2D interactive canvas with React Flow
@@ -213,15 +98,7 @@ export default function DiagramPanel() {
             />
 
             {/* Block cards */}
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '16px',
-                position: 'relative',
-                zIndex: 1,
-              }}
-            >
+            <div className="relative z-[1] flex flex-col gap-4">
               {diagramBlocks.map((block, index) => (
                 <DiagramBlock
                   key={block.id}

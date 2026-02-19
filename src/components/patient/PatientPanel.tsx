@@ -10,24 +10,10 @@ export default function PatientPanel() {
   const { isSpeaking } = useTTS()
 
   return (
-    <div
-      style={{
-        width: '100%',
-        height: '100%',
-        background: 'var(--surface)',
-        display: 'flex',
-        flexDirection: 'column',
-        overflow: 'hidden',
-        position: 'relative',
-      }}
-    >
+    <div className="relative flex h-full w-full flex-col overflow-hidden bg-[var(--surface)]">
       <PatientFullscreenButton />
       {/* Zone 1: Avatar */}
-      <PatientAvatar
-        caseId={currentCase.id}
-        size={96}
-        isSpeaking={isSpeaking}
-      />
+      <PatientAvatar caseId={currentCase.id} size={96} isSpeaking={isSpeaking} />
 
       {/* Zone 2: Vitals Grid (scrollable) */}
       <VitalsGrid />

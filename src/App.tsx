@@ -11,7 +11,7 @@ import { DiagramFullscreen } from './components/diagram/DiagramFullscreen'
 function App() {
   return (
     <ModeProvider>
-      <div className="flex flex-col h-screen overflow-hidden">
+      <div className="flex h-screen flex-col overflow-hidden">
         <TopBar />
         <PanelGroup direction="horizontal" className="flex-1">
           {/* Patient Panel */}
@@ -19,40 +19,18 @@ function App() {
             <PatientPanel />
           </Panel>
 
-          <PanelResizeHandle
-            style={{
-              width: '3px',
-              background: 'var(--border-md)',
-              cursor: 'col-resize',
-              transition: 'background 0.2s',
-            }}
-            onMouseEnter={(e: any) => {
-              e.currentTarget.style.background = 'var(--teal)'
-            }}
-            onMouseLeave={(e: any) => {
-              e.currentTarget.style.background = 'var(--border-md)'
-            }}
-          />
+          <PanelResizeHandle className="group relative w-2 cursor-col-resize bg-[var(--border)] transition-colors duration-200 hover:bg-[var(--teal)]">
+            <div className="pointer-events-none absolute left-1/2 top-1/2 h-10 w-[3px] -translate-x-1/2 -translate-y-1/2 rounded-[2px] bg-[var(--border-md)]" />
+          </PanelResizeHandle>
 
           {/* Reasoning Panel */}
           <Panel defaultSize={50} minSize={10}>
             <ReasoningPanel />
           </Panel>
 
-          <PanelResizeHandle
-            style={{
-              width: '3px',
-              background: 'var(--border-md)',
-              cursor: 'col-resize',
-              transition: 'background 0.2s',
-            }}
-            onMouseEnter={(e: any) => {
-              e.currentTarget.style.background = 'var(--teal)'
-            }}
-            onMouseLeave={(e: any) => {
-              e.currentTarget.style.background = 'var(--border-md)'
-            }}
-          />
+          <PanelResizeHandle className="group relative w-2 cursor-col-resize bg-[var(--border)] transition-colors duration-200 hover:bg-[var(--teal)]">
+            <div className="pointer-events-none absolute left-1/2 top-1/2 h-10 w-[3px] -translate-x-1/2 -translate-y-1/2 rounded-[2px] bg-[var(--border-md)]" />
+          </PanelResizeHandle>
 
           {/* Diagram Panel */}
           <Panel defaultSize={30} minSize={5}>

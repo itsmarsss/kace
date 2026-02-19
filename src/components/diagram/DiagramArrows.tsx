@@ -1,7 +1,22 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 
-export default function DiagramArrows({ blocks, blockRefs, containerRef }) {
-  const [connections, setConnections] = useState([])
+interface Connection {
+  id: string
+  fromX: number
+  fromY: number
+  toX: number
+  toY: number
+  delay: number
+}
+
+interface DiagramArrowsProps {
+  blocks: any[]
+  blockRefs: (HTMLDivElement | null)[]
+  containerRef: HTMLDivElement | null
+}
+
+export default function DiagramArrows({ blocks, blockRefs, containerRef }: DiagramArrowsProps) {
+  const [connections, setConnections] = useState<Connection[]>([])
   const svgRef = useRef(null)
 
   // Compute arrow connections from block positions
@@ -11,9 +26,9 @@ export default function DiagramArrows({ blocks, blockRefs, containerRef }) {
     }
 
     const containerRect = containerRef.getBoundingClientRect()
-    const newConnections = []
+    const newConnections: Connection[] = []
 
-    blocks.forEach((block, index) => {
+    blocks.forEach((block: any, index: number) => {
       const fromRef = blockRefs[index]
       if (!fromRef || !block.connects_to || block.connects_to.length === 0) {
         return
@@ -21,8 +36,8 @@ export default function DiagramArrows({ blocks, blockRefs, containerRef }) {
 
       const fromRect = fromRef.getBoundingClientRect()
 
-      block.connects_to.forEach((targetId) => {
-        const targetIndex = blocks.findIndex((b) => b.id === targetId)
+      block.connects_to.forEach((targetId: string) => {
+        const targetIndex = blocks.findIndex((b: any) => b.id === targetId)
         if (targetIndex === -1) return
 
         const toRef = blockRefs[targetIndex]
@@ -68,25 +83,10 @@ export default function DiagramArrows({ blocks, blockRefs, containerRef }) {
   return (
     <svg
       ref={svgRef}
-      style={{
-        position: 'absolute',
-        inset: 0,
-        width: '100%',
-        height: '100%',
-        pointerEvents: 'none',
-        zIndex: 0,
-        overflow: 'visible',
-      }}
+      className="pointer-events-none absolute inset-0 z-0 h-full w-full overflow-visible"
     >
       <defs>
-        <marker
-          id="arrowhead"
-          markerWidth="8"
-          markerHeight="6"
-          refX="8"
-          refY="3"
-          orient="auto"
-        >
+        <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
           <polygon points="0 0, 8 3, 0 6" fill="rgba(0,0,0,0.22)" />
         </marker>
       </defs>
@@ -111,8 +111,8 @@ export default function DiagramArrows({ blocks, blockRefs, containerRef }) {
             markerEnd="url(#arrowhead)"
             strokeDasharray={pathLength}
             strokeDashoffset={pathLength}
+            className="animate-[drawLine_0.6s_ease_forwards]"
             style={{
-              animation: `drawLine 0.6s ease forwards`,
               animationDelay: `${delay}ms`,
             }}
           />

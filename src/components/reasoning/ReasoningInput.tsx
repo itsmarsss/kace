@@ -1,39 +1,21 @@
 import { useEffect, useRef } from 'react'
-import { Loader2 } from 'lucide-react'
 import { useMode } from '../../context/ModeProvider'
-import DrugPills from '../input/DrugPills'
 import ConfidenceSlider from '../input/ConfidenceSlider'
-
-const DRUG_OPTIONS = [
-  'Metformin',
-  'Empagliflozin',
-  'Semaglutide',
-  'Glipizide',
-  'Pioglitazone',
-  'Insulin',
-  'Other',
-]
+import TreatmentReference from './TreatmentReference'
 
 export default function ReasoningInput() {
-  const {
-    reasoningText,
-    confidence,
-    selectedDrugs,
-    isSubmitted,
-    isAnalyzing,
-    sessionState,
-    dispatch,
-  } = useMode()
+  const { reasoningText, selectedDrugs, isSubmitted, isAnalyzing, sessionState, dispatch } =
+    useMode()
 
-  const textareaRef = useRef(null)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
 
-  // Auto-resize textarea
-  useEffect(() => {
-    if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto'
-      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`
-    }
-  }, [reasoningText])
+  // Auto-resize textarea - disabled since we want it to fill container
+  // useEffect(() => {
+  //   if (textareaRef.current) {
+  //     textareaRef.current.style.height = 'auto'
+  //     textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`
+  //   }
+  // }, [reasoningText])
 
   const handleSubmit = async () => {
     if (isSubmitted || selectedDrugs.length === 0 || !reasoningText.trim()) {
@@ -56,50 +38,17 @@ export default function ReasoningInput() {
   // Show analyzing state
   if (isAnalyzing) {
     return (
-      <div
-        style={{
-          background: 'var(--surface)',
-          borderTop: '1px solid var(--border)',
-          padding: '40px 20px',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '12px',
-        }}
-      >
+      <div className="flex flex-col items-center justify-center gap-3 border-t border-[var(--border)] bg-[var(--surface)] px-5 py-10">
         {/* Spinner */}
-        <div
-          style={{
-            width: '28px',
-            height: '28px',
-            border: '2.5px solid var(--muted-bg)',
-            borderTopColor: 'var(--teal)',
-            borderRadius: '50%',
-            animation: 'spin 0.8s linear infinite',
-          }}
-        />
+        <div className="h-7 w-7 animate-spin rounded-full border-[2.5px] border-[var(--muted-bg)] border-t-[var(--teal)]" />
 
         {/* Primary text */}
-        <div
-          style={{
-            fontFamily: '"DM Sans", sans-serif',
-            fontSize: '13px',
-            fontWeight: 500,
-            color: 'var(--text-secondary)',
-          }}
-        >
+        <div className="font-['DM_Sans',sans-serif] text-[13px] font-medium text-[var(--text-secondary)]">
           Analyzing your reasoning...
         </div>
 
         {/* Secondary text */}
-        <div
-          style={{
-            fontFamily: '"DM Sans", sans-serif',
-            fontSize: '11px',
-            color: 'var(--text-tertiary)',
-          }}
-        >
+        <div className="font-['DM_Sans',sans-serif] text-[11px] text-[var(--text-tertiary)]">
           Building your reasoning diagram
         </div>
       </div>
@@ -107,56 +56,35 @@ export default function ReasoningInput() {
   }
 
   return (
-    <div
-      style={{
-        background: 'var(--surface)',
-        borderTop: '1px solid var(--border)',
-        padding: '16px 20px 20px',
-      }}
-    >
-      {/* Drug Selection */}
-      <div style={{ marginBottom: '16px' }}>
-        <div className="label-caps" style={{ marginBottom: '8px' }}>
-          DRUG SELECTION
-        </div>
-        <DrugPills drugs={DRUG_OPTIONS} disabled={isSubmitted} />
+    <div className="flex h-full w-full flex-col border-t border-[var(--border)] bg-[var(--surface)]">
+      {/* Treatment Options Reference with built-in selection */}
+      <div className="flex-shrink-0 px-5 pb-0 pt-4">
+        <TreatmentReference />
       </div>
 
       {/* Reasoning Textarea */}
-      <div style={{ marginBottom: '14px' }}>
-        <div className="label-caps" style={{ marginBottom: '8px' }}>
-          YOUR REASONING
-        </div>
+      <div className="flex flex-1 flex-col px-5 pb-3">
+        <div className="label-caps mb-2 flex-shrink-0">YOUR REASONING</div>
         <textarea
           ref={textareaRef}
           value={reasoningText}
           onChange={(e) =>
-            dispatch({ type: 'SET_REASONING_TEXT', payload: e.target.value })
+            dispatch({
+              type: 'SET_REASONING_TEXT',
+              payload: e.target.value,
+            })
           }
           readOnly={isSubmitted}
           placeholder="Walk through your reasoning. Which findings do you consider most significant? What did you rule out and why? What drives your drug selection?"
-          style={{
-            width: '100%',
-            minHeight: '160px',
-            background: isSubmitted ? 'var(--muted-bg)' : 'var(--card)',
-            border: `1px solid ${isSubmitted ? 'var(--border)' : 'var(--border-md)'}`,
-            borderRadius: 'var(--r)',
-            padding: '13px 16px',
-            fontFamily: '"DM Sans", sans-serif',
-            fontSize: '14px',
-            color: isSubmitted ? 'var(--text-secondary)' : 'var(--text-primary)',
-            lineHeight: '1.7',
-            resize: 'none',
-            boxShadow: 'var(--shadow-sm)',
-            outline: 'none',
-            transition: 'all 0.15s',
-            cursor: isSubmitted ? 'default' : 'text',
-          }}
+          className={`h-full w-full resize-none rounded-[var(--r)] p-[13px_16px] font-['DM_Sans',sans-serif] text-[14px] leading-[1.7] shadow-[var(--shadow-sm)] outline-none transition-all duration-150 ${
+            isSubmitted
+              ? 'cursor-default border border-[var(--border)] bg-[var(--muted-bg)] text-[var(--text-secondary)]'
+              : 'cursor-text border border-[var(--border-md)] bg-[var(--card)] text-[var(--text-primary)]'
+          }`}
           onFocus={(e) => {
             if (!isSubmitted) {
               e.target.style.borderColor = 'var(--teal)'
-              e.target.style.boxShadow =
-                '0 0 0 3px var(--teal-glow), var(--shadow-sm)'
+              e.target.style.boxShadow = '0 0 0 3px var(--teal-glow), var(--shadow-sm)'
             }
           }}
           onBlur={(e) => {
@@ -169,57 +97,17 @@ export default function ReasoningInput() {
       </div>
 
       {/* Confidence Slider + Submit Button */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '16px',
-        }}
-      >
+      <div className="flex flex-shrink-0 items-center justify-between gap-4 px-5 pb-5">
         <ConfidenceSlider disabled={isSubmitted} />
 
         <button
           onClick={handleSubmit}
           disabled={isSubmitted || selectedDrugs.length === 0 || !reasoningText.trim()}
-          style={{
-            background:
-              isSubmitted || selectedDrugs.length === 0 || !reasoningText.trim()
-                ? 'var(--muted-bg)'
-                : 'var(--teal)',
-            color:
-              isSubmitted || selectedDrugs.length === 0 || !reasoningText.trim()
-                ? 'var(--text-tertiary)'
-                : 'white',
-            fontFamily: '"DM Sans", sans-serif',
-            fontSize: '13px',
-            fontWeight: 600,
-            padding: '10px 20px',
-            borderRadius: 'var(--r-sm)',
-            border: 'none',
-            boxShadow:
-              isSubmitted || selectedDrugs.length === 0 || !reasoningText.trim()
-                ? 'none'
-                : 'var(--shadow-md)',
-            minWidth: '180px',
-            cursor:
-              isSubmitted || selectedDrugs.length === 0 || !reasoningText.trim()
-                ? 'not-allowed'
-                : 'pointer',
-            transition: 'all 0.15s',
-          }}
-          onMouseEnter={(e) => {
-            if (!isSubmitted && selectedDrugs.length > 0 && reasoningText.trim()) {
-              e.currentTarget.style.background = 'var(--teal-dark)'
-              e.currentTarget.style.transform = 'translateY(-1px)'
-            }
-          }}
-          onMouseLeave={(e) => {
-            if (!isSubmitted && selectedDrugs.length > 0 && reasoningText.trim()) {
-              e.currentTarget.style.background = 'var(--teal)'
-              e.currentTarget.style.transform = 'translateY(0)'
-            }
-          }}
+          className={`min-w-[180px] rounded-[var(--r-sm)] border-none px-5 py-[10px] font-['DM_Sans',sans-serif] text-[13px] font-semibold transition-all duration-150 ${
+            isSubmitted || selectedDrugs.length === 0 || !reasoningText.trim()
+              ? 'cursor-not-allowed bg-[var(--muted-bg)] text-[var(--text-tertiary)] shadow-none'
+              : 'cursor-pointer bg-[var(--teal)] text-white shadow-[var(--shadow-md)] hover:-translate-y-px hover:bg-[var(--teal-dark)]'
+          }`}
         >
           Analyze Reasoning →
         </button>

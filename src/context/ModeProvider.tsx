@@ -1,7 +1,37 @@
-import { createContext, useContext, useReducer, useCallback, useRef } from 'react'
+import { createContext, useContext, useReducer, useCallback, useRef, Dispatch } from 'react'
 import { james } from '../data/cases/james'
 
-const ModeContext = createContext()
+interface ModeState {
+  mode: 'demo' | 'live'
+  isPlaying: boolean
+  reasoningText: string
+  confidence: number
+  selectedDrugs: string[]
+  sessionState: 'idle' | 'analyzing' | 'reviewed' | 'expert'
+  isAnalyzing: boolean
+  isSubmitted: boolean
+  diagramBlocks: any[]
+  diagramOpen: boolean
+  diagramLayout: '1d' | '2d'
+  showOverlay: boolean
+  showPatientFullscreen: boolean
+  showDiagramFullscreen: boolean
+  currentSpeechLine: number
+}
+
+interface ModeAction {
+  type: string
+  payload?: any
+}
+
+interface ModeContextType extends ModeState {
+  dispatch: Dispatch<ModeAction>
+  playDemo: () => void
+  stopDemo: () => void
+  currentCase: typeof james
+}
+
+const ModeContext = createContext<ModeContextType | undefined>(undefined)
 
 export const useMode = () => {
   const context = useContext(ModeContext)
@@ -116,10 +146,7 @@ function modeReducer(state, action) {
     case 'NEXT_SPEECH_LINE':
       return {
         ...state,
-        currentSpeechLine: Math.min(
-          state.currentSpeechLine + 1,
-          james.speechLines.length - 1
-        ),
+        currentSpeechLine: Math.min(state.currentSpeechLine + 1, james.speechLines.length - 1),
       }
 
     case 'PREV_SPEECH_LINE':

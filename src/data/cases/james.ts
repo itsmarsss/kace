@@ -140,7 +140,7 @@ Symptoms:
       text: "Patient presents with classic T2DM symptoms and HbA1c 9.1%. Initial instinct is metformin as first-line, but I need to consider comorbidities.\n\nKey findings:\n- eGFR 52 (CKD Stage 3a) — metformin dose would need adjustment but is still safe\n- BP 148/92 — hypertensive, suggests need for medication with BP benefits\n- Post-MI 8mo ago — this changes everything. Need cardioprotective agent.\n- HFrEF with EF 35% — THIS is the critical finding.\n\nWith confirmed HFrEF, the patient needs an SGLT2 inhibitor for proven mortality benefit. Empagliflozin is supported by EMPEROR-Reduced trial for HFrEF patients. It also treats his diabetes and helps with BP.\n\nMetformin would be fine for glycemic control but doesn't address his cardiac risk, which is the primary concern here.",
       delay: 100,
     },
-    { action: 'selectDrug', drug: 'Empagliflozin', delay: 800 },
+    { action: 'selectDrug', drug: 'SGLT2i', delay: 800 },
     { action: 'setConfidence', value: 5, delay: 600 },
     { action: 'submit', delay: 1200 },
     { action: 'buildDiagram', delay: 1800 },
