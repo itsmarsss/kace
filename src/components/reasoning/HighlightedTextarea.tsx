@@ -76,7 +76,7 @@ export default function HighlightedTextarea({
       {/* Background layer with highlighted text */}
       <div
         ref={highlightRef}
-        className={`absolute inset-0 overflow-hidden whitespace-pre-wrap break-words rounded-[var(--r)] p-[13px_16px] font-['DM_Sans',sans-serif] text-[14px] leading-[1.7] ${className}`}
+        className="absolute inset-0 overflow-hidden whitespace-pre-wrap break-words font-['DM_Sans',sans-serif]"
         style={{
           pointerEvents: 'none',
           wordWrap: 'break-word',
@@ -84,6 +84,10 @@ export default function HighlightedTextarea({
           scrollbarWidth: 'none',
           msOverflowStyle: 'none',
           color: 'transparent',
+          padding: '13px 16px',
+          fontSize: '14px',
+          lineHeight: '1.7',
+          borderRadius: 'var(--r)',
         }}
       >
         {renderHighlightedText()}
@@ -97,12 +101,16 @@ export default function HighlightedTextarea({
         onScroll={handleScroll}
         readOnly={readOnly}
         placeholder={placeholder}
-        className={`relative h-full w-full resize-none bg-transparent ${className}`}
+        className={`relative h-full w-full resize-none bg-transparent font-['DM_Sans',sans-serif] ${className}`}
         onFocus={onFocus}
         onBlur={onBlur}
         style={{
           color: 'var(--text-primary)',
           zIndex: 1,
+          padding: '13px 16px',
+          fontSize: '14px',
+          lineHeight: '1.7',
+          borderRadius: 'var(--r)',
         }}
       />
     </div>

@@ -2,7 +2,7 @@ import { useMode } from '../../context/ModeProvider'
 import { getBlockStyle } from './blockTypes'
 
 export default function BlockDetailModal() {
-  const { selectedBlock, dispatch } = useMode()
+  const { selectedBlock, diagramBlocks, dispatch } = useMode()
 
   if (!selectedBlock) return null
 
@@ -109,15 +109,26 @@ export default function BlockDetailModal() {
             <div className="mb-2 font-['DM_Sans',sans-serif] text-[9px] font-semibold uppercase tracking-[0.12em] text-[var(--text-tertiary)]">
               Connects to
             </div>
-            <div className="flex flex-wrap gap-2">
-              {selectedBlock.connects_to.map((id) => (
-                <div
-                  key={id}
-                  className="rounded-[var(--r-sm)] border border-[var(--border)] bg-[var(--surface)] px-3 py-1 font-['DM_Sans',sans-serif] text-[12px] text-[var(--text-secondary)]"
-                >
-                  {id}
-                </div>
-              ))}
+            <div className="flex flex-col gap-2">
+              {selectedBlock.connects_to.map((id) => {
+                const connectedBlock = diagramBlocks.find((b) => b.id === id)
+                if (!connectedBlock) return null
+
+                const connectedStyle = getBlockStyle(connectedBlock.type)
+                return (
+                  <div
+                    key={id}
+                    className="rounded-[var(--r-sm)] border border-[var(--border)] bg-[var(--surface)] p-[8px_12px]"
+                  >
+                    <div className="mb-1 font-['DM_Sans',sans-serif] text-[9px] font-semibold uppercase tracking-[0.12em] text-[var(--text-tertiary)]">
+                      {connectedStyle.label}
+                    </div>
+                    <div className="font-['DM_Sans',sans-serif] text-[13px] font-medium text-[var(--text-primary)]">
+                      {connectedBlock.title}
+                    </div>
+                  </div>
+                )
+              })}
             </div>
           </div>
         )}
