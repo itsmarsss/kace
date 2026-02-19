@@ -13,11 +13,11 @@ export default function ModeSelectionModal() {
     // if (mode === 'live') {
     //   dispatch({ type: 'SHOW_ACCESS_CODE_MODAL' })
     // } else {
-    //   dispatch({ type: 'SHOW_DIFFICULTY_MODAL' })
+    //   dispatch({ type: 'SHOW_PATIENT_MODAL' })
     // }
 
-    // For now, skip access code and go straight to difficulty
-    dispatch({ type: 'SHOW_DIFFICULTY_MODAL' })
+    // For now, skip access code and go straight to patient selection
+    dispatch({ type: 'SHOW_PATIENT_MODAL' })
   }
 
   return (

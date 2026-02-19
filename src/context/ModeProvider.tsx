@@ -1,10 +1,13 @@
 import { createContext, useContext, useReducer, useCallback, useRef, Dispatch } from 'react'
 import { james } from '../data/cases/james'
+import { allCases, caseList, CaseId } from '../data/cases'
 import { DiagramBlock } from '../services/api'
 
 interface ModeState {
   mode: 'demo' | 'live' | null
   showModeModal: boolean
+  showPatientModal: boolean
+  selectedCaseId: CaseId
   showAccessCodeModal: boolean
   accessGranted: boolean
   difficulty: 'easy' | 'medium' | 'hard' | null
@@ -42,7 +45,7 @@ interface ModeContextType extends ModeState {
   dispatch: Dispatch<ModeAction>
   playDemo: () => void
   stopDemo: () => void
-  currentCase: typeof james
+  currentCase: (typeof james) | (typeof allCases)[CaseId]
 }
 
 const ModeContext = createContext<ModeContextType | undefined>(undefined)
@@ -59,10 +62,12 @@ export const useMode = () => {
 const initialState: ModeState = {
   mode: null, // Show mode selection modal first
   showModeModal: true, // Show mode modal on first load
+  showPatientModal: false, // Will be shown after mode selection
+  selectedCaseId: 'james', // Default case
   showAccessCodeModal: false,
   accessGranted: false,
   difficulty: null, // Show difficulty modal after mode selection
-  showDifficultyModal: false, // Will be shown after mode selection
+  showDifficultyModal: false, // Will be shown after patient selection
   isPlaying: false,
   demoFinished: false,
   reasoningText: '',
@@ -97,6 +102,15 @@ function modeReducer(state: ModeState, action: ModeAction): ModeState {
 
     case 'SHOW_MODE_MODAL':
       return { ...state, showModeModal: true }
+
+    case 'SHOW_PATIENT_MODAL':
+      return { ...state, showPatientModal: true }
+
+    case 'HIDE_PATIENT_MODAL':
+      return { ...state, showPatientModal: false }
+
+    case 'SET_SELECTED_CASE':
+      return { ...state, selectedCaseId: action.payload }
 
     case 'SHOW_ACCESS_CODE_MODAL':
       return { ...state, showAccessCodeModal: true }
@@ -290,8 +304,10 @@ function modeReducer(state: ModeState, action: ModeAction): ModeState {
         ...initialState,
         mode: state.mode, // Preserve mode
         difficulty: state.difficulty, // Preserve difficulty
+        selectedCaseId: state.selectedCaseId, // Preserve selected case
         showModeModal: false, // Don't show modals on reset
         showDifficultyModal: false,
+        showPatientModal: false,
       }
 
     default:
@@ -317,10 +333,13 @@ export function ModeProvider({ children }: { children: React.ReactNode }) {
     dispatch({ type: 'SET_PLAYING', payload: true })
     dispatch({ type: 'SET_DEMO_FINISHED', payload: false })
 
+    // Get current case
+    const currentCase = allCases[state.selectedCaseId]
+
     // Execute demo script
     let cumulativeDelay = 0
 
-    james.demoScript.forEach((step, stepIndex) => {
+    currentCase.demoScript.forEach((step, stepIndex) => {
       const timer = setTimeout(() => {
         switch (step.action) {
           case 'caseLoad':
@@ -375,10 +394,10 @@ export function ModeProvider({ children }: { children: React.ReactNode }) {
             dispatch({
               type: 'DIAGRAM_READY',
               payload: {
-                studentBlocks: james.studentBlocks,
-                expertBlocks: james.expertBlocks,
-                overallFeedback: james.overallFeedback,
-                score: james.score,
+                studentBlocks: currentCase.studentBlocks,
+                expertBlocks: currentCase.expertBlocks,
+                overallFeedback: currentCase.overallFeedback,
+                score: currentCase.score,
               },
             })
             break
@@ -388,7 +407,7 @@ export function ModeProvider({ children }: { children: React.ReactNode }) {
         }
 
         // Check if this is the last step
-        if (stepIndex === james.demoScript.length - 1) {
+        if (stepIndex === currentCase.demoScript.length - 1) {
           setTimeout(() => {
             dispatch({ type: 'SET_PLAYING', payload: false })
             dispatch({ type: 'SET_DEMO_FINISHED', payload: true })
@@ -399,7 +418,7 @@ export function ModeProvider({ children }: { children: React.ReactNode }) {
       demoTimersRef.current.push(timer)
       cumulativeDelay += step.delay || 1200
     })
-  }, [state.isPlaying])
+  }, [state.isPlaying, state.selectedCaseId])
 
   const stopDemo = useCallback(() => {
     demoTimersRef.current.forEach((timer) => clearTimeout(timer))
@@ -416,7 +435,7 @@ export function ModeProvider({ children }: { children: React.ReactNode }) {
     dispatch,
     playDemo,
     stopDemo,
-    currentCase: james,
+    currentCase: allCases[state.selectedCaseId],
   }
 
   return <ModeContext.Provider value={value}>{children}</ModeContext.Provider>

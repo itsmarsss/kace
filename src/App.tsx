@@ -9,6 +9,7 @@ import { PatientFullscreen } from './components/patient/PatientFullscreen'
 import { DiagramFullscreen } from './components/diagram/DiagramFullscreen'
 import BlockDetailModal from './components/diagram/BlockDetailModal'
 import ModeSelectionModal from './components/ModeSelectionModal'
+import PatientSelectionModal from './components/PatientSelectionModal'
 import AccessCodeModal from './components/AccessCodeModal'
 import DifficultyModal from './components/DifficultyModal'
 
@@ -62,6 +63,7 @@ function AppContent() {
         </PanelGroup>
       </div>
       <ModeSelectionModal />
+      <PatientSelectionModal />
       <AccessCodeModal />
       <DifficultyModal />
       <BlockDetailModal />
