@@ -34,9 +34,23 @@ export default function HighlightedTextarea({
 
   // Scroll to highlighted text when hovering over a block
   useEffect(() => {
-    if (hoveredBlock && textareaRef.current && hoveredBlock.sourceStart !== undefined) {
+    if (hoveredBlock && textareaRef.current && hoveredBlock.sourceText && value) {
       const textarea = textareaRef.current
-      const start = hoveredBlock.sourceStart
+
+      // Find the actual position using fuzzy matching
+      const findStart = (searchText: string, fullText: string): number => {
+        // Try exact match first
+        let index = fullText.indexOf(searchText)
+        if (index !== -1) return index
+
+        // Try case-insensitive
+        index = fullText.toLowerCase().indexOf(searchText.toLowerCase())
+        if (index !== -1) return index
+
+        return 0 // Default to top if not found
+      }
+
+      const start = findStart(hoveredBlock.sourceText, value)
 
       // Calculate approximate line position
       const beforeText = value.substring(0, start)
@@ -66,24 +80,87 @@ export default function HighlightedTextarea({
     }
   }
 
+  // Find text in reasoning with fuzzy matching
+  const findTextPosition = (searchText: string, fullText: string): { start: number; end: number } | null => {
+    if (!searchText || !fullText) return null
+
+    // 1. Try exact match
+    let index = fullText.indexOf(searchText)
+    if (index !== -1) {
+      return { start: index, end: index + searchText.length }
+    }
+
+    // 2. Try case-insensitive match
+    const lowerSearch = searchText.toLowerCase()
+    const lowerText = fullText.toLowerCase()
+    index = lowerText.indexOf(lowerSearch)
+    if (index !== -1) {
+      return { start: index, end: index + searchText.length }
+    }
+
+    // 3. Try normalized whitespace match
+    const normalizeWhitespace = (str: string) => str.replace(/\s+/g, ' ').trim()
+    const normalizedSearch = normalizeWhitespace(searchText)
+    const normalizedLowerSearch = normalizedSearch.toLowerCase()
+
+    // Search through the text with normalized whitespace
+    for (let i = 0; i <= fullText.length - normalizedSearch.length; i++) {
+      const candidate = fullText.substring(i, i + normalizedSearch.length * 2) // Check longer window
+      const normalizedCandidate = normalizeWhitespace(candidate).toLowerCase()
+
+      if (normalizedCandidate.startsWith(normalizedLowerSearch)) {
+        // Find the actual end position
+        let endPos = i
+        let matchedChars = 0
+        const searchChars = normalizedSearch.length
+
+        while (endPos < fullText.length && matchedChars < searchChars) {
+          if (!/\s/.test(fullText[endPos]) || !/\s/.test(normalizedSearch[matchedChars])) {
+            matchedChars++
+          }
+          endPos++
+        }
+
+        return { start: i, end: endPos }
+      }
+    }
+
+    // 4. Try finding best partial match (at least 80% of the text)
+    const minMatchLength = Math.floor(searchText.length * 0.8)
+    for (let len = searchText.length; len >= minMatchLength; len--) {
+      const substring = searchText.substring(0, len).toLowerCase()
+      index = lowerText.indexOf(substring)
+      if (index !== -1) {
+        return { start: index, end: index + len }
+      }
+    }
+
+    return null
+  }
+
   const renderBackdrop = () => {
-    // If no highlight, return empty backdrop with proper spacing
-    if (
-      !hoveredBlock ||
-      hoveredBlock.sourceStart === undefined ||
-      hoveredBlock.sourceEnd === undefined ||
-      !value
-    ) {
+    // If no highlight or no source text, return empty
+    if (!hoveredBlock || !value || !hoveredBlock.sourceText) {
       return null
     }
 
-    const { sourceStart, sourceEnd, type } = hoveredBlock
+    const { sourceText, type } = hoveredBlock
     const highlightColor = getHighlightColor(type)
 
+    // Find the text position using fuzzy matching
+    const position = findTextPosition(sourceText, value)
+
+    if (!position) {
+      // Couldn't find the text, don't highlight
+      return null
+    }
+
+    const { start, end } = position
+
     // Split text into parts
-    const before = value.substring(0, sourceStart)
-    const highlighted = value.substring(sourceStart, sourceEnd)
-    const after = value.substring(sourceEnd)
+    const before = value.substring(0, start)
+    const highlighted = value.substring(start, end)
+    const after = value.substring(end)
 
     return (
       <>
