@@ -5,7 +5,7 @@ import PatientPanel from './components/patient/PatientPanel'
 import ReasoningPanel from './components/reasoning/ReasoningPanel'
 import DiagramPanel from './components/diagram/DiagramPanel'
 import ExpertOverlay from './components/overlay/ExpertOverlay'
-import FeedbackModal from './components/overlay/FeedbackModal'
+import FeedbackView from './components/overlay/FeedbackView'
 import { PatientFullscreen } from './components/patient/PatientFullscreen'
 import { DiagramFullscreen } from './components/diagram/DiagramFullscreen'
 
@@ -40,7 +40,7 @@ function App() {
         </PanelGroup>
       </div>
       <ExpertOverlay />
-      <FeedbackModal />
+      <FeedbackView />
       <PatientFullscreen />
       <DiagramFullscreen />
     </ModeProvider>
