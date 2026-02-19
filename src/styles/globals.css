@@ -110,6 +110,15 @@ body {
   color: var(--text-mute);
 }
 
+.hide-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 /* ═══ Animations ═══ */
 @keyframes fadeUp {
   from {

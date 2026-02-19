@@ -101,7 +101,7 @@ export default function HighlightedTextarea({
         onScroll={handleScroll}
         readOnly={readOnly}
         placeholder={placeholder}
-        className={`relative h-full w-full resize-none bg-transparent font-['DM_Sans',sans-serif] ${className}`}
+        className={`hide-scrollbar relative h-full w-full resize-none bg-transparent font-['DM_Sans',sans-serif] ${className}`}
         onFocus={onFocus}
         onBlur={onBlur}
         style={{
