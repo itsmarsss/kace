@@ -57,6 +57,18 @@ export default function HighlightedTextarea({
       return <span>{value}&nbsp;</span>
     }
 
+    // Get highlight color based on block type
+    const highlightColor =
+      hoveredBlock.type === 'OBSERVATION'
+        ? 'var(--teal-light)'
+        : hoveredBlock.type === 'INTERPRETATION'
+          ? 'var(--slate-light)'
+          : hoveredBlock.type === 'CONSIDERATION'
+            ? 'var(--amber-light)'
+            : hoveredBlock.type === 'CONTRAINDICATION'
+              ? 'var(--crimson-light)'
+              : 'var(--green-light)' // DECISION
+
     const { sourceStart, sourceEnd } = hoveredBlock
     const before = value.substring(0, sourceStart)
     const highlighted = value.substring(sourceStart, sourceEnd)
@@ -65,7 +77,7 @@ export default function HighlightedTextarea({
     return (
       <>
         <span>{before}</span>
-        <mark style={{ backgroundColor: 'var(--teal-light)', color: 'transparent' }}>{highlighted}</mark>
+        <mark style={{ backgroundColor: highlightColor, color: 'transparent' }}>{highlighted}</mark>
         <span>{after}&nbsp;</span>
       </>
     )
