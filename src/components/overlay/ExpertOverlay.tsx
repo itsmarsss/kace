@@ -4,7 +4,7 @@ import DiffNode from './DiffNode'
 import CalibrationBars from './CalibrationBars'
 
 export default function ExpertOverlay() {
-  const { showOverlay, comparisonResult, currentCase, dispatch } = useMode()
+  const { showOverlay, comparisonResult, dispatch } = useMode()
 
   if (!showOverlay || !comparisonResult) return null
 

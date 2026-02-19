@@ -1,6 +1,7 @@
 import { createContext, useContext, useReducer, useCallback, useRef, Dispatch } from 'react'
 import { james } from '../data/cases/james'
 import { ComparisonResult } from '../utils/compareReasoning'
+import { DiagramBlock } from '../services/api'
 
 interface ModeState {
   mode: 'demo' | 'live'
@@ -11,7 +12,7 @@ interface ModeState {
   sessionState: 'idle' | 'analyzing' | 'reviewed' | 'expert'
   isAnalyzing: boolean
   isSubmitted: boolean
-  diagramBlocks: any[]
+  diagramBlocks: DiagramBlock[]
   diagramOpen: boolean
   diagramLayout: '1d' | '2d'
   showOverlay: boolean
@@ -63,7 +64,7 @@ const initialState: ModeState = {
   comparisonResult: null,
 }
 
-function modeReducer(state, action) {
+function modeReducer(state: ModeState, action: ModeAction): ModeState {
   switch (action.type) {
     case 'SET_MODE':
       return { ...state, mode: action.payload }
@@ -194,9 +195,9 @@ function modeReducer(state, action) {
   }
 }
 
-export function ModeProvider({ children }) {
+export function ModeProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(modeReducer, initialState)
-  const demoTimersRef = useRef([])
+  const demoTimersRef = useRef<NodeJS.Timeout[]>([])
 
   // Demo playback engine for v3 workflow
   const playDemo = useCallback(() => {
