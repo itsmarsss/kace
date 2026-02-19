@@ -156,7 +156,7 @@ export default function BlockDetailModal() {
                   <button
                     key={block.id}
                     onClick={() => dispatch({ type: 'SET_SELECTED_BLOCK', payload: block })}
-                    className={`w-full cursor-pointer rounded-[var(--r-sm)] border p-[8px_12px] text-left transition-all duration-150 hover:shadow-[var(--shadow-md)] ${blockBgClass} ${blockBorderClass}`}
+                    className={`w-full cursor-pointer rounded-[var(--r-sm)] border p-[8px_12px] text-left shadow-[var(--shadow-sm)] transition-all duration-150 hover:shadow-[var(--shadow-md)] ${blockBgClass} ${blockBorderClass}`}
                   >
                     <div className={`mb-1 font-['DM_Sans',sans-serif] text-[9px] font-semibold uppercase tracking-[0.12em] ${blockColorClass}`}>
                       {blockStyle.label}
@@ -222,7 +222,7 @@ export default function BlockDetailModal() {
                   <button
                     key={id}
                     onClick={() => dispatch({ type: 'SET_SELECTED_BLOCK', payload: connectedBlock })}
-                    className={`w-full cursor-pointer rounded-[var(--r-sm)] border p-[8px_12px] text-left transition-all duration-150 hover:shadow-[var(--shadow-md)] ${connectedBgClass} ${connectedBorderClass}`}
+                    className={`w-full cursor-pointer rounded-[var(--r-sm)] border p-[8px_12px] text-left shadow-[var(--shadow-sm)] transition-all duration-150 hover:shadow-[var(--shadow-md)] ${connectedBgClass} ${connectedBorderClass}`}
                   >
                     <div className={`mb-1 font-['DM_Sans',sans-serif] text-[9px] font-semibold uppercase tracking-[0.12em] ${connectedColorClass}`}>
                       {connectedStyle.label}
