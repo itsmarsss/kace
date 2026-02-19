@@ -1,4 +1,5 @@
-import { X, Workflow, List } from 'lucide-react'
+import { useState } from 'react'
+import { X, Workflow, List, RefreshCw } from 'lucide-react'
 import { useMode } from '../../context/ModeProvider'
 import DiagramBlock from './DiagramBlock'
 import DiagramFlow from './DiagramFlow'
@@ -7,8 +8,13 @@ import BlockDetailModal from './BlockDetailModal'
 
 export default function DiagramPanel() {
   const { diagramBlocks, diagramOpen, diagramLayout, dispatch } = useMode()
+  const [layoutKey, setLayoutKey] = useState(0)
 
   const is2D = diagramLayout === '2d'
+
+  const handleReLayout = () => {
+    setLayoutKey((prev) => prev + 1)
+  }
 
   if (!diagramOpen) {
     return (
@@ -57,6 +63,18 @@ export default function DiagramPanel() {
           </button>
         </div>
 
+        {/* Re-layout button (2D only) */}
+        {is2D && (
+          <button
+            onClick={handleReLayout}
+            className="flex h-7 cursor-pointer items-center gap-1 rounded-[var(--r-sm)] border border-[var(--border)] bg-[var(--surface)] px-2 py-1 font-['DM_Sans',sans-serif] text-[10px] font-medium text-[var(--text-secondary)] transition-all duration-150 hover:bg-[var(--card-hover)] hover:text-[var(--text-primary)]"
+            title="Re-organize diagram layout"
+          >
+            <RefreshCw size={12} />
+            Re-layout
+          </button>
+        )}
+
         <DiagramFullscreenButton />
 
         <button
@@ -75,7 +93,7 @@ export default function DiagramPanel() {
           </div>
         ) : is2D ? (
           // 2D interactive canvas with React Flow - no padding, full height
-          <DiagramFlow blocks={diagramBlocks} />
+          <DiagramFlow key={layoutKey} blocks={diagramBlocks} />
         ) : (
           // 1D vertical layout (no arrows, just stacked blocks)
           <div className="flex flex-col gap-4">
