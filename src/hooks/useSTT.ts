@@ -8,6 +8,7 @@ export function useSTT(onFinalTranscript?: (text: string) => void) {
   const [isListening, setIsListening] = useState(false)
   const [interimTranscript, setInterimTranscript] = useState('')
   const recognitionRef = useRef<SpeechRecognition | null>(null)
+  const shouldListenRef = useRef(false)
 
   useEffect(() => {
     // Check if browser supports Speech Recognition
@@ -43,17 +44,30 @@ export function useSTT(onFinalTranscript?: (text: string) => void) {
 
     recognition.onerror = (event) => {
       console.error('Speech recognition error:', event.error)
-      setIsListening(false)
+      if (event.error !== 'no-speech' && event.error !== 'aborted') {
+        setIsListening(false)
+        shouldListenRef.current = false
+      }
     }
 
     recognition.onend = () => {
-      setIsListening(false)
       setInterimTranscript('')
+      // Restart if we should still be listening
+      if (shouldListenRef.current) {
+        try {
+          recognition.start()
+        } catch (error) {
+          console.error('Failed to restart recognition:', error)
+        }
+      } else {
+        setIsListening(false)
+      }
     }
 
     recognitionRef.current = recognition
 
     return () => {
+      shouldListenRef.current = false
       if (recognitionRef.current) {
         recognitionRef.current.stop()
       }
@@ -63,6 +77,7 @@ export function useSTT(onFinalTranscript?: (text: string) => void) {
   const startListening = useCallback(() => {
     if (recognitionRef.current && !isListening) {
       setInterimTranscript('')
+      shouldListenRef.current = true
       recognitionRef.current.start()
       setIsListening(true)
     }
@@ -70,6 +85,7 @@ export function useSTT(onFinalTranscript?: (text: string) => void) {
 
   const stopListening = useCallback(() => {
     if (recognitionRef.current && isListening) {
+      shouldListenRef.current = false
       recognitionRef.current.stop()
       setIsListening(false)
       setInterimTranscript('')
