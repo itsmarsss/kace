@@ -3,7 +3,8 @@ import { james } from '../data/cases/james'
 import { DiagramBlock } from '../services/api'
 
 interface ModeState {
-  mode: 'demo' | 'live'
+  mode: 'demo' | 'live' | null
+  showModeModal: boolean
   difficulty: 'easy' | 'medium' | 'hard' | null
   showDifficultyModal: boolean
   isPlaying: boolean
@@ -53,9 +54,10 @@ export const useMode = () => {
 
 // Session states: 'idle' | 'analyzing' | 'reviewed' | 'expert'
 const initialState: ModeState = {
-  mode: 'live', // 'demo' | 'live'
-  difficulty: null, // Show modal on first load
-  showDifficultyModal: true, // Show on first load
+  mode: null, // Show mode selection modal first
+  showModeModal: true, // Show mode modal on first load
+  difficulty: null, // Show difficulty modal after mode selection
+  showDifficultyModal: false, // Will be shown after mode selection
   isPlaying: false,
   reasoningText: '',
   confidence: 3,
@@ -83,6 +85,12 @@ function modeReducer(state: ModeState, action: ModeAction): ModeState {
   switch (action.type) {
     case 'SET_MODE':
       return { ...state, mode: action.payload }
+
+    case 'HIDE_MODE_MODAL':
+      return { ...state, showModeModal: false }
+
+    case 'SHOW_MODE_MODAL':
+      return { ...state, showModeModal: true }
 
     case 'SET_DIFFICULTY':
       return { ...state, difficulty: action.payload }

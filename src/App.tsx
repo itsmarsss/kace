@@ -8,6 +8,7 @@ import FeedbackView from './components/overlay/FeedbackView'
 import { PatientFullscreen } from './components/patient/PatientFullscreen'
 import { DiagramFullscreen } from './components/diagram/DiagramFullscreen'
 import BlockDetailModal from './components/diagram/BlockDetailModal'
+import ModeSelectionModal from './components/ModeSelectionModal'
 import DifficultyModal from './components/DifficultyModal'
 
 function App() {
@@ -59,6 +60,7 @@ function AppContent() {
           )}
         </PanelGroup>
       </div>
+      <ModeSelectionModal />
       <DifficultyModal />
       <BlockDetailModal />
       <PatientFullscreen />
