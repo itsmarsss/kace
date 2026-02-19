@@ -75,6 +75,7 @@ Symptoms:
       title: 'Uncontrolled T2DM presentation',
       body: 'HbA1c 9.1% with classic symptoms (polyuria, polydipsia, fatigue). Clear indication for pharmacotherapy.',
       connects_to: ['d4'],
+      sourceText: "61 years old, newly diagnosed T2DM with HbA1c at 9.1%. That's pretty high, definitely needs treatment. Classic symptoms too - polyuria, polydipsia, fatigue.",
       feedback: {
         isCorrect: true,
         timing: 'correct',
@@ -89,6 +90,7 @@ Symptoms:
       title: 'Metformin - standard first-line',
       body: 'eGFR 52 allows metformin use with dose monitoring. Standard guideline-recommended approach.',
       connects_to: ['d4'],
+      sourceText: "My first thought is metformin - it's the standard first-line for T2DM. Looking at his kidney function... eGFR is 52, that's CKD stage 3a. Metformin is still safe here, would just need to watch the dose.",
       feedback: {
         isCorrect: true,
         timing: 'late',
@@ -105,6 +107,7 @@ Symptoms:
       title: 'HFrEF with recent MI',
       body: 'EF 35% confirms heart failure. NSTEMI 8 months ago with LAD stent. High cardiovascular risk.',
       connects_to: ['d4'],
+      sourceText: "NSTEMI 8 months ago. That's significant. He's got a stent in his LAD, on dual antiplatelet therapy. And his echo shows... EF 35%? That's HFrEF. Heart failure with reduced ejection fraction.",
       feedback: {
         isCorrect: false,
         timing: 'early',
@@ -123,6 +126,7 @@ Symptoms:
       title: 'Cardiac risk supersedes glycemic urgency',
       body: 'HFrEF is the dominant clinical problem. Must prioritize cardiovascular mortality benefit over pure glycemic efficacy.',
       connects_to: ['d5', 'd6'],
+      sourceText: "He doesn't just need glucose control - he needs a medication that will help his heart failure. HFrEF has high mortality risk. The diabetes is important but the cardiac status is what's going to kill him if we don't address it.",
       feedback: {
         isCorrect: true,
         timing: 'correct',
@@ -137,6 +141,7 @@ Symptoms:
       title: 'SGLT2i - proven HFrEF benefit',
       body: 'Empagliflozin has demonstrated mortality reduction in HFrEF (EMPEROR-Reduced). Also provides glycemic control and BP benefits.',
       connects_to: ['d7'],
+      sourceText: "So metformin would control his glucose, sure, but it doesn't have proven mortality benefit in HFrEF. I need to think about SGLT2 inhibitors here. The EMPEROR-Reduced trial showed empagliflozin reduces mortality in HFrEF patients. That's the evidence I need.",
       feedback: {
         isCorrect: true,
         timing: 'correct',
@@ -151,6 +156,7 @@ Symptoms:
       title: 'GLP-1 RA - less compelling in HFrEF',
       body: 'While GLP-1 agonists have cardiovascular benefits, HFrEF mortality data is strongest for SGLT2 inhibitors.',
       connects_to: ['d7'],
+      sourceText: "What about GLP-1 agonists? They have CV benefits too... but the data for HFrEF specifically is strongest with SGLT2 inhibitors. SGLT2i is the class with the mortality benefit in this exact patient population.",
       feedback: {
         isCorrect: true,
         timing: 'correct',
@@ -167,6 +173,7 @@ Symptoms:
       title: 'Empagliflozin as primary agent',
       body: 'Addresses both T2DM and HFrEF with proven mortality reduction. eGFR 52 is safe. Evidence-based choice.',
       connects_to: [],
+      sourceText: "Decision: Empagliflozin. It treats his diabetes AND his heart failure. His eGFR of 52 is safe for SGLT2i. This is the evidence-based choice for a patient with both T2DM and HFrEF.",
       feedback: {
         isCorrect: true,
         timing: 'correct',

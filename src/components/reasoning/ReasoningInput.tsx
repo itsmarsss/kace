@@ -55,10 +55,13 @@ export default function ReasoningInput() {
     if (mode === 'demo') {
       // Show feedback modal with analyzing state in demo
       dispatch({ type: 'SHOW_FEEDBACK_MODAL' })
-      dispatch({ type: 'SET_ANALYZING', payload: true })
+      // Delay analyzing state to ensure modal renders first
       setTimeout(() => {
-        dispatch({ type: 'SET_ANALYZING', payload: false })
-      }, 1200)
+        dispatch({ type: 'SET_ANALYZING', payload: true })
+        setTimeout(() => {
+          dispatch({ type: 'SET_ANALYZING', payload: false })
+        }, 1200)
+      }, 0)
     } else {
       // In live mode, just show the feedback
       dispatch({ type: 'SHOW_FEEDBACK_MODAL' })
