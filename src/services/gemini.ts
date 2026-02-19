@@ -59,14 +59,11 @@ export async function updateDiagramWithGemini(params: {
 }): Promise<{ blocks: DiagramBlock[] }> {
   const client = getClient()
   const model = client.getGenerativeModel({
-    model: 'gemini-3-flash-preview',
+    model: 'gemini-2.5-flash-lite', // Fastest for high-frequency extraction
     generationConfig: {
       temperature: 1.0,
       responseMimeType: 'application/json',
-      responseSchema: blockSchema,
-      thinkingConfig: {
-        thinkingLevel: 'minimal' // Fast for simple summarization
-      }
+      responseSchema: blockSchema
     }
   })
 
