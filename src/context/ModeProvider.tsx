@@ -4,6 +4,8 @@ import { DiagramBlock } from '../services/api'
 
 interface ModeState {
   mode: 'demo' | 'live'
+  difficulty: 'easy' | 'medium' | 'hard' | null
+  showDifficultyModal: boolean
   isPlaying: boolean
   reasoningText: string
   confidence: number
@@ -52,6 +54,8 @@ export const useMode = () => {
 // Session states: 'idle' | 'analyzing' | 'reviewed' | 'expert'
 const initialState: ModeState = {
   mode: 'live', // 'demo' | 'live'
+  difficulty: null, // Show modal on first load
+  showDifficultyModal: true, // Show on first load
   isPlaying: false,
   reasoningText: '',
   confidence: 3,
@@ -79,6 +83,15 @@ function modeReducer(state: ModeState, action: ModeAction): ModeState {
   switch (action.type) {
     case 'SET_MODE':
       return { ...state, mode: action.payload }
+
+    case 'SET_DIFFICULTY':
+      return { ...state, difficulty: action.payload }
+
+    case 'HIDE_DIFFICULTY_MODAL':
+      return { ...state, showDifficultyModal: false }
+
+    case 'SHOW_DIFFICULTY_MODAL':
+      return { ...state, showDifficultyModal: true }
 
     case 'SET_PLAYING':
       return { ...state, isPlaying: action.payload }

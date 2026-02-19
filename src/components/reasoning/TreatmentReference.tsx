@@ -31,10 +31,23 @@ const TREATMENT_CATEGORIES: TreatmentCategory[] = [
 ]
 
 export default function TreatmentReference() {
-  const { selectedDrugs, isSubmitted, dispatch } = useMode()
+  const { selectedDrugs, isSubmitted, difficulty, dispatch } = useMode()
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
+
+  // Filter categories based on difficulty
+  const getAvailableCategories = () => {
+    if (difficulty === 'easy') {
+      return TREATMENT_CATEGORIES.filter((cat) => cat.name === 'Pharmacological')
+    } else if (difficulty === 'medium') {
+      return TREATMENT_CATEGORIES.filter((cat) => cat.name === 'Pharmacological' || cat.name === 'Insulin')
+    }
+    // Hard mode: all categories
+    return TREATMENT_CATEGORIES
+  }
+
+  const availableCategories = getAvailableCategories()
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -51,7 +64,7 @@ export default function TreatmentReference() {
     dispatch({ type: 'TOGGLE_DRUG', payload: treatment })
   }
 
-  const currentCategory = TREATMENT_CATEGORIES.find((cat) => cat.name === selectedCategory)
+  const currentCategory = availableCategories.find((cat) => cat.name === selectedCategory)
 
   return (
     <div className="mb-2.5">
@@ -76,7 +89,7 @@ export default function TreatmentReference() {
           {/* Dropdown menu */}
           {isOpen && (
             <div className="absolute left-0 top-[calc(100%+4px)] z-[100] min-w-[160px] rounded-[var(--r-sm)] border border-[var(--border)] bg-[var(--card)] p-1 shadow-[var(--shadow-md)]">
-              {TREATMENT_CATEGORIES.map((category) => (
+              {availableCategories.map((category) => (
                 <button
                   key={category.name}
                   onClick={() => {
