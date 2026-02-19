@@ -3,7 +3,6 @@ import { X, Workflow, List, RefreshCw, AlertTriangle, CheckCircle } from 'lucide
 import { useMode } from '../../context/ModeProvider'
 import DiagramBlock from '../diagram/DiagramBlock'
 import DiagramFlow from '../diagram/DiagramFlow'
-import CalibrationBars from './CalibrationBars'
 
 export default function FeedbackView() {
   const {
@@ -12,7 +11,6 @@ export default function FeedbackView() {
     overallFeedback,
     score,
     showFeedbackModal,
-    comparisonResult,
     isAnalyzing,
     dispatch,
   } = useMode()
@@ -245,20 +243,6 @@ export default function FeedbackView() {
             </div>
           </div>
         )}
-
-        {/* Insights from comparison */}
-        {comparisonResult?.insights && comparisonResult.insights.length > 0 && (
-          <div className="mx-6 mb-4 space-y-2">
-            {comparisonResult.insights.map((insight, index) => (
-              <div
-                key={index}
-                className="rounded-[var(--r)] border border-l-[3px] border-[var(--teal-border)] border-l-[var(--teal)] bg-[var(--teal-light)] p-3 font-['DM_Sans',sans-serif] text-[13px] leading-[1.7] text-[var(--text-primary)]"
-              >
-                {insight}
-              </div>
-            ))}
-          </div>
-        )}
       </div>
 
       {/* Main content - side by side diagrams */}
@@ -287,16 +271,6 @@ export default function FeedbackView() {
           )}
         </div>
       </div>
-
-      {/* Confidence Calibration at bottom */}
-      {comparisonResult && (
-        <div className="flex-shrink-0 border-t border-[var(--border)] bg-[var(--surface)] px-6 py-4">
-          <div className="mb-3 font-['DM_Sans',sans-serif] text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--text-tertiary)]">
-            Confidence Calibration
-          </div>
-          <CalibrationBars />
-        </div>
-      )}
     </div>
   )
 }

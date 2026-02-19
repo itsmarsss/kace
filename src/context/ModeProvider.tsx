@@ -1,6 +1,5 @@
 import { createContext, useContext, useReducer, useCallback, useRef, Dispatch } from 'react'
 import { james } from '../data/cases/james'
-import { ComparisonResult } from '../utils/compareReasoning'
 import { DiagramBlock } from '../services/api'
 
 interface ModeState {
@@ -24,7 +23,6 @@ interface ModeState {
   showPatientFullscreen: boolean
   showDiagramFullscreen: boolean
   currentSpeechLine: number
-  comparisonResult: ComparisonResult | null
   hoveredBlock: DiagramBlock | null
   selectedBlock: DiagramBlock | null
 }
@@ -73,7 +71,6 @@ const initialState: ModeState = {
   showPatientFullscreen: false,
   showDiagramFullscreen: false,
   currentSpeechLine: 0,
-  comparisonResult: null,
   hoveredBlock: null,
   selectedBlock: null,
 }
@@ -213,17 +210,6 @@ function modeReducer(state: ModeState, action: ModeAction): ModeState {
 
     case 'SET_DIAGRAM_LAYOUT':
       return { ...state, diagramLayout: action.payload }
-
-    case 'SHOW_OVERLAY':
-      return {
-        ...state,
-        showOverlay: true,
-        sessionState: 'expert',
-        comparisonResult: action.payload || null,
-      }
-
-    case 'HIDE_OVERLAY':
-      return { ...state, showOverlay: false, sessionState: 'reviewed' }
 
     case 'TOGGLE_PATIENT_FULLSCREEN':
       return { ...state, showPatientFullscreen: !state.showPatientFullscreen }
