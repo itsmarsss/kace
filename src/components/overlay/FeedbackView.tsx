@@ -1,10 +1,9 @@
 import { useState, useMemo } from 'react'
-import { X, Workflow, List, RefreshCw, AlertTriangle, CheckCircle, XCircle } from 'lucide-react'
+import { X, Workflow, List, RefreshCw, AlertTriangle, CheckCircle } from 'lucide-react'
 import { useMode } from '../../context/ModeProvider'
 import DiagramBlock from '../diagram/DiagramBlock'
 import DiagramFlow from '../diagram/DiagramFlow'
 import CalibrationBars from './CalibrationBars'
-import { compareDiagrams } from '../../utils/diffBlocks'
 
 export default function FeedbackView() {
   const {
@@ -23,43 +22,30 @@ export default function FeedbackView() {
   const [expertLayoutKey, setExpertLayoutKey] = useState(0)
 
   // All hooks must be called before any conditional returns!
-  // Calculate comparison using diffBlocks utility
-  const comparison = useMemo(() => {
-    return compareDiagrams(diagramBlocks, expertBlocks)
-  }, [diagramBlocks, expertBlocks])
+  // Calculate feedback statistics from student blocks
+  const feedbackStats = useMemo(() => {
+    let accurate = 0
+    let needsReview = 0
+    let totalIssues = 0
+    let totalSuggestions = 0
 
-  // Calculate alignment percentage
-  const alignmentPercent = useMemo(() => {
-    const total = diagramBlocks.length + expertBlocks.length
-    if (total === 0) return 0
-    const matches = comparison.match.length
-    // Calculate based on matched blocks vs total unique blocks
-    return Math.round((matches / Math.max(diagramBlocks.length, expertBlocks.length)) * 100)
-  }, [comparison, diagramBlocks.length, expertBlocks.length])
-
-  // Map blocks to include diff state and feedback flags
-  const studentBlocksWithDiff = useMemo(() => {
-    return diagramBlocks.map((block) => {
-      const isMatch = comparison.match.some((m) => m.id === block.id)
-      const isWrong = comparison.wrong.some((w) => w.id === block.id)
-      return {
-        ...block,
-        diffState: isMatch ? 'match' : isWrong ? 'wrong' : null,
-        showFeedback: true, // Student blocks show feedback
+    diagramBlocks.forEach((block) => {
+      if (block.feedback) {
+        if (block.feedback.isCorrect) {
+          accurate++
+        } else {
+          needsReview++
+        }
+        totalIssues += block.feedback.issues?.length || 0
+        totalSuggestions += block.feedback.suggestions?.length || 0
       }
     })
-  }, [diagramBlocks, comparison])
 
-  const expertBlocksWithDiff = useMemo(() => {
-    return expertBlocks.map((block) => {
-      const isMissed = comparison.miss.some((m) => m.id === block.id)
-      return {
-        ...block,
-        diffState: isMissed ? 'miss' : 'match',
-        showFeedback: false, // Expert blocks don't show feedback
-      }
-    })
-  }, [expertBlocks, comparison])
+    return { accurate, needsReview, totalIssues, totalSuggestions }
+  }, [diagramBlocks])
+
+  // Count additional insights from expert blocks
+  const additionalInsights = expertBlocks.length
 
   // Early returns AFTER all hooks
   if (!showFeedbackModal) return null
@@ -103,8 +89,7 @@ export default function FeedbackView() {
     layout: '1d' | '2d',
     setLayout: (layout: '1d' | '2d') => void,
     layoutKey: number,
-    setLayoutKey: (key: number) => void,
-    showFeedback: boolean = false
+    setLayoutKey: (key: number) => void
   ) => {
     const is2D = layout === '2d'
 
@@ -170,13 +155,7 @@ export default function FeedbackView() {
           ) : (
             <div className="flex flex-col gap-4">
               {blocks.map((block, index) => (
-                <DiagramBlock
-                  key={block.id}
-                  block={block}
-                  index={index}
-                  showFeedback={showFeedback}
-                  diffState={block.diffState}
-                />
+                <DiagramBlock key={block.id} block={block} index={index} />
               ))}
             </div>
           )}
@@ -214,16 +193,16 @@ export default function FeedbackView() {
           </button>
         </div>
 
-        {/* Comparison Statistics */}
+        {/* Feedback Statistics */}
         <div className="mx-6 mb-4 flex gap-3">
           <div className="flex flex-1 items-center gap-3 rounded-[var(--r)] border border-[var(--green-border)] bg-[var(--green-light)] p-3">
             <CheckCircle size={18} className="text-[var(--green)]" />
             <div>
               <div className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--green)]">
-                Correct
+                Accurate
               </div>
               <div className="font-['DM_Sans',sans-serif] text-[16px] font-bold text-[var(--text-primary)]">
-                {comparison.match.length}
+                {feedbackStats.accurate}
               </div>
             </div>
           </div>
@@ -231,34 +210,36 @@ export default function FeedbackView() {
             <AlertTriangle size={18} className="text-[var(--amber)]" />
             <div>
               <div className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--amber)]">
-                Missed
+                Needs Review
               </div>
               <div className="font-['DM_Sans',sans-serif] text-[16px] font-bold text-[var(--text-primary)]">
-                {comparison.miss.length}
+                {feedbackStats.needsReview}
               </div>
             </div>
           </div>
-          <div className="flex flex-1 items-center gap-3 rounded-[var(--r)] border border-[var(--crimson-border)] bg-[var(--crimson-light)] p-3">
-            <XCircle size={18} className="text-[var(--crimson)]" />
+          <div className="flex flex-1 items-center gap-3 rounded-[var(--r)] border border-[var(--teal-border)] bg-[var(--teal-light)] p-3">
+            <div className="flex h-[18px] w-[18px] items-center justify-center rounded-full bg-[var(--teal)] text-[10px] font-bold text-white">
+              +
+            </div>
             <div>
-              <div className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--crimson)]">
-                Incorrect
+              <div className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--teal)]">
+                Additional Insights
               </div>
               <div className="font-['DM_Sans',sans-serif] text-[16px] font-bold text-[var(--text-primary)]">
-                {comparison.wrong.length}
+                {additionalInsights}
               </div>
             </div>
           </div>
           <div className="flex flex-1 items-center gap-3 rounded-[var(--r)] border border-[var(--border)] bg-[var(--surface)] p-3">
-            <div className="flex h-[18px] w-[18px] items-center justify-center rounded-full bg-[var(--teal-light)] text-[10px] font-bold text-[var(--teal)]">
-              %
+            <div className="flex h-[18px] w-[18px] items-center justify-center rounded-full bg-[var(--slate-light)] text-[10px] font-bold text-[var(--slate)]">
+              ✓
             </div>
             <div>
               <div className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--text-tertiary)]">
-                Alignment
+                Score
               </div>
               <div className="font-['DM_Sans',sans-serif] text-[16px] font-bold text-[var(--text-primary)]">
-                {alignmentPercent}%
+                {score}/100
               </div>
             </div>
           </div>
@@ -297,12 +278,11 @@ export default function FeedbackView() {
         <div className="flex w-1/2 flex-col border-r border-[var(--border)]">
           {renderDiagramSection(
             'Your Reasoning',
-            studentBlocksWithDiff,
+            diagramBlocks,
             studentLayout,
             setStudentLayout,
             studentLayoutKey,
-            setStudentLayoutKey,
-            true // Show feedback on student blocks
+            setStudentLayoutKey
           )}
         </div>
 
@@ -310,12 +290,11 @@ export default function FeedbackView() {
         <div className="flex w-1/2 flex-col">
           {renderDiagramSection(
             'Ideal Reasoning',
-            expertBlocksWithDiff,
+            expertBlocks,
             expertLayout,
             setExpertLayout,
             expertLayoutKey,
-            setExpertLayoutKey,
-            false // No feedback on expert blocks
+            setExpertLayoutKey
           )}
         </div>
       </div>

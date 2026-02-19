@@ -1,5 +1,6 @@
 import { useMode } from '../../context/ModeProvider'
 import { getBlockStyle } from './blockTypes'
+import BlockFeedback from './BlockFeedback'
 
 export default function BlockDetailModal() {
   const { selectedBlock, diagramBlocks, dispatch } = useMode()
@@ -95,6 +96,13 @@ export default function BlockDetailModal() {
         <div className="mb-4 font-['DM_Sans',sans-serif] text-[14px] font-normal leading-[1.65] text-[var(--text-secondary)]">
           {selectedBlock.body}
         </div>
+
+        {/* Feedback */}
+        {selectedBlock.feedback && (
+          <div className="mb-4">
+            <BlockFeedback feedback={selectedBlock.feedback} />
+          </div>
+        )}
 
         {/* Source text citation */}
         {selectedBlock.sourceText && (
