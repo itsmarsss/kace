@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useState } from 'react'
 import { useMode } from '../../context/ModeProvider'
 
 interface HighlightedTextareaProps {
@@ -7,8 +7,8 @@ interface HighlightedTextareaProps {
   readOnly?: boolean
   placeholder?: string
   className?: string
-  onFocus?: (e: React.FocusEvent<HTMLDivElement>) => void
-  onBlur?: (e: React.FocusEvent<HTMLDivElement>) => void
+  onFocus?: (e: React.FocusEvent<HTMLTextAreaElement>) => void
+  onBlur?: (e: React.FocusEvent<HTMLTextAreaElement>) => void
 }
 
 export default function HighlightedTextarea({
@@ -21,35 +21,21 @@ export default function HighlightedTextarea({
   onBlur,
 }: HighlightedTextareaProps) {
   const { hoveredBlock } = useMode()
-  const editorRef = useRef<HTMLDivElement>(null)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const backdropRef = useRef<HTMLDivElement>(null)
 
-  // Update contenteditable when value changes externally
-  useEffect(() => {
-    if (editorRef.current && editorRef.current.innerText !== value) {
-      const selection = window.getSelection()
-      const range = selection?.rangeCount ? selection.getRangeAt(0) : null
-      const start = range?.startOffset || 0
-
-      editorRef.current.innerText = value
-
-      // Restore cursor position
-      if (range && editorRef.current.firstChild) {
-        try {
-          range.setStart(editorRef.current.firstChild, Math.min(start, value.length))
-          range.collapse(true)
-          selection?.removeAllRanges()
-          selection?.addRange(range)
-        } catch (e) {
-          // Ignore if cursor restoration fails
-        }
-      }
+  // Sync scroll between textarea and backdrop
+  const handleScroll = () => {
+    if (textareaRef.current && backdropRef.current) {
+      backdropRef.current.scrollTop = textareaRef.current.scrollTop
+      backdropRef.current.scrollLeft = textareaRef.current.scrollLeft
     }
-  }, [value])
+  }
 
   // Scroll to highlighted text when hovering over a block
   useEffect(() => {
-    if (hoveredBlock && editorRef.current && hoveredBlock.sourceStart !== undefined) {
-      const editor = editorRef.current
+    if (hoveredBlock && textareaRef.current && hoveredBlock.sourceStart !== undefined) {
+      const textarea = textareaRef.current
       const start = hoveredBlock.sourceStart
 
       // Calculate approximate line position
@@ -59,83 +45,110 @@ export default function HighlightedTextarea({
       const targetScroll = (lines - 3) * lineHeight // Scroll to show context above
 
       // Smooth scroll to the target position
-      editor.scrollTop = Math.max(0, targetScroll)
+      textarea.scrollTop = Math.max(0, targetScroll)
     }
   }, [hoveredBlock, value])
 
-  const handleInput = (e: React.FormEvent<HTMLDivElement>) => {
-    const newValue = e.currentTarget.innerText
-    onChange(newValue)
+  const getHighlightColor = (type: string) => {
+    switch (type) {
+      case 'OBSERVATION':
+        return 'var(--teal-light)'
+      case 'INTERPRETATION':
+        return 'var(--slate-light)'
+      case 'CONSIDERATION':
+        return 'var(--amber-light)'
+      case 'CONTRAINDICATION':
+        return 'var(--crimson-light)'
+      case 'DECISION':
+        return 'var(--green-light)'
+      default:
+        return 'transparent'
+    }
   }
 
-  const renderContent = () => {
+  const renderBackdrop = () => {
+    // If no highlight, return empty backdrop with proper spacing
     if (
       !hoveredBlock ||
       hoveredBlock.sourceStart === undefined ||
       hoveredBlock.sourceEnd === undefined ||
       !value
     ) {
-      return value || ''
+      return null
     }
 
-    // Get highlight color based on block type
-    const highlightColor =
-      hoveredBlock.type === 'OBSERVATION'
-        ? 'var(--teal-light)'
-        : hoveredBlock.type === 'INTERPRETATION'
-          ? 'var(--slate-light)'
-          : hoveredBlock.type === 'CONSIDERATION'
-            ? 'var(--amber-light)'
-            : hoveredBlock.type === 'CONTRAINDICATION'
-              ? 'var(--crimson-light)'
-              : 'var(--green-light)' // DECISION
+    const { sourceStart, sourceEnd, type } = hoveredBlock
+    const highlightColor = getHighlightColor(type)
 
-    const { sourceStart, sourceEnd } = hoveredBlock
+    // Split text into parts
     const before = value.substring(0, sourceStart)
     const highlighted = value.substring(sourceStart, sourceEnd)
     const after = value.substring(sourceEnd)
 
     return (
       <>
-        {before}
+        <span style={{ opacity: 0 }}>{before}</span>
         <mark
           style={{
             backgroundColor: highlightColor,
-            color: 'inherit',
+            color: 'transparent',
+            margin: 0,
             padding: 0,
-            borderRadius: '2px',
+            border: 'none',
           }}
         >
           {highlighted}
         </mark>
-        {after}
+        <span style={{ opacity: 0 }}>{after}</span>
       </>
     )
   }
 
   return (
-    <div
-      ref={editorRef}
-      contentEditable={!readOnly}
-      onInput={handleInput}
-      onFocus={onFocus}
-      onBlur={onBlur}
-      className={`hide-scrollbar relative h-full w-full resize-none overflow-auto font-['DM_Sans',sans-serif] ${className}`}
-      style={{
-        color: 'var(--text-primary)',
-        padding: '13px 16px',
-        fontSize: '14px',
-        lineHeight: '1.7',
-        borderRadius: 'var(--r)',
-        whiteSpace: 'pre-wrap',
-        wordWrap: 'break-word',
-        overflowWrap: 'break-word',
-        outline: 'none',
-      }}
-      suppressContentEditableWarning
-      data-placeholder={!value ? placeholder : undefined}
-    >
-      {renderContent()}
+    <div className="relative h-full w-full">
+      {/* Backdrop with highlights */}
+      <div
+        ref={backdropRef}
+        className="absolute inset-0 overflow-hidden font-['DM_Sans',sans-serif]"
+        style={{
+          pointerEvents: 'none',
+          whiteSpace: 'pre-wrap',
+          wordBreak: 'break-word',
+          overflowWrap: 'break-word',
+          padding: '13px 16px',
+          fontSize: '14px',
+          lineHeight: '1.7',
+          borderRadius: 'var(--r)',
+          border: '1px solid transparent', // Match textarea border
+        }}
+        aria-hidden="true"
+      >
+        {renderBackdrop()}
+      </div>
+
+      {/* Textarea */}
+      <textarea
+        ref={textareaRef}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        onScroll={handleScroll}
+        readOnly={readOnly}
+        placeholder={placeholder}
+        className={`hide-scrollbar relative h-full w-full resize-none bg-transparent font-['DM_Sans',sans-serif] ${className}`}
+        onFocus={onFocus}
+        onBlur={onBlur}
+        style={{
+          color: 'var(--text-primary)',
+          zIndex: 1,
+          padding: '13px 16px',
+          fontSize: '14px',
+          lineHeight: '1.7',
+          borderRadius: 'var(--r)',
+          whiteSpace: 'pre-wrap',
+          wordBreak: 'break-word',
+          overflowWrap: 'break-word',
+        }}
+      />
     </div>
   )
 }
