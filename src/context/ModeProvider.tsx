@@ -187,9 +187,8 @@ function modeReducer(state: ModeState, action: ModeAction): ModeState {
         overallFeedback: action.payload.overallFeedback || '',
         score: action.payload.score || 0,
         diagramOpen: true,
-        // Show feedback modal when we have feedback (both demo and live)
-        showFeedbackModal:
-          action.payload.overallFeedback || action.payload.score > 0 || action.payload.expertBlocks?.length > 0,
+        // Don't auto-show feedback modal - user can click "View Analysis" button
+        showFeedbackModal: false,
       }
 
     case 'ADD_DIAGRAM_BLOCK':

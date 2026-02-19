@@ -91,8 +91,8 @@ export default function DiagramPanel() {
           </button>
         )}
 
-        {/* Student/Expert toggle (live mode only, when expert blocks exist) */}
-        {mode === 'live' && hasExpertDiagram && (
+        {/* Student/Expert toggle (when expert blocks exist) */}
+        {hasExpertDiagram && (
           <button
             onClick={handleToggleDiagram}
             className={`flex h-7 cursor-pointer items-center gap-1 rounded-[var(--r-sm)] border px-2 py-1 font-['DM_Sans',sans-serif] text-[10px] font-medium transition-all duration-150 ${
@@ -133,7 +133,7 @@ export default function DiagramPanel() {
                 key={block.id}
                 block={block}
                 index={index}
-                showFeedback={!showExpertDiagram && mode === 'live'}
+                showFeedback={!showExpertDiagram}
               />
             ))}
           </div>
