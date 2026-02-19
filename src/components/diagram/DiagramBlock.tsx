@@ -1,4 +1,5 @@
 import { forwardRef } from 'react'
+import { CheckCircle, AlertCircle, Clock, AlertTriangle } from 'lucide-react'
 import { getBlockStyle, getBlockTypeClass } from './blockTypes'
 import { useMode } from '../../context/ModeProvider'
 import BlockFeedback from './BlockFeedback'
@@ -43,12 +44,52 @@ const DiagramBlock = forwardRef<HTMLDivElement, DiagramBlockProps>(
     return (
       <div
         ref={ref}
-        className={`diagram-block ${typeClass} ${diffState ? `block--${diffState}` : ''} cursor-pointer transition-shadow hover:shadow-[var(--shadow-md)]`}
+        className={`diagram-block ${typeClass} ${diffState ? `block--${diffState}` : ''} relative cursor-pointer transition-shadow hover:shadow-[var(--shadow-md)]`}
         style={{ animationDelay: `${index * 150}ms` }}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         onDoubleClick={handleDoubleClick}
       >
+        {/* Feedback indicators in top right */}
+        {block.feedback && (
+          <div className="absolute right-2 top-2 flex gap-1">
+            {/* Correctness indicator */}
+            {block.feedback.isCorrect ? (
+              <span title="Correct">
+                <CheckCircle size={14} className="text-[var(--green)]" />
+              </span>
+            ) : (
+              <span title="Needs review">
+                <AlertCircle size={14} className="text-[var(--crimson)]" />
+              </span>
+            )}
+
+            {/* Timing indicator */}
+            {block.feedback.timing === 'early' && (
+              <span title="Should be later in reasoning">
+                <Clock size={14} className="text-[var(--crimson)]" />
+              </span>
+            )}
+            {block.feedback.timing === 'late' && (
+              <span title="Should be earlier in reasoning">
+                <Clock size={14} className="text-[var(--amber)]" />
+              </span>
+            )}
+
+            {/* Necessity indicator */}
+            {block.feedback.necessity === 'unnecessary' && (
+              <span title="Unnecessary block">
+                <AlertTriangle size={14} className="text-[var(--amber)]" />
+              </span>
+            )}
+            {block.feedback.necessity === 'missing' && (
+              <span title="Missing information">
+                <AlertTriangle size={14} className="text-[var(--crimson)]" />
+              </span>
+            )}
+          </div>
+        )}
+
         {/* Type label */}
         <div
           className={`block-type-label mb-1 font-['DM_Sans',sans-serif] text-[9px] font-semibold uppercase tracking-[0.12em] ${colorClass}`}

@@ -91,10 +91,12 @@ Symptoms:
       connects_to: ['d4'],
       feedback: {
         isCorrect: true,
-        timing: 'correct',
+        timing: 'late',
         necessity: 'necessary',
         issues: [],
-        suggestions: ['Good to consider first-line, but need to evaluate if this is the best choice given comorbidities'],
+        suggestions: [
+          'This consideration came too early. Should first fully assess cardiac status before jumping to diabetes medications.',
+        ],
       },
     },
     {
@@ -104,11 +106,15 @@ Symptoms:
       body: 'EF 35% confirms heart failure. NSTEMI 8 months ago with LAD stent. High cardiovascular risk.',
       connects_to: ['d4'],
       feedback: {
-        isCorrect: true,
-        timing: 'correct',
+        isCorrect: false,
+        timing: 'early',
         necessity: 'necessary',
-        issues: [],
-        suggestions: [],
+        issues: [
+          'Should have been identified earlier - cardiac history should be reviewed before considering medications',
+        ],
+        suggestions: [
+          'Always review complete medical history, especially cardiac, before drug selection',
+        ],
       },
     },
     {
@@ -148,9 +154,11 @@ Symptoms:
       feedback: {
         isCorrect: true,
         timing: 'correct',
-        necessity: 'necessary',
+        necessity: 'unnecessary',
         issues: [],
-        suggestions: ['Could strengthen by citing specific trial comparisons'],
+        suggestions: [
+          'While not incorrect, this block adds minimal value since SGLT2i is clearly indicated. Focus on justifying the chosen medication rather than ruling out alternatives.',
+        ],
       },
     },
     {
@@ -223,19 +231,23 @@ Symptoms:
   ],
 
   // Overall feedback for the analysis
-  overallFeedback: `Excellent clinical reasoning. You correctly identified HFrEF as the dominant clinical problem and prioritized cardiovascular mortality benefit over pure glycemic control. Your systematic approach of first considering metformin (standard first-line), then recognizing the cardiac history, and pivoting to SGLT2i based on EMPEROR-Reduced trial data demonstrates strong evidence-based decision making.
+  overallFeedback: `Good clinical reasoning with several areas for improvement. You correctly identified HFrEF as the dominant clinical problem and arrived at the right medication choice (empagliflozin). However, your reasoning process had some timing and sequencing issues.
 
 Key strengths:
-- Recognized the significance of HFrEF (EF 35%) and recent MI
-- Understood that cardiac risk supersedes glycemic urgency
-- Correctly applied SGLT2i trial data (EMPEROR-Reduced) to this clinical scenario
-- Appropriately ruled out alternatives with clear reasoning
+- Correctly prioritized cardiac risk over glycemic control
+- Arrived at evidence-based SGLT2i choice with appropriate trial citation (EMPEROR-Reduced)
+- Good final decision-making with clear justification
 
-Minor suggestions:
-- Could have explicitly mentioned monitoring for euglycemic DKA with SGLT2i
-- Consider mentioning the role of metformin as potential add-on therapy`,
+Areas for improvement:
+- **Timing**: Cardiac history should be reviewed FIRST before jumping to medication considerations. You considered metformin too early without fully assessing the patient's cardiac status.
+- **Sequencing**: The HFrEF observation came late - this critical information should drive your entire approach from the start.
+- **Efficiency**: Some blocks (like ruling out GLP-1 agonists) were unnecessary given the clear SGLT2i indication.
 
-  score: 94,
+Next steps:
+- Practice the systematic approach: complete history review → identify primary problem → consider medications
+- Focus on critical information first (HFrEF, post-MI) before diving into treatment options`,
+
+  score: 78,
 
   // Expert insight for overlay footer
   expertInsight:
