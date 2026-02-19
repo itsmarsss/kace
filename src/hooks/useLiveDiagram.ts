@@ -11,7 +11,7 @@ interface DiagramSnapshot {
 
 /**
  * Hook for live diagram generation as user types
- * Captures snapshots every 10-15 seconds and sends to Claude API
+ * Intelligently triggers based on content changes and natural breakpoints
  * Only active in live mode before submission
  */
 export function useLiveDiagram() {
@@ -35,12 +35,22 @@ export function useLiveDiagram() {
       if (isGeneratingRef.current) return
 
       const previousSnapshot = lastSnapshotRef.current
-      const hasChanges =
-        !previousSnapshot ||
-        previousSnapshot.text !== snapshot.text ||
-        previousSnapshot.drugs.join(',') !== snapshot.drugs.join(',')
+      const previousText = previousSnapshot?.text || ''
+      const newText = snapshot.text
 
-      if (!hasChanges || !snapshot.text.trim()) return
+      // Check if there are meaningful changes
+      const textDiff = newText.length - previousText.length
+      const hasSignificantTextChange = Math.abs(textDiff) >= 100 // At least 100 chars changed
+      const hasDrugChange =
+        previousSnapshot && previousSnapshot.drugs.join(',') !== snapshot.drugs.join(',')
+
+      // Only generate if we have significant changes
+      if (!hasSignificantTextChange && !hasDrugChange) {
+        console.log('[Live Diagram] Skipping - insufficient changes:', { textDiff })
+        return
+      }
+
+      if (!snapshot.text.trim()) return
 
       isGeneratingRef.current = true
 
@@ -90,11 +100,19 @@ export function useLiveDiagram() {
     }
 
     // Don't generate if text is empty or too short
-    if (!reasoningText.trim() || reasoningText.length < 50) {
+    if (!reasoningText.trim() || reasoningText.length < 100) {
       return
     }
 
-    // Schedule snapshot after 12 seconds of inactivity
+    // Detect if user finished a natural thought (paragraph or sentence)
+    const endsWithParagraph = /\n\n\s*$/.test(reasoningText)
+    const endsWithSentence = /[.!?]\s*$/.test(reasoningText)
+    const hasNaturalBreak = endsWithParagraph || endsWithSentence
+
+    // Use shorter delay if at natural break, longer otherwise
+    const delay = hasNaturalBreak ? 8000 : 15000 // 8s or 15s
+
+    // Schedule snapshot after period of inactivity
     timeoutRef.current = setTimeout(() => {
       const snapshot: DiagramSnapshot = {
         text: reasoningText,
@@ -104,7 +122,7 @@ export function useLiveDiagram() {
       }
 
       generateDiagram(snapshot)
-    }, 12000) // 12 seconds
+    }, delay)
 
     return () => {
       if (timeoutRef.current) {
@@ -121,6 +139,24 @@ export function useLiveDiagram() {
       }
     }
   }, [])
+
+  // Manual trigger function
+  const triggerNow = useCallback(() => {
+    if (mode !== 'live' || isSubmitted || !reasoningText.trim()) {
+      return
+    }
+
+    const snapshot: DiagramSnapshot = {
+      text: reasoningText,
+      drugs: selectedDrugs,
+      confidence,
+      timestamp: Date.now(),
+    }
+
+    generateDiagram(snapshot)
+  }, [mode, isSubmitted, reasoningText, selectedDrugs, confidence, generateDiagram])
+
+  return { triggerNow, isGenerating: isGeneratingRef.current }
 }
 
 /**

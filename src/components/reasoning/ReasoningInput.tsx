@@ -8,11 +8,9 @@ import TreatmentReference from './TreatmentReference'
 export default function ReasoningInput() {
   const { reasoningText, selectedDrugs, isSubmitted, isAnalyzing, mode, dispatch } = useMode()
   const { submitReasoning } = useAnalysis()
+  const { triggerNow, isGenerating } = useLiveDiagram()
 
   const textareaRef = useRef<HTMLTextAreaElement>(null)
-
-  // Enable live diagram generation in live mode (before submission)
-  useLiveDiagram()
 
   // Auto-resize textarea - disabled since we want it to fill container
   // useEffect(() => {
@@ -97,21 +95,40 @@ export default function ReasoningInput() {
         />
       </div>
 
-      {/* Confidence Slider + Submit Button */}
+      {/* Confidence Slider + Buttons */}
       <div className="flex flex-shrink-0 items-center justify-between gap-4 px-5 pb-5">
         <ConfidenceSlider disabled={isSubmitted} />
 
-        <button
-          onClick={handleSubmit}
-          disabled={isSubmitted || selectedDrugs.length === 0 || !reasoningText.trim()}
-          className={`min-w-[180px] rounded-[var(--r-sm)] border-none px-5 py-[10px] font-['DM_Sans',sans-serif] text-[13px] font-semibold transition-all duration-150 ${
-            isSubmitted || selectedDrugs.length === 0 || !reasoningText.trim()
-              ? 'cursor-not-allowed bg-[var(--muted-bg)] text-[var(--text-tertiary)] shadow-none'
-              : 'cursor-pointer bg-[var(--teal)] text-white shadow-[var(--shadow-md)] hover:-translate-y-px hover:bg-[var(--teal-dark)]'
-          }`}
-        >
-          Analyze Reasoning →
-        </button>
+        <div className="flex gap-2">
+          {/* Manual diagram update button (live mode only) */}
+          {mode === 'live' && !isSubmitted && (
+            <button
+              onClick={triggerNow}
+              disabled={isGenerating || reasoningText.length < 100}
+              className={`rounded-[var(--r-sm)] border border-[var(--border-md)] bg-transparent px-4 py-[10px] font-['DM_Sans',sans-serif] text-[13px] font-semibold transition-all duration-150 ${
+                isGenerating || reasoningText.length < 100
+                  ? 'cursor-not-allowed text-[var(--text-tertiary)]'
+                  : 'cursor-pointer text-[var(--teal)] hover:bg-[var(--teal-light)]'
+              }`}
+              title="Manually update diagram (or wait for auto-update)"
+            >
+              {isGenerating ? 'Updating...' : 'Update Diagram'}
+            </button>
+          )}
+
+          {/* Submit button */}
+          <button
+            onClick={handleSubmit}
+            disabled={isSubmitted || selectedDrugs.length === 0 || !reasoningText.trim()}
+            className={`min-w-[180px] rounded-[var(--r-sm)] border-none px-5 py-[10px] font-['DM_Sans',sans-serif] text-[13px] font-semibold transition-all duration-150 ${
+              isSubmitted || selectedDrugs.length === 0 || !reasoningText.trim()
+                ? 'cursor-not-allowed bg-[var(--muted-bg)] text-[var(--text-tertiary)] shadow-none'
+                : 'cursor-pointer bg-[var(--teal)] text-white shadow-[var(--shadow-md)] hover:-translate-y-px hover:bg-[var(--teal-dark)]'
+            }`}
+          >
+            Analyze Reasoning →
+          </button>
+        </div>
       </div>
     </div>
   )
