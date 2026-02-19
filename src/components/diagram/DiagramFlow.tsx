@@ -11,6 +11,7 @@ import {
   MarkerType,
   Handle,
   Position,
+  useReactFlow,
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 import { getBlockStyle } from './blockTypes'
@@ -101,9 +102,11 @@ interface DiagramFlowProps {
   blocks: any[]
 }
 
-export default function DiagramFlow({ blocks }: DiagramFlowProps) {
+// Inner component that has access to ReactFlow context
+function FlowContent({ blocks }: DiagramFlowProps) {
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([])
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([])
+  const { fitView } = useReactFlow()
 
   // Convert blocks to React Flow nodes and edges
   useEffect(() => {
@@ -210,16 +213,31 @@ export default function DiagramFlow({ blocks }: DiagramFlowProps) {
     setEdges(flowEdges)
   }, [blocks, setNodes, setEdges])
 
+  // Auto-fit view whenever nodes/edges change
+  useEffect(() => {
+    if (nodes.length > 0) {
+      // Small delay to ensure nodes are rendered before fitting
+      const timer = setTimeout(() => {
+        fitView({ padding: 0.2, duration: 400 })
+      }, 100)
+      return () => clearTimeout(timer)
+    }
+  }, [nodes, edges, fitView])
+
+  return (
+    <>
+      <Background color="#e5e5e5" gap={16} />
+      <Controls />
+    </>
+  )
+}
+
+// Outer wrapper component
+export default function DiagramFlow({ blocks }: DiagramFlowProps) {
   return (
     <div className="h-full w-full">
       <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
         nodeTypes={nodeTypes}
-        fitView
-        fitViewOptions={{ padding: 0.2 }}
         minZoom={0.2}
         maxZoom={1.5}
         defaultViewport={{ x: 0, y: 0, zoom: 0.8 }}
@@ -231,8 +249,7 @@ export default function DiagramFlow({ blocks }: DiagramFlowProps) {
         elevateEdgesOnSelect={false}
         proOptions={{ hideAttribution: true }}
       >
-        <Background color="#e5e5e5" gap={16} />
-        <Controls />
+        <FlowContent blocks={blocks} />
       </ReactFlow>
     </div>
   )
