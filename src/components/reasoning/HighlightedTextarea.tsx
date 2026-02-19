@@ -88,9 +88,10 @@ export default function HighlightedTextarea({
       {/* Background layer with highlighted text */}
       <div
         ref={highlightRef}
-        className="absolute inset-0 overflow-hidden whitespace-pre-wrap break-words font-['DM_Sans',sans-serif]"
+        className="absolute inset-0 overflow-hidden font-['DM_Sans',sans-serif]"
         style={{
           pointerEvents: 'none',
+          whiteSpace: 'pre-wrap',
           wordWrap: 'break-word',
           overflowWrap: 'break-word',
           scrollbarWidth: 'none',
@@ -123,6 +124,9 @@ export default function HighlightedTextarea({
           fontSize: '14px',
           lineHeight: '1.7',
           borderRadius: 'var(--r)',
+          whiteSpace: 'pre-wrap',
+          wordWrap: 'break-word',
+          overflowWrap: 'break-word',
         }}
       />
     </div>
