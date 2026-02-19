@@ -135,9 +135,12 @@ function modeReducer(state: ModeState, action: ModeAction): ModeState {
       if (action.payload.studentBlocks && state.mode === 'live') {
         // In live mode, merge feedback from Claude's response into existing blocks
         updatedDiagramBlocks = state.diagramBlocks.map((block) => {
-          // Find matching block in Claude's response by ID or title
+          // Find matching block in Claude's response by ID, title, or sourceText
           const feedbackBlock = action.payload.studentBlocks.find(
-            (fb: any) => fb.id === block.id || fb.title === block.title
+            (fb: any) =>
+              fb.id === block.id ||
+              fb.title === block.title ||
+              (fb.sourceText && block.sourceText && fb.sourceText.trim() === block.sourceText.trim())
           )
           if (feedbackBlock?.feedback) {
             // Merge feedback into existing block, preserving all original properties

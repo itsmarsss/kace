@@ -94,7 +94,7 @@ export default function FeedbackView() {
     const is2D = layout === '2d'
 
     return (
-      <div className="flex h-full flex-1 flex-col overflow-hidden">
+      <div className="flex min-h-screen flex-1 flex-col">
         {/* Section header */}
         <div className="flex items-center justify-between gap-3 border-b border-[var(--border)] px-4 py-3">
           <div>
@@ -145,7 +145,7 @@ export default function FeedbackView() {
         </div>
 
         {/* Diagram area */}
-        <div className={`relative flex-1 ${is2D ? 'h-full overflow-hidden' : 'overflow-y-auto overflow-x-hidden p-4'}`}>
+        <div className={`relative flex-1 ${is2D ? 'min-h-[600px]' : 'p-4'}`}>
           {blocks.length === 0 ? (
             <div className="flex h-full items-center justify-center p-5 text-center font-['DM_Sans',sans-serif] text-[13px] text-[var(--text-tertiary)]">
               No blocks to display
@@ -165,9 +165,9 @@ export default function FeedbackView() {
   }
 
   return (
-    <div className="flex h-full w-full flex-col overflow-hidden bg-[var(--surface)]">
+    <div className="flex h-full w-full flex-col overflow-y-auto bg-[var(--surface)]">
       {/* Top bar with overall feedback */}
-      <div className="flex max-h-[40%] flex-col overflow-y-auto border-b border-[var(--border)] bg-[var(--surface)] flex-shrink-0">
+      <div className="flex flex-col border-b border-[var(--border)] bg-[var(--surface)] flex-shrink-0">
         {/* Header row */}
         <div className="flex items-center justify-between px-6 py-4">
           <div className="flex items-center gap-4">
@@ -273,9 +273,9 @@ export default function FeedbackView() {
       </div>
 
       {/* Main content - side by side diagrams */}
-      <div className="flex min-h-0 flex-1 overflow-hidden">
+      <div className="flex min-h-screen flex-1">
         {/* Student's reasoning */}
-        <div className="flex h-full w-1/2 flex-col border-r border-[var(--border)]">
+        <div className="flex w-1/2 flex-col border-r border-[var(--border)]">
           {renderDiagramSection(
             'Your Reasoning',
             diagramBlocks,
@@ -287,7 +287,7 @@ export default function FeedbackView() {
         </div>
 
         {/* Ideal reasoning */}
-        <div className="flex h-full w-1/2 flex-col">
+        <div className="flex w-1/2 flex-col">
           {renderDiagramSection(
             'Ideal Reasoning',
             expertBlocks,
