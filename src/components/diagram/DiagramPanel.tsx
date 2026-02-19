@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { X, Workflow, List, RefreshCw } from 'lucide-react'
+import { Workflow, List, RefreshCw } from 'lucide-react'
 import { useMode } from '../../context/ModeProvider'
 import DiagramBlock from './DiagramBlock'
 import DiagramFlow from './DiagramFlow'
@@ -104,13 +104,6 @@ export default function DiagramPanel() {
         )}
 
         <DiagramFullscreenButton />
-
-        <button
-          onClick={() => dispatch({ type: 'TOGGLE_DIAGRAM' })}
-          className="flex h-5 w-5 cursor-pointer items-center justify-center rounded-[var(--r-xs)] border-none bg-transparent text-[var(--text-tertiary)] transition-all duration-150 hover:bg-[var(--card-hover)] hover:text-[var(--text-primary)]"
-        >
-          <X size={14} />
-        </button>
       </div>
 
       {/* Diagram scroll area */}
