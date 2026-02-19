@@ -53,11 +53,11 @@ export default function ReasoningInput() {
 
   const handleViewAnalysis = () => {
     if (mode === 'demo') {
-      // Simulate brief analyzing state in demo
+      // Show feedback modal with analyzing state in demo
+      dispatch({ type: 'SHOW_FEEDBACK_MODAL' })
       dispatch({ type: 'SET_ANALYZING', payload: true })
       setTimeout(() => {
         dispatch({ type: 'SET_ANALYZING', payload: false })
-        dispatch({ type: 'SHOW_FEEDBACK_MODAL' })
       }, 1200)
     } else {
       // In live mode, just show the feedback
