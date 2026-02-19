@@ -65,7 +65,7 @@ export default function HighlightedTextarea({
     return (
       <>
         <span>{before}</span>
-        <mark className="bg-[var(--teal-light)]">{highlighted}</mark>
+        <mark style={{ backgroundColor: 'var(--teal-light)', color: 'transparent' }}>{highlighted}</mark>
         <span>{after}&nbsp;</span>
       </>
     )
