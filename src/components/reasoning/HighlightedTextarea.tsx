@@ -32,20 +32,20 @@ export default function HighlightedTextarea({
     }
   }
 
-  const getHighlightColor = (type: string) => {
+  const getHighlightClass = (type: string) => {
     switch (type) {
       case 'OBSERVATION':
-        return 'var(--teal-light)'
+        return 'bg-[var(--teal-light)]'
       case 'INTERPRETATION':
-        return 'var(--slate-light)'
+        return 'bg-[var(--slate-light)]'
       case 'CONSIDERATION':
-        return 'var(--amber-light)'
+        return 'bg-[var(--amber-light)]'
       case 'CONTRAINDICATION':
-        return 'var(--crimson-light)'
+        return 'bg-[var(--crimson-light)]'
       case 'DECISION':
-        return 'var(--green-light)'
+        return 'bg-[var(--green-light)]'
       default:
-        return 'transparent'
+        return 'bg-transparent'
     }
   }
 
@@ -135,7 +135,7 @@ export default function HighlightedTextarea({
     }
 
     const { sourceText, type } = hoveredBlock
-    const highlightColor = getHighlightColor(type)
+    const highlightClass = getHighlightClass(type)
 
     // Find the text position using fuzzy matching
     const position = findTextPosition(sourceText, value)
@@ -154,19 +154,9 @@ export default function HighlightedTextarea({
 
     return (
       <>
-        <span style={{ opacity: 0 }}>{before}</span>
-        <mark
-          style={{
-            backgroundColor: highlightColor,
-            color: 'transparent',
-            margin: 0,
-            padding: 0,
-            border: 'none',
-          }}
-        >
-          {highlighted}
-        </mark>
-        <span style={{ opacity: 0 }}>{after}</span>
+        <span className="opacity-0">{before}</span>
+        <mark className={`m-0 border-0 p-0 text-transparent ${highlightClass}`}>{highlighted}</mark>
+        <span className="opacity-0">{after}</span>
       </>
     )
   }
@@ -176,18 +166,7 @@ export default function HighlightedTextarea({
       {/* Backdrop with highlights */}
       <div
         ref={backdropRef}
-        className="absolute inset-0 overflow-hidden font-['DM_Sans',sans-serif]"
-        style={{
-          pointerEvents: 'none',
-          whiteSpace: 'pre-wrap',
-          wordBreak: 'break-word',
-          overflowWrap: 'break-word',
-          padding: '13px 16px',
-          fontSize: '14px',
-          lineHeight: '1.7',
-          borderRadius: 'var(--r)',
-          border: '1px solid transparent', // Match textarea border
-        }}
+        className="absolute inset-0 overflow-hidden whitespace-pre-wrap break-words rounded-[var(--r)] border border-transparent p-[13px_16px] font-['DM_Sans',sans-serif] text-[14px] leading-[1.7] pointer-events-none"
         aria-hidden="true"
       >
         {renderBackdrop()}
@@ -201,20 +180,9 @@ export default function HighlightedTextarea({
         onScroll={handleScroll}
         readOnly={readOnly}
         placeholder={placeholder}
-        className={`hide-scrollbar relative h-full w-full resize-none bg-transparent font-['DM_Sans',sans-serif] ${className}`}
+        className={`hide-scrollbar relative z-[1] h-full w-full resize-none whitespace-pre-wrap break-words rounded-[var(--r)] bg-transparent p-[13px_16px] font-['DM_Sans',sans-serif] text-[14px] leading-[1.7] text-[var(--text-primary)] ${className}`}
         onFocus={onFocus}
         onBlur={onBlur}
-        style={{
-          color: 'var(--text-primary)',
-          zIndex: 1,
-          padding: '13px 16px',
-          fontSize: '14px',
-          lineHeight: '1.7',
-          borderRadius: 'var(--r)',
-          whiteSpace: 'pre-wrap',
-          wordBreak: 'break-word',
-          overflowWrap: 'break-word',
-        }}
       />
     </div>
   )
