@@ -164,10 +164,7 @@ export default function BlockDetailModal() {
                   <button
                     key={block.id}
                     onClick={() => dispatch({ type: 'SET_SELECTED_BLOCK', payload: block })}
-                    className={`w-full cursor-pointer rounded-[var(--r-sm)] border p-[8px_12px] text-left transition-all duration-150 ${blockBgClass} ${blockBorderClass}`}
-                    style={{ boxShadow: 'var(--shadow-sm)' }}
-                    onMouseEnter={(e) => (e.currentTarget.style.boxShadow = 'var(--shadow-md)')}
-                    onMouseLeave={(e) => (e.currentTarget.style.boxShadow = 'var(--shadow-sm)')}
+                    className={`w-full cursor-pointer rounded-[var(--r-sm)] border p-[8px_12px] text-left shadow-sm transition-all duration-150 hover:shadow-md ${blockBgClass} ${blockBorderClass}`}
                   >
                     <div className={`mb-1 font-['DM_Sans',sans-serif] text-[9px] font-semibold uppercase tracking-[0.12em] ${blockColorClass}`}>
                       {blockStyle.label}
@@ -233,10 +230,7 @@ export default function BlockDetailModal() {
                   <button
                     key={id}
                     onClick={() => dispatch({ type: 'SET_SELECTED_BLOCK', payload: connectedBlock })}
-                    className={`w-full cursor-pointer rounded-[var(--r-sm)] border p-[8px_12px] text-left transition-all duration-150 ${connectedBgClass} ${connectedBorderClass}`}
-                    style={{ boxShadow: 'var(--shadow-sm)' }}
-                    onMouseEnter={(e) => (e.currentTarget.style.boxShadow = 'var(--shadow-md)')}
-                    onMouseLeave={(e) => (e.currentTarget.style.boxShadow = 'var(--shadow-sm)')}
+                    className={`w-full cursor-pointer rounded-[var(--r-sm)] border p-[8px_12px] text-left shadow-sm transition-all duration-150 hover:shadow-md ${connectedBgClass} ${connectedBorderClass}`}
                   >
                     <div className={`mb-1 font-['DM_Sans',sans-serif] text-[9px] font-semibold uppercase tracking-[0.12em] ${connectedColorClass}`}>
                       {connectedStyle.label}

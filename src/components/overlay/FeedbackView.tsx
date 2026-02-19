@@ -145,7 +145,7 @@ export default function FeedbackView() {
         </div>
 
         {/* Diagram area */}
-        <div className={`relative flex-1 overflow-hidden ${is2D ? '' : 'overflow-y-auto p-4'}`}>
+        <div className={`relative flex-1 ${is2D ? 'h-full overflow-hidden' : 'overflow-y-auto overflow-x-hidden p-4'}`}>
           {blocks.length === 0 ? (
             <div className="flex h-full items-center justify-center p-5 text-center font-['DM_Sans',sans-serif] text-[13px] text-[var(--text-tertiary)]">
               No blocks to display

@@ -7,6 +7,7 @@ import DiagramPanel from './components/diagram/DiagramPanel'
 import FeedbackView from './components/overlay/FeedbackView'
 import { PatientFullscreen } from './components/patient/PatientFullscreen'
 import { DiagramFullscreen } from './components/diagram/DiagramFullscreen'
+import BlockDetailModal from './components/diagram/BlockDetailModal'
 
 function App() {
   return (
@@ -57,6 +58,7 @@ function AppContent() {
           )}
         </PanelGroup>
       </div>
+      <BlockDetailModal />
       <PatientFullscreen />
       <DiagramFullscreen />
     </>
