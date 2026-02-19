@@ -9,7 +9,8 @@ import TreatmentReference from './TreatmentReference'
 import HighlightedTextarea from './HighlightedTextarea'
 
 export default function ReasoningInput() {
-  const { reasoningText, selectedDrugs, isSubmitted, isAnalyzing, mode, dispatch } = useMode()
+  const { reasoningText, selectedDrugs, isSubmitted, isAnalyzing, mode, showFeedbackModal, dispatch } =
+    useMode()
   const { submitReasoning } = useAnalysis()
   const { triggerNow, isGenerating, countdown } = useLiveDiagram()
 
@@ -47,6 +48,20 @@ export default function ReasoningInput() {
     } else {
       // In demo mode, just dispatch SUBMIT (diagram built by demo script)
       dispatch({ type: 'SUBMIT' })
+    }
+  }
+
+  const handleViewAnalysis = () => {
+    if (mode === 'demo') {
+      // Simulate brief analyzing state in demo
+      dispatch({ type: 'SET_ANALYZING', payload: true })
+      setTimeout(() => {
+        dispatch({ type: 'SET_ANALYZING', payload: false })
+        dispatch({ type: 'SHOW_FEEDBACK_MODAL' })
+      }, 1200)
+    } else {
+      // In live mode, just show the feedback
+      dispatch({ type: 'SHOW_FEEDBACK_MODAL' })
     }
   }
 
@@ -151,18 +166,27 @@ export default function ReasoningInput() {
             </button>
           )}
 
-          {/* Submit button */}
-          <button
-            onClick={handleSubmit}
-            disabled={isSubmitted || selectedDrugs.length === 0 || !reasoningText.trim()}
-            className={`min-w-[180px] rounded-[var(--r-sm)] border-none px-5 py-[10px] font-['DM_Sans',sans-serif] text-[13px] font-semibold transition-all duration-150 ${
-              isSubmitted || selectedDrugs.length === 0 || !reasoningText.trim()
-                ? 'cursor-not-allowed bg-[var(--muted-bg)] text-[var(--text-tertiary)] shadow-none'
-                : 'cursor-pointer bg-[var(--teal)] text-white shadow-[var(--shadow-md)] hover:-translate-y-px hover:bg-[var(--teal-dark)]'
-            }`}
-          >
-            Analyze Reasoning →
-          </button>
+          {/* Submit / View Analysis button */}
+          {isSubmitted && !showFeedbackModal ? (
+            <button
+              onClick={handleViewAnalysis}
+              className="min-w-[180px] cursor-pointer rounded-[var(--r-sm)] border-none bg-[var(--teal)] px-5 py-[10px] font-['DM_Sans',sans-serif] text-[13px] font-semibold text-white shadow-[var(--shadow-md)] transition-all duration-150 hover:-translate-y-px hover:bg-[var(--teal-dark)]"
+            >
+              View Analysis →
+            </button>
+          ) : (
+            <button
+              onClick={handleSubmit}
+              disabled={isSubmitted || selectedDrugs.length === 0 || !reasoningText.trim()}
+              className={`min-w-[180px] rounded-[var(--r-sm)] border-none px-5 py-[10px] font-['DM_Sans',sans-serif] text-[13px] font-semibold transition-all duration-150 ${
+                isSubmitted || selectedDrugs.length === 0 || !reasoningText.trim()
+                  ? 'cursor-not-allowed bg-[var(--muted-bg)] text-[var(--text-tertiary)] shadow-none'
+                  : 'cursor-pointer bg-[var(--teal)] text-white shadow-[var(--shadow-md)] hover:-translate-y-px hover:bg-[var(--teal-dark)]'
+              }`}
+            >
+              Analyze Reasoning →
+            </button>
+          )}
         </div>
       </div>
     </div>
