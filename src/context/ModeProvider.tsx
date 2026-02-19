@@ -122,9 +122,9 @@ function modeReducer(state: ModeState, action: ModeAction): ModeState {
         ...state,
         isSubmitted: true,
         sessionState: 'analyzing',
-        isAnalyzing: true,
-        // Show feedback modal in live mode to display analyzing loader
-        showFeedbackModal: state.mode === 'live',
+        isAnalyzing: state.mode === 'live', // Only show analyzing in live mode
+        // Don't show feedback modal on submit - wait for DIAGRAM_READY
+        showFeedbackModal: false,
       }
 
     case 'DIAGRAM_READY':
@@ -177,10 +177,9 @@ function modeReducer(state: ModeState, action: ModeAction): ModeState {
         overallFeedback: action.payload.overallFeedback || '',
         score: action.payload.score || 0,
         diagramOpen: true,
-        // Show feedback modal in live mode when we have feedback
+        // Show feedback modal when we have feedback (both demo and live)
         showFeedbackModal:
-          state.mode === 'live' &&
-          (action.payload.overallFeedback || action.payload.score > 0 || action.payload.expertBlocks?.length > 0),
+          action.payload.overallFeedback || action.payload.score > 0 || action.payload.expertBlocks?.length > 0,
       }
 
     case 'ADD_DIAGRAM_BLOCK':
