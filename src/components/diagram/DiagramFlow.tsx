@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import dagre from 'dagre'
 import {
   ReactFlow,
   Background,
@@ -112,81 +113,57 @@ interface FlowContentProps {
 function FlowContent({ blocks, setNodes, setEdges }: FlowContentProps) {
   const { fitView, getNodes, getEdges } = useReactFlow()
 
-  // Convert blocks to React Flow nodes and edges
+  // Convert blocks to React Flow nodes and edges using dagre layout
   useEffect(() => {
     if (blocks.length === 0) return
 
-    // Build adjacency map for level calculation
-    const childrenMap = new Map<string, string[]>()
-    const parentsMap = new Map<string, string[]>()
-
-    blocks.forEach((block) => {
-      childrenMap.set(block.id, [])
-      parentsMap.set(block.id, [])
+    // Create dagre graph for layout calculation
+    const dagreGraph = new dagre.graphlib.Graph()
+    dagreGraph.setDefaultEdgeLabel(() => ({}))
+    dagreGraph.setGraph({
+      rankdir: 'TB', // Top to bottom
+      nodesep: 100, // Horizontal spacing between nodes
+      ranksep: 150, // Vertical spacing between ranks
+      marginx: 50,
+      marginy: 50
     })
 
-    blocks.forEach((block) => {
-      if (block.connects_to) {
+    // Create nodes without positions first
+    const flowNodes: Node[] = blocks.map((block: any) => ({
+      id: block.id,
+      type: 'diagramBlock',
+      position: { x: 0, y: 0 }, // Will be set by dagre
+      data: {
+        type: block.type,
+        title: block.title,
+        body: block.body,
+      },
+    }))
+
+    // Add nodes to dagre graph with dimensions
+    flowNodes.forEach((node) => {
+      dagreGraph.setNode(node.id, { width: 350, height: 150 })
+    })
+
+    // Add edges to dagre graph
+    blocks.forEach((block: any) => {
+      if (block.connects_to && block.connects_to.length > 0) {
         block.connects_to.forEach((targetId: string) => {
-          childrenMap.get(block.id)?.push(targetId)
-          parentsMap.get(targetId)?.push(block.id)
+          dagreGraph.setEdge(block.id, targetId)
         })
       }
     })
 
-    // Calculate levels using BFS
-    const levels = new Map<string, number>()
-    const roots = blocks.filter((b) => (parentsMap.get(b.id)?.length || 0) === 0)
-    const queue = roots.map((r) => r.id)
-    roots.forEach((r) => levels.set(r.id, 0))
+    // Run dagre layout algorithm
+    dagre.layout(dagreGraph)
 
-    while (queue.length > 0) {
-      const nodeId = queue.shift()!
-      const nodeLevel = levels.get(nodeId) || 0
-      const children = childrenMap.get(nodeId) || []
-
-      children.forEach((childId) => {
-        const currentLevel = levels.get(childId)
-        const newLevel = nodeLevel + 1
-        if (currentLevel === undefined || newLevel > currentLevel) {
-          levels.set(childId, newLevel)
-          queue.push(childId)
-        }
-      })
-    }
-
-    // Group by level and position
-    const levelGroups = new Map<number, any[]>()
-    blocks.forEach((block) => {
-      const level = levels.get(block.id) || 0
-      if (!levelGroups.has(level)) levelGroups.set(level, [])
-      levelGroups.get(level)?.push(block)
-    })
-
-    // Create nodes with positions
-    const flowNodes: Node[] = []
-    const VERTICAL_SPACING = 200
-    const HORIZONTAL_SPACING = 400
-
-    levelGroups.forEach((nodesAtLevel, level) => {
-      const levelWidth = nodesAtLevel.length * HORIZONTAL_SPACING
-      const startX = -levelWidth / 2
-
-      nodesAtLevel.forEach((block: any, index: number) => {
-        flowNodes.push({
-          id: block.id,
-          type: 'diagramBlock',
-          position: {
-            x: startX + index * HORIZONTAL_SPACING,
-            y: level * VERTICAL_SPACING,
-          },
-          data: {
-            type: block.type,
-            title: block.title,
-            body: block.body,
-          },
-        })
-      })
+    // Apply calculated positions to nodes
+    flowNodes.forEach((node) => {
+      const nodeWithPosition = dagreGraph.node(node.id)
+      node.position = {
+        x: nodeWithPosition.x - 175, // Center node (width/2)
+        y: nodeWithPosition.y - 75, // Center node (height/2)
+      }
     })
 
     // Create edges with teal arrows
