@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { Volume2, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useMode } from '../../context/ModeProvider'
 import { useTTS } from '../../hooks/useTTS'
@@ -6,20 +6,29 @@ import { useTTS } from '../../hooks/useTTS'
 export default function PatientSpeech() {
   const { currentCase, currentSpeechLine, isPlaying, dispatch } = useMode()
   const { isSpeaking, toggle } = useTTS()
+  const hasAutoPlayedRef = useRef(false)
 
   const speechLines = currentCase.speechLines || []
   const currentText = speechLines[currentSpeechLine] || ''
 
+  // Reset auto-play flag when demo stops
+  useEffect(() => {
+    if (!isPlaying) {
+      hasAutoPlayedRef.current = false
+    }
+  }, [isPlaying])
+
   // Auto-play TTS at demo start
   useEffect(() => {
-    if (isPlaying && currentSpeechLine === 0 && currentText) {
+    if (isPlaying && currentSpeechLine === 0 && currentText && !isSpeaking && !hasAutoPlayedRef.current) {
       // Auto-play first line when demo starts
+      hasAutoPlayedRef.current = true
       const timer = setTimeout(() => {
         toggle(currentText)
       }, 800)
       return () => clearTimeout(timer)
     }
-  }, [isPlaying]) // Only run when isPlaying changes
+  }, [isPlaying, currentSpeechLine, currentText, isSpeaking, toggle])
 
   return (
     <div className="flex-shrink-0 border-t border-[var(--border)] bg-[var(--teal-light)] px-[14px] pb-[14px] pt-3">

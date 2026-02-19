@@ -9,13 +9,15 @@ export default function ModeSelectionModal() {
     dispatch({ type: 'SET_MODE', payload: mode })
     dispatch({ type: 'HIDE_MODE_MODAL' })
 
-    if (mode === 'live') {
-      // Show access code modal for live mode
-      dispatch({ type: 'SHOW_ACCESS_CODE_MODAL' })
-    } else {
-      // Show difficulty modal directly for demo mode
-      dispatch({ type: 'SHOW_DIFFICULTY_MODAL' })
-    }
+    // TODO: Enable access code when needed
+    // if (mode === 'live') {
+    //   dispatch({ type: 'SHOW_ACCESS_CODE_MODAL' })
+    // } else {
+    //   dispatch({ type: 'SHOW_DIFFICULTY_MODAL' })
+    // }
+
+    // For now, skip access code and go straight to difficulty
+    dispatch({ type: 'SHOW_DIFFICULTY_MODAL' })
   }
 
   return (

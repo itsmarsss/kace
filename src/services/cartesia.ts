@@ -20,6 +20,7 @@ export class CartesiaTTS {
   private isPlaying = false
   private apiKey: string
   private options: CartesiaTTSOptions
+  private currentSource: AudioBufferSourceNode | null = null
 
   constructor(apiKey: string, options: CartesiaTTSOptions = {}) {
     this.apiKey = apiKey
@@ -62,22 +63,29 @@ export class CartesiaTTS {
       const data = JSON.parse(event.data)
 
       if (data.type === 'chunk' && data.data) {
+        console.log('[Cartesia] Received audio chunk')
         // Decode base64 audio data
         const audioData = Uint8Array.from(atob(data.data), (c) => c.charCodeAt(0))
         await this.playAudio(audioData.buffer)
         this.options.onAudio?.(audioData.buffer)
       } else if (data.type === 'done') {
+        console.log('[Cartesia] TTS complete')
         this.isPlaying = false
         this.options.onComplete?.()
+      } else if (data.type === 'error') {
+        console.error('[Cartesia] Server error:', data)
       }
     } catch (error) {
-      console.error('Error handling message:', error)
+      console.error('[Cartesia] Error handling message:', error)
       this.options.onError?.(error as Error)
     }
   }
 
   async speak(text: string): Promise<void> {
+    console.log('[Cartesia] speak() called with text:', text.substring(0, 50))
+
     if (!this.isConnected) {
+      console.log('[Cartesia] Connecting...')
       await this.connect()
     }
 
@@ -87,8 +95,16 @@ export class CartesiaTTS {
 
     // Initialize audio context
     if (!this.audioContext) {
+      console.log('[Cartesia] Creating AudioContext')
       this.audioContext = new AudioContext({ sampleRate: 44100 })
     }
+
+    // Resume audio context if suspended (browser autoplay policy)
+    if (this.audioContext.state === 'suspended') {
+      console.log('[Cartesia] Resuming suspended AudioContext')
+      await this.audioContext.resume()
+    }
+    console.log('[Cartesia] AudioContext state:', this.audioContext.state)
 
     this.isPlaying = true
 
@@ -108,6 +124,7 @@ export class CartesiaTTS {
       language: 'en',
     }
 
+    console.log('[Cartesia] Sending TTS request')
     this.ws.send(JSON.stringify(request))
   }
 
@@ -119,6 +136,12 @@ export class CartesiaTTS {
       const source = this.audioContext.createBufferSource()
       source.buffer = audioBuffer
       source.connect(this.audioContext.destination)
+      source.onended = () => {
+        if (this.currentSource === source) {
+          this.currentSource = null
+        }
+      }
+      this.currentSource = source
       source.start(0)
     } catch (error) {
       console.error('Error playing audio:', error)
@@ -127,9 +150,14 @@ export class CartesiaTTS {
 
   stop(): void {
     this.isPlaying = false
-    if (this.audioContext) {
-      this.audioContext.close()
-      this.audioContext = null
+    // Stop current audio source without closing the AudioContext
+    if (this.currentSource) {
+      try {
+        this.currentSource.stop()
+      } catch (error) {
+        // Source may already be stopped
+      }
+      this.currentSource = null
     }
   }
 
@@ -138,6 +166,10 @@ export class CartesiaTTS {
     if (this.ws) {
       this.ws.close()
       this.ws = null
+    }
+    if (this.audioContext) {
+      this.audioContext.close()
+      this.audioContext = null
     }
     this.isConnected = false
   }

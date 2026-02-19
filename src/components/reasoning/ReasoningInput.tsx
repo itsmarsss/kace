@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useCallback, useRef, useEffect } from 'react'
 import { Mic, MicOff } from 'lucide-react'
 import { useMode } from '../../context/ModeProvider'
 import { useAnalysis } from '../../hooks/useAnalysis'
@@ -14,17 +14,24 @@ export default function ReasoningInput() {
   const { submitReasoning } = useAnalysis()
   const { triggerNow, isGenerating, countdown } = useLiveDiagram()
 
+  // Use ref to track current reasoning text
+  const reasoningTextRef = useRef(reasoningText)
+
+  useEffect(() => {
+    reasoningTextRef.current = reasoningText
+  }, [reasoningText])
+
   // Handle final speech transcript
   const handleFinalTranscript = useCallback(
     (text: string) => {
       if (!isSubmitted) {
         dispatch({
           type: 'SET_REASONING_TEXT',
-          payload: reasoningText + text,
+          payload: reasoningTextRef.current + text,
         })
       }
     },
-    [isSubmitted, dispatch, reasoningText]
+    [isSubmitted, dispatch]
   )
 
   const { isListening, interimTranscript, toggleListening } = useSTT(handleFinalTranscript)

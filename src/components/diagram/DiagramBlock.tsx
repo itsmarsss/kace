@@ -37,7 +37,7 @@ const DiagramBlock = forwardRef<HTMLDivElement, DiagramBlockProps>(
       dispatch({ type: 'SET_HOVERED_BLOCK', payload: null })
     }
 
-    const handleDoubleClick = () => {
+    const handleClick = () => {
       dispatch({ type: 'SET_SELECTED_BLOCK', payload: block })
     }
 
@@ -48,7 +48,7 @@ const DiagramBlock = forwardRef<HTMLDivElement, DiagramBlockProps>(
         style={{ animationDelay: `${index * 150}ms` }}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        onDoubleClick={handleDoubleClick}
+        onClick={handleClick}
       >
         {/* Feedback indicators in top right */}
         {block.feedback && (

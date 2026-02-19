@@ -29,11 +29,25 @@ export function useLiveDiagram() {
   const lastSnapshotRef = useRef<DiagramSnapshot | null>(null)
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
   const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null)
-  const scheduledTimeRef = useRef<number>(0) // When the next trigger is scheduled
   const stepCounterRef = useRef(0)
+  const lastCheckedTextRef = useRef('') // Track text from last check
+
+  // Store current values in refs for interval access
+  const reasoningTextRef = useRef(reasoningText)
+  const selectedDrugsRef = useRef(selectedDrugs)
+  const confidenceRef = useRef(confidence)
+  const diagramBlocksRef = useRef(diagramBlocks)
 
   const [isGenerating, setIsGenerating] = useState(false)
   const [countdown, setCountdown] = useState(0) // Seconds until next auto-trigger
+
+  // Update refs when values change
+  useEffect(() => {
+    reasoningTextRef.current = reasoningText
+    selectedDrugsRef.current = selectedDrugs
+    confidenceRef.current = confidence
+    diagramBlocksRef.current = diagramBlocks
+  }, [reasoningText, selectedDrugs, confidence, diagramBlocks])
 
   const generateDiagram = useCallback(
     async (snapshot: DiagramSnapshot) => {
@@ -81,7 +95,7 @@ export function useLiveDiagram() {
           previousText: previousSnapshot?.text || '',
           newText: snapshot.text,
           textDiff,
-          currentBlocks: diagramBlocks,
+          currentBlocks: diagramBlocksRef.current,
           caseContext: currentCase.systemContext,
           selectedDrugs: snapshot.drugs,
         })
@@ -100,7 +114,7 @@ export function useLiveDiagram() {
     [isGenerating, diagramBlocks, currentCase, dispatch]
   )
 
-  // Throttle snapshot capture to every 8-15 seconds
+  // Generate every 10 seconds regardless of edits
   useEffect(() => {
     // Only run in live mode and before submission
     if (mode !== 'live' || isSubmitted) {
@@ -108,72 +122,54 @@ export function useLiveDiagram() {
       return
     }
 
-    // Clear existing timeout and countdown
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current)
-    }
-    if (countdownIntervalRef.current) {
-      clearInterval(countdownIntervalRef.current)
-    }
+    let nextTriggerTime = Date.now() + 10000
 
-    // Don't generate if text is empty or too short
-    if (!reasoningText.trim() || reasoningText.length < 100) {
-      setCountdown(0)
-      return
-    }
+    // Update countdown every second
+    countdownIntervalRef.current = setInterval(() => {
+      const remaining = Math.max(0, Math.ceil((nextTriggerTime - Date.now()) / 1000))
+      setCountdown(remaining)
+    }, 1000)
 
-    // Don't schedule if already generating
-    if (isGenerating) {
-      return
-    }
+    // Generate every 10 seconds
+    timeoutRef.current = setInterval(() => {
+      const currentText = reasoningTextRef.current
+      const currentDrugs = selectedDrugsRef.current
+      const currentConfidence = confidenceRef.current
 
-    // Detect if user finished a natural thought (paragraph or sentence)
-    const endsWithParagraph = /\n\n\s*$/.test(reasoningText)
-    const endsWithSentence = /[.!?]\s*$/.test(reasoningText)
-    const hasNaturalBreak = endsWithParagraph || endsWithSentence
+      // Skip if empty, too short, already generating, or no changes
+      if (!currentText.trim() || currentText.length < 100 || isGenerating) {
+        return
+      }
 
-    // Use shorter delay if at natural break, longer otherwise
-    const delay = hasNaturalBreak ? 8000 : 15000 // 8s or 15s
+      // Only generate if text has changed since last check
+      if (currentText === lastCheckedTextRef.current) {
+        return
+      }
 
-    // Track when the next trigger is scheduled
-    scheduledTimeRef.current = Date.now() + delay
+      lastCheckedTextRef.current = currentText
 
-    // Schedule snapshot after period of inactivity
-    timeoutRef.current = setTimeout(() => {
       const snapshot: DiagramSnapshot = {
-        text: reasoningText,
-        drugs: selectedDrugs,
-        confidence,
+        text: currentText,
+        drugs: currentDrugs,
+        confidence: currentConfidence,
         timestamp: Date.now(),
       }
 
       generateDiagram(snapshot)
-    }, delay)
+      nextTriggerTime = Date.now() + 10000
+    }, 10000) as any
 
-    // Update countdown every second
-    countdownIntervalRef.current = setInterval(() => {
-      const remaining = Math.max(0, Math.ceil((scheduledTimeRef.current - Date.now()) / 1000))
-      setCountdown(remaining)
-
-      if (remaining === 0) {
-        if (countdownIntervalRef.current) {
-          clearInterval(countdownIntervalRef.current)
-        }
-      }
-    }, 1000)
-
-    // Set initial countdown
-    setCountdown(Math.ceil(delay / 1000))
+    setCountdown(10)
 
     return () => {
       if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
+        clearInterval(timeoutRef.current)
       }
       if (countdownIntervalRef.current) {
         clearInterval(countdownIntervalRef.current)
       }
     }
-  }, [reasoningText, selectedDrugs, confidence, mode, isSubmitted, isGenerating, generateDiagram])
+  }, [mode, isSubmitted]) // Only depend on mode and submission status
 
   // Cleanup on unmount
   useEffect(() => {

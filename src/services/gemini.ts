@@ -62,7 +62,7 @@ export async function updateDiagramWithGemini(params: {
 }): Promise<{ blocks: DiagramBlock[] }> {
   const client = getClient()
   const model = client.getGenerativeModel({
-    model: 'gemini-2.5-flash-lite', // Fastest for high-frequency extraction
+    model: 'gemini-flash-lite-latest', // Always uses latest lite version
     generationConfig: {
       temperature: 1.0,
       responseMimeType: 'application/json',
@@ -128,15 +128,36 @@ Each block MUST include accurate citations (sourceStart, sourceEnd, sourceText) 
 
 Current timestamp: ${Date.now()}`
 
-  try {
-    const result = await model.generateContent(prompt)
-    const response = result.response
-    const text = response.text()
+  // Retry with exponential backoff for rate limits
+  let retries = 3
+  let delay = 1000 // Start with 1 second
 
-    const parsed = JSON.parse(text)
-    return parsed
-  } catch (error) {
-    console.error('[Gemini] Generation failed:', error)
-    throw new Error('Failed to generate diagram with Gemini')
+  while (retries > 0) {
+    try {
+      const result = await model.generateContent(prompt)
+      const response = result.response
+      const text = response.text()
+
+      const parsed = JSON.parse(text)
+      return parsed
+    } catch (error: any) {
+      // Check if it's a rate limit error (429)
+      const is429 = error?.message?.includes('429') ||
+                    error?.message?.includes('quota') ||
+                    error?.message?.includes('rate limit')
+
+      if (is429 && retries > 1) {
+        console.warn(`[Gemini] Rate limit hit, retrying in ${delay}ms... (${retries - 1} retries left)`)
+        await new Promise(resolve => setTimeout(resolve, delay))
+        delay *= 2 // Exponential backoff
+        retries--
+        continue
+      }
+
+      console.error('[Gemini] Generation failed:', error)
+      throw new Error(is429 ? 'Rate limit exceeded. Please wait a moment and try again.' : 'Failed to generate diagram with Gemini')
+    }
   }
+
+  throw new Error('Failed to generate diagram after retries')
 }
