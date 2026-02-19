@@ -196,52 +196,39 @@ export default function FeedbackView() {
         </div>
 
         {/* Feedback Statistics */}
-        <div className="mx-6 mb-4 flex gap-3">
-          <div className="flex flex-1 items-center gap-3 rounded-[var(--r)] border border-[var(--green-border)] bg-[var(--green-light)] p-3">
-            <CheckCircle size={18} className="text-[var(--green)]" />
+        <div className="mx-6 mb-4 grid grid-cols-3 gap-3">
+          <div className="flex items-center gap-3 rounded-[var(--r)] border border-[var(--green-border)] bg-[var(--green-light)] p-4">
+            <CheckCircle size={20} className="flex-shrink-0 text-[var(--green)]" />
             <div>
               <div className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--green)]">
                 Accurate
               </div>
-              <div className="font-['DM_Sans',sans-serif] text-[16px] font-bold text-[var(--text-primary)]">
+              <div className="font-['DM_Sans',sans-serif] text-[18px] font-bold text-[var(--text-primary)]">
                 {feedbackStats.accurate}
               </div>
             </div>
           </div>
-          <div className="flex flex-1 items-center gap-3 rounded-[var(--r)] border border-[var(--amber-border)] bg-[var(--amber-light)] p-3">
-            <AlertTriangle size={18} className="text-[var(--amber)]" />
+          <div className="flex items-center gap-3 rounded-[var(--r)] border border-[var(--amber-border)] bg-[var(--amber-light)] p-4">
+            <AlertTriangle size={20} className="flex-shrink-0 text-[var(--amber)]" />
             <div>
               <div className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--amber)]">
                 Needs Review
               </div>
-              <div className="font-['DM_Sans',sans-serif] text-[16px] font-bold text-[var(--text-primary)]">
+              <div className="font-['DM_Sans',sans-serif] text-[18px] font-bold text-[var(--text-primary)]">
                 {feedbackStats.needsReview}
               </div>
             </div>
           </div>
-          <div className="flex flex-1 items-center gap-3 rounded-[var(--r)] border border-[var(--teal-border)] bg-[var(--teal-light)] p-3">
-            <div className="flex h-[18px] w-[18px] items-center justify-center rounded-full bg-[var(--teal)] text-[10px] font-bold text-white">
+          <div className="flex items-center gap-3 rounded-[var(--r)] border border-[var(--teal-border)] bg-[var(--teal-light)] p-4">
+            <div className="flex h-[20px] w-[20px] flex-shrink-0 items-center justify-center rounded-full bg-[var(--teal)] text-[11px] font-bold text-white">
               +
             </div>
             <div>
               <div className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--teal)]">
                 Additional Insights
               </div>
-              <div className="font-['DM_Sans',sans-serif] text-[16px] font-bold text-[var(--text-primary)]">
+              <div className="font-['DM_Sans',sans-serif] text-[18px] font-bold text-[var(--text-primary)]">
                 {additionalInsights}
-              </div>
-            </div>
-          </div>
-          <div className="flex flex-1 items-center gap-3 rounded-[var(--r)] border border-[var(--border)] bg-[var(--surface)] p-3">
-            <div className="flex h-[18px] w-[18px] items-center justify-center rounded-full bg-[var(--slate-light)] text-[10px] font-bold text-[var(--slate)]">
-              ✓
-            </div>
-            <div>
-              <div className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--text-tertiary)]">
-                Score
-              </div>
-              <div className="font-['DM_Sans',sans-serif] text-[16px] font-bold text-[var(--text-primary)]">
-                {score}/100
               </div>
             </div>
           </div>

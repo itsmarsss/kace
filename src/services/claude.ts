@@ -27,9 +27,9 @@ export async function analyzeReasoningWithClaude(
   const client = getClient()
 
   const systemPrompt = `You are an expert clinical educator analyzing a medical student's reasoning. You will:
-1. Extract and evaluate their reasoning into structured blocks
-2. Provide detailed feedback on each block
-3. Generate the ideal reasoning blocks showing correct clinical thinking as a connected graph
+1. Evaluate their reasoning blocks and identify issues
+2. Provide detailed feedback on what needs correction
+3. Create corrected versions of THEIR reasoning (not a completely different approach)
 
 BLOCK TYPES:
 - OBSERVATION: Identifies findings, vitals, labs, history
@@ -71,19 +71,10 @@ REQUIRED OUTPUT STRUCTURE:
     {
       "id": "e1",
       "type": "OBSERVATION",
-      "title": "Initial Patient Assessment",
-      "body": "Comprehensive description of key findings...",
-      "connects_to": ["e2", "e3"],
+      "title": "Patient Assessment (corrected)",
+      "body": "Fixed version of student's observation with accurate details...",
+      "connects_to": ["e2"],
       "step": 1,
-      "addedAt": ${Date.now()}
-    },
-    {
-      "id": "e2",
-      "type": "INTERPRETATION",
-      "title": "Analysis of Findings",
-      "body": "Clinical interpretation...",
-      "connects_to": ["e4"],
-      "step": 2,
       "addedAt": ${Date.now()}
     }
   ],
@@ -113,26 +104,29 @@ EXISTING BLOCKS (created by initial analysis):
 ${JSON.stringify(request.existingBlocks, null, 2)}
 
 TASK:
-1. For each existing block above, add a "feedback" property with your evaluation
+1. For each existing student block, add a "feedback" property with your evaluation
 2. IMPORTANT: Preserve the original block IDs, titles, bodies, and all other properties
-3. Only ADD the feedback object - do not change anything else
-4. Create separate ideal reasoning blocks in expertBlocks array
-5. Provide overall feedback and a score (0-100)
+3. Only ADD the feedback object - do not change the student blocks themselves
+4. Create corrected versions in expertBlocks array by fixing the student's reasoning
+5. Each expert block should correspond 1:1 with a student block (same structure, fixed content)
+6. Provide overall feedback and a score (0-100)
 
-EXPERT BLOCKS REQUIREMENTS:
-- Create approximately ${request.existingBlocks.length} expert blocks (similar granularity to student)
-- Each expert block MUST have a "connects_to" array showing logical flow to next blocks
-- Use IDs like "e1", "e2", "e3", etc.
-- Build a coherent reasoning graph (not just a linear chain)
-- Show how observations lead to interpretations, interpretations lead to considerations, etc.
-- Include step numbers that show the logical order
-- The expert blocks should demonstrate the IDEAL clinical reasoning process for this case
+CORRECTED REASONING APPROACH:
+- Create expert blocks by FIXING the student's blocks, not creating new reasoning
+- For each student block, create a corresponding corrected version
+- Keep the SAME number of blocks (1:1 correspondence)
+- Preserve the student's reasoning structure and flow
+- Keep similar titles but fix any issues in the content
+- Maintain the student's connects_to relationships (or fix if incorrect)
+- Use IDs like "e1", "e2", "e3" corresponding to student blocks
+- Fix clinical inaccuracies, flawed logic, or missing information
+- Show students how THEIR reasoning should look when corrected
 
-Example expert block connections:
-- e1 (initial observation) -> connects_to: ["e2", "e3"] (splits to multiple interpretations)
-- e2 (interpretation) -> connects_to: ["e4"] (leads to consideration)
-- e3 (interpretation) -> connects_to: ["e4", "e5"] (leads to multiple considerations)
-- e4 (consideration) -> connects_to: ["e6"] (leads to decision)
+Example: If student block says "Patient has diabetes, give insulin"
+WRONG: Create completely different reasoning about comprehensive assessment
+RIGHT: Fix their block to "Patient has T2DM (HbA1c 9.1%), consider insulin vs oral agents based on severity and comorbidities"
+
+The goal: Students learn to improve their OWN thinking, not memorize a different approach
 
 Return the studentBlocks array with the SAME blocks but with feedback added.
 Focus on educational feedback that helps the student improve their clinical reasoning skills.`
