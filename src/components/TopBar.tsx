@@ -2,7 +2,7 @@ import { Play, Square } from 'lucide-react'
 import { useMode } from '../context/ModeProvider'
 
 export default function TopBar() {
-  const { isPlaying, playDemo, stopDemo, dispatch, currentCase, mode } = useMode()
+  const { isPlaying, playDemo, stopDemo, dispatch, currentCase, mode, sessionState, score } = useMode()
 
   return (
     <header className="flex h-[52px] items-center gap-3 border-b border-[var(--border)] bg-[var(--surface)] px-5">
@@ -31,6 +31,20 @@ export default function TopBar() {
 
       {/* Spacer */}
       <div className="flex-1" />
+
+      {/* View Feedback button (appears after analysis in live mode) */}
+      {mode === 'live' && sessionState === 'reviewed' && score > 0 && (
+        <>
+          <button
+            onClick={() => dispatch({ type: 'SHOW_FEEDBACK_MODAL' })}
+            className="rounded-[6px] border-none bg-[var(--teal)] px-[14px] py-[7px] font-['DM_Sans',sans-serif] text-[11px] font-semibold text-white transition-all hover:bg-[var(--teal-dark)]"
+          >
+            View Analysis
+          </button>
+
+          <div className="h-[18px] w-[1px] bg-[var(--border-md)]" />
+        </>
+      )}
 
       {/* Mode toggle */}
       <div className="flex gap-1 rounded-[6px] bg-[var(--muted-bg)] p-[2px]">
