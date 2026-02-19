@@ -1,11 +1,12 @@
 import { useEffect, useRef } from 'react'
 import { useMode } from '../../context/ModeProvider'
+import { useAnalysis } from '../../hooks/useAnalysis'
 import ConfidenceSlider from '../input/ConfidenceSlider'
 import TreatmentReference from './TreatmentReference'
 
 export default function ReasoningInput() {
-  const { reasoningText, selectedDrugs, isSubmitted, isAnalyzing, sessionState, dispatch } =
-    useMode()
+  const { reasoningText, selectedDrugs, isSubmitted, isAnalyzing, mode, dispatch } = useMode()
+  const { submitReasoning } = useAnalysis()
 
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
@@ -22,16 +23,12 @@ export default function ReasoningInput() {
       return
     }
 
-    dispatch({ type: 'SUBMIT' })
-
-    // In demo mode, diagram will be built by demo script
-    // In live mode, would call API here via useAnalysis hook
-    if (sessionState !== 'analyzing') {
-      // Simulate API call delay in live mode
-      // TODO: Replace with actual useAnalysis hook
-      setTimeout(() => {
-        dispatch({ type: 'ANALYSIS_FAILED' })
-      }, 2000)
+    // In live mode, call API to analyze reasoning
+    if (mode === 'live') {
+      await submitReasoning()
+    } else {
+      // In demo mode, just dispatch SUBMIT (diagram built by demo script)
+      dispatch({ type: 'SUBMIT' })
     }
   }
 
