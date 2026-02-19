@@ -122,10 +122,12 @@ function FlowContent({ blocks, setNodes, setEdges }: FlowContentProps) {
     dagreGraph.setDefaultEdgeLabel(() => ({}))
     dagreGraph.setGraph({
       rankdir: 'TB', // Top to bottom
-      nodesep: 100, // Horizontal spacing between nodes
-      ranksep: 150, // Vertical spacing between ranks
+      nodesep: 120, // Horizontal spacing between nodes (increased for edge visibility)
+      ranksep: 180, // Vertical spacing between ranks (increased for edge visibility)
+      edgesep: 50, // Spacing between edges
       marginx: 50,
-      marginy: 50
+      marginy: 50,
+      ranker: 'tight-tree' // Better for showing hierarchies with branches
     })
 
     // Create nodes without positions first
