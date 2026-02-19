@@ -29,7 +29,7 @@ export async function analyzeReasoningWithClaude(
   const systemPrompt = `You are an expert clinical educator analyzing a medical student's reasoning. You will:
 1. Extract and evaluate their reasoning into structured blocks
 2. Provide detailed feedback on each block
-3. Generate the ideal reasoning blocks showing correct clinical thinking
+3. Generate the ideal reasoning blocks showing correct clinical thinking as a connected graph
 
 BLOCK TYPES:
 - OBSERVATION: Identifies findings, vitals, labs, history
@@ -71,10 +71,19 @@ REQUIRED OUTPUT STRUCTURE:
     {
       "id": "e1",
       "type": "OBSERVATION",
-      "title": "...",
-      "body": "...",
+      "title": "Initial Patient Assessment",
+      "body": "Comprehensive description of key findings...",
       "connects_to": ["e2", "e3"],
       "step": 1,
+      "addedAt": ${Date.now()}
+    },
+    {
+      "id": "e2",
+      "type": "INTERPRETATION",
+      "title": "Analysis of Findings",
+      "body": "Clinical interpretation...",
+      "connects_to": ["e4"],
+      "step": 2,
       "addedAt": ${Date.now()}
     }
   ],
@@ -100,12 +109,32 @@ ${request.reasoningText}
 Selected Treatments: ${request.selectedDrugs.join(', ') || 'None selected'}
 Confidence Level: ${request.confidence}/5
 
-TASK:
-1. Extract the student's reasoning into structured blocks with accurate sourceText citations
-2. Evaluate each block: identify issues, assess timing/necessity, provide suggestions
-3. Create the ideal reasoning blocks showing correct clinical thinking for this case
-4. Provide overall feedback and a score (0-100)
+EXISTING BLOCKS (created by initial analysis):
+${JSON.stringify(request.existingBlocks, null, 2)}
 
+TASK:
+1. For each existing block above, add a "feedback" property with your evaluation
+2. IMPORTANT: Preserve the original block IDs, titles, bodies, and all other properties
+3. Only ADD the feedback object - do not change anything else
+4. Create separate ideal reasoning blocks in expertBlocks array
+5. Provide overall feedback and a score (0-100)
+
+EXPERT BLOCKS REQUIREMENTS:
+- Create approximately ${request.existingBlocks.length} expert blocks (similar granularity to student)
+- Each expert block MUST have a "connects_to" array showing logical flow to next blocks
+- Use IDs like "e1", "e2", "e3", etc.
+- Build a coherent reasoning graph (not just a linear chain)
+- Show how observations lead to interpretations, interpretations lead to considerations, etc.
+- Include step numbers that show the logical order
+- The expert blocks should demonstrate the IDEAL clinical reasoning process for this case
+
+Example expert block connections:
+- e1 (initial observation) -> connects_to: ["e2", "e3"] (splits to multiple interpretations)
+- e2 (interpretation) -> connects_to: ["e4"] (leads to consideration)
+- e3 (interpretation) -> connects_to: ["e4", "e5"] (leads to multiple considerations)
+- e4 (consideration) -> connects_to: ["e6"] (leads to decision)
+
+Return the studentBlocks array with the SAME blocks but with feedback added.
 Focus on educational feedback that helps the student improve their clinical reasoning skills.`
 
   const response = await client.messages.create({

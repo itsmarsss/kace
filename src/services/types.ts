@@ -25,6 +25,7 @@ export interface AnalyzeReasoningRequest {
   selectedDrugs: string[]
   confidence: number
   caseContext: string
+  existingBlocks: DiagramBlock[] // Blocks already created by Gemini (with IDs)
 }
 
 export interface AnalyzeReasoningResponse {

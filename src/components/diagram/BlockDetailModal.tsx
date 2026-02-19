@@ -3,14 +3,18 @@ import { getBlockStyle } from './blockTypes'
 import BlockFeedback from './BlockFeedback'
 
 export default function BlockDetailModal() {
-  const { selectedBlock, diagramBlocks, dispatch } = useMode()
+  const { selectedBlock, diagramBlocks, expertBlocks, dispatch } = useMode()
 
   if (!selectedBlock) return null
 
   const style = getBlockStyle(selectedBlock.type)
 
+  // Determine which blocks array the selected block belongs to
+  const isExpertBlock = expertBlocks.some((block) => block.id === selectedBlock.id)
+  const currentBlocks = isExpertBlock ? expertBlocks : diagramBlocks
+
   // Find blocks that connect TO this block (incoming connections)
-  const connectsFrom = diagramBlocks.filter((block) =>
+  const connectsFrom = currentBlocks.filter((block) =>
     block.connects_to?.includes(selectedBlock.id)
   )
 
@@ -187,7 +191,7 @@ export default function BlockDetailModal() {
             </div>
             <div className="flex flex-col gap-2">
               {selectedBlock.connects_to.map((id) => {
-                const connectedBlock = diagramBlocks.find((b) => b.id === id)
+                const connectedBlock = currentBlocks.find((b) => b.id === id)
                 if (!connectedBlock) return null
 
                 const connectedStyle = getBlockStyle(connectedBlock.type)

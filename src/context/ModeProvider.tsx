@@ -53,7 +53,7 @@ export const useMode = () => {
 
 // Session states: 'idle' | 'analyzing' | 'reviewed' | 'expert'
 const initialState: ModeState = {
-  mode: 'demo', // 'demo' | 'live'
+  mode: 'live', // 'demo' | 'live'
   isPlaying: false,
   reasoningText: '',
   confidence: 3,

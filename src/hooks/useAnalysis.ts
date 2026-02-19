@@ -6,7 +6,7 @@ import { analyzeReasoning } from '../services/api'
  * Hook for analyzing user reasoning and generating diagram
  */
 export function useAnalysis() {
-  const { reasoningText, selectedDrugs, confidence, currentCase, dispatch } = useMode()
+  const { reasoningText, selectedDrugs, confidence, currentCase, diagramBlocks, dispatch } = useMode()
 
   const submitReasoning = useCallback(async () => {
     // Validation
@@ -25,6 +25,7 @@ export function useAnalysis() {
         selectedDrugs,
         confidence,
         caseContext: currentCase.systemContext,
+        existingBlocks: diagramBlocks, // Pass existing blocks so Claude preserves IDs
       })
 
       // Update diagram with results
@@ -52,7 +53,7 @@ export function useAnalysis() {
         alert('Analysis failed. Please check your API key and try again.')
       }
     }
-  }, [reasoningText, selectedDrugs, confidence, currentCase, dispatch])
+  }, [reasoningText, selectedDrugs, confidence, currentCase, diagramBlocks, dispatch])
 
   return {
     submitReasoning,
