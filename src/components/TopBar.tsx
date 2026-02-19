@@ -3,8 +3,16 @@ import { useMode } from '../context/ModeProvider'
 import { compareReasoning } from '../utils/compareReasoning'
 
 export default function TopBar() {
-  const { isPlaying, playDemo, stopDemo, sessionState, dispatch, currentCase, diagramBlocks } =
-    useMode()
+  const {
+    isPlaying,
+    playDemo,
+    stopDemo,
+    sessionState,
+    dispatch,
+    currentCase,
+    diagramBlocks,
+    mode,
+  } = useMode()
 
   const handleShowExpertAnalysis = () => {
     // Compute comparison between user's reasoning and expert reasoning
@@ -56,27 +64,53 @@ export default function TopBar() {
         </>
       )}
 
-      {/* Demo button */}
-      <button
-        onClick={isPlaying ? stopDemo : playDemo}
-        className={`flex items-center gap-[5px] rounded-[6px] px-3 py-[6px] font-['DM_Sans',sans-serif] text-[11px] font-semibold tracking-wide transition-all ${
-          isPlaying
-            ? 'border border-[var(--crimson-border)] bg-[var(--crimson-light)] text-[var(--crimson)]'
-            : 'border border-[rgba(73,198,185,0.35)] bg-[#EDFAF8] text-[var(--teal-dark)]'
-        }`}
-      >
-        {isPlaying ? (
-          <>
-            <Square size={12} fill="currentColor" />
-            Stop Demo
-          </>
-        ) : (
-          <>
-            <Play size={12} fill="currentColor" />
-            Run Demo
-          </>
-        )}
-      </button>
+      {/* Mode toggle */}
+      <div className="flex gap-1 rounded-[6px] bg-[var(--muted-bg)] p-[2px]">
+        <button
+          onClick={() => dispatch({ type: 'SET_MODE', payload: 'demo' })}
+          className={`rounded-[4px] border-none px-3 py-[5px] font-['DM_Sans',sans-serif] text-[10px] font-semibold transition-all ${
+            mode === 'demo'
+              ? 'bg-[var(--surface)] text-[var(--text-primary)] shadow-[var(--shadow-sm)]'
+              : 'bg-transparent text-[var(--text-tertiary)]'
+          }`}
+        >
+          Demo
+        </button>
+        <button
+          onClick={() => dispatch({ type: 'SET_MODE', payload: 'live' })}
+          className={`rounded-[4px] border-none px-3 py-[5px] font-['DM_Sans',sans-serif] text-[10px] font-semibold transition-all ${
+            mode === 'live'
+              ? 'bg-[var(--surface)] text-[var(--text-primary)] shadow-[var(--shadow-sm)]'
+              : 'bg-transparent text-[var(--text-tertiary)]'
+          }`}
+        >
+          Live
+        </button>
+      </div>
+
+      {/* Demo button (only show in demo mode) */}
+      {mode === 'demo' && (
+        <button
+          onClick={isPlaying ? stopDemo : playDemo}
+          className={`flex items-center gap-[5px] rounded-[6px] px-3 py-[6px] font-['DM_Sans',sans-serif] text-[11px] font-semibold tracking-wide transition-all ${
+            isPlaying
+              ? 'border border-[var(--crimson-border)] bg-[var(--crimson-light)] text-[var(--crimson)]'
+              : 'border border-[rgba(73,198,185,0.35)] bg-[#EDFAF8] text-[var(--teal-dark)]'
+          }`}
+        >
+          {isPlaying ? (
+            <>
+              <Square size={12} fill="currentColor" />
+              Stop Demo
+            </>
+          ) : (
+            <>
+              <Play size={12} fill="currentColor" />
+              Run Demo
+            </>
+          )}
+        </button>
+      )}
     </header>
   )
 }
