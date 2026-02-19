@@ -71,6 +71,9 @@ function modeReducer(state, action) {
     case 'SET_REASONING_TEXT':
       return { ...state, reasoningText: action.payload }
 
+    case 'APPEND_REASONING_TEXT':
+      return { ...state, reasoningText: state.reasoningText + action.payload }
+
     case 'SET_CONFIDENCE':
       return { ...state, confidence: action.payload }
 
@@ -111,6 +114,23 @@ function modeReducer(state, action) {
         sessionState: 'reviewed',
         diagramBlocks: action.payload,
         diagramOpen: true,
+      }
+
+    case 'ADD_DIAGRAM_BLOCK':
+      return {
+        ...state,
+        diagramBlocks: [...state.diagramBlocks, action.payload],
+        diagramOpen: true,
+      }
+
+    case 'UPDATE_BLOCK_CONNECTION':
+      return {
+        ...state,
+        diagramBlocks: state.diagramBlocks.map((block) =>
+          block.id === action.payload.from
+            ? { ...block, connects_to: [...(block.connects_to || []), action.payload.to] }
+            : block
+        ),
       }
 
     case 'ANALYSIS_FAILED':
@@ -204,6 +224,24 @@ export function ModeProvider({ children }) {
           case 'typeText':
             // Simulate typing in textarea
             dispatch({ type: 'SET_REASONING_TEXT', payload: step.text })
+            break
+
+          case 'appendText':
+            // Append more text to textarea
+            dispatch({ type: 'APPEND_REASONING_TEXT', payload: step.text })
+            break
+
+          case 'addDiagramBlock':
+            // Add a single block to the diagram
+            dispatch({ type: 'ADD_DIAGRAM_BLOCK', payload: step.block })
+            break
+
+          case 'updateBlockConnection':
+            // Update a block's connections
+            dispatch({
+              type: 'UPDATE_BLOCK_CONNECTION',
+              payload: { from: step.from, to: step.to },
+            })
             break
 
           case 'selectDrug':

@@ -130,19 +130,141 @@ Symptoms:
     alignment: 92,
   },
 
-  // Demo script for v3 single-submission workflow
+  // Demo script for v3 - incremental reasoning with live diagram building
   demoScript: [
     { action: 'caseLoad', delay: 500 },
     { action: 'ttsAutoPlay', delay: 800 },
-    { action: 'startTyping', delay: 2500 },
+
+    // Chunk 1: Initial observations
     {
       action: 'typeText',
-      text: "Patient presents with classic T2DM symptoms and HbA1c 9.1%. Initial instinct is metformin as first-line, but I need to consider comorbidities.\n\nKey findings:\n- eGFR 52 (CKD Stage 3a) — metformin dose would need adjustment but is still safe\n- BP 148/92 — hypertensive, suggests need for medication with BP benefits\n- Post-MI 8mo ago — this changes everything. Need cardioprotective agent.\n- HFrEF with EF 35% — THIS is the critical finding.\n\nWith confirmed HFrEF, the patient needs an SGLT2 inhibitor for proven mortality benefit. Empagliflozin is supported by EMPEROR-Reduced trial for HFrEF patients. It also treats his diabetes and helps with BP.\n\nMetformin would be fine for glycemic control but doesn't address his cardiac risk, which is the primary concern here.",
-      delay: 100,
+      text: "Okay, looking at James... 61 years old, newly diagnosed T2DM with HbA1c at 9.1%. That's pretty high, definitely needs treatment. Classic symptoms too - polyuria, polydipsia, fatigue. Textbook presentation.\n\n",
+      delay: 2500,
     },
-    { action: 'selectDrug', drug: 'SGLT2i', delay: 800 },
-    { action: 'setConfidence', value: 5, delay: 600 },
-    { action: 'submit', delay: 1200 },
-    { action: 'buildDiagram', delay: 1800 },
+    {
+      action: 'addDiagramBlock',
+      block: {
+        id: 'd1',
+        type: 'OBSERVATION',
+        title: 'Uncontrolled T2DM presentation',
+        body: 'HbA1c 9.1% with classic symptoms (polyuria, polydipsia, fatigue). Clear indication for pharmacotherapy.',
+        connects_to: [],
+      },
+      delay: 1500,
+    },
+
+    // Chunk 2: Initial medication consideration
+    {
+      action: 'appendText',
+      text: "My first thought is metformin - it's the standard first-line for T2DM. Looking at his kidney function... eGFR is 52, that's CKD stage 3a. Metformin is still safe here, would just need to watch the dose. So far so good.\n\n",
+      delay: 2000,
+    },
+    {
+      action: 'addDiagramBlock',
+      block: {
+        id: 'd2',
+        type: 'CONSIDERATION',
+        title: 'Metformin - standard first-line',
+        body: 'eGFR 52 allows metformin use with dose monitoring. Standard guideline-recommended approach.',
+        connects_to: [],
+      },
+      delay: 1500,
+    },
+
+    // Chunk 3: Discovering cardiac history
+    {
+      action: 'appendText',
+      text: "Wait, let me check his history... Oh. NSTEMI 8 months ago. That's significant. He's got a stent in his LAD, on dual antiplatelet therapy. And his echo shows... EF 35%? That's HFrEF. Heart failure with reduced ejection fraction.\n\n",
+      delay: 2500,
+    },
+    {
+      action: 'addDiagramBlock',
+      block: {
+        id: 'd3',
+        type: 'OBSERVATION',
+        title: 'HFrEF with recent MI',
+        body: 'EF 35% confirms heart failure. NSTEMI 8 months ago with LAD stent. High cardiovascular risk.',
+        connects_to: ['d4'],
+      },
+      delay: 1500,
+    },
+
+    // Chunk 4: Connecting dots
+    {
+      action: 'appendText',
+      text: "Okay this changes everything. He doesn't just need glucose control - he needs a medication that will help his heart failure. HFrEF has high mortality risk. The diabetes is important but the cardiac status is what's going to kill him if we don't address it.\n\n",
+      delay: 2500,
+    },
+    {
+      action: 'addDiagramBlock',
+      block: {
+        id: 'd4',
+        type: 'INTERPRETATION',
+        title: 'Cardiac risk supersedes glycemic urgency',
+        body: 'HFrEF is the dominant clinical problem. Must prioritize cardiovascular mortality benefit over pure glycemic efficacy.',
+        connects_to: ['d5', 'd6'],
+      },
+      delay: 1500,
+    },
+    { action: 'updateBlockConnection', from: 'd1', to: 'd4', delay: 500 },
+    { action: 'updateBlockConnection', from: 'd2', to: 'd4', delay: 500 },
+
+    // Chunk 5: Reconsidering options
+    {
+      action: 'appendText',
+      text: "So metformin would control his glucose, sure, but it doesn't have proven mortality benefit in HFrEF. I need to think about SGLT2 inhibitors here. The EMPEROR-Reduced trial showed empagliflozin reduces mortality in HFrEF patients. That's the evidence I need.\n\n",
+      delay: 2500,
+    },
+    {
+      action: 'addDiagramBlock',
+      block: {
+        id: 'd5',
+        type: 'CONSIDERATION',
+        title: 'SGLT2i - proven HFrEF benefit',
+        body: 'Empagliflozin has demonstrated mortality reduction in HFrEF (EMPEROR-Reduced). Also provides glycemic control and BP benefits.',
+        connects_to: ['d7'],
+      },
+      delay: 1500,
+    },
+
+    // Chunk 6: Ruling out alternatives
+    {
+      action: 'appendText',
+      text: "What about GLP-1 agonists? They have CV benefits too... but the data for HFrEF specifically is strongest with SGLT2 inhibitors. SGLT2i is the class with the mortality benefit in this exact patient population. That's what the evidence says.\n\n",
+      delay: 2500,
+    },
+    {
+      action: 'addDiagramBlock',
+      block: {
+        id: 'd6',
+        type: 'CONTRAINDICATION',
+        title: 'GLP-1 RA - less compelling in HFrEF',
+        body: 'While GLP-1 agonists have cardiovascular benefits, HFrEF mortality data is strongest for SGLT2 inhibitors.',
+        connects_to: ['d7'],
+      },
+      delay: 1500,
+    },
+
+    // Chunk 7: Final decision
+    {
+      action: 'appendText',
+      text: 'Decision: Empagliflozin. It treats his diabetes AND his heart failure. His eGFR of 52 is safe for SGLT2i. This is the evidence-based choice for a patient with both T2DM and HFrEF. The cardiac indication is actually the stronger reason here, the diabetes control is almost a bonus.',
+      delay: 2500,
+    },
+    { action: 'selectDrug', drug: 'SGLT2i', delay: 1000 },
+    {
+      action: 'addDiagramBlock',
+      block: {
+        id: 'd7',
+        type: 'DECISION',
+        title: 'Empagliflozin as primary agent',
+        body: 'Addresses both T2DM and HFrEF with proven mortality reduction. eGFR 52 is safe. Evidence-based choice.',
+        connects_to: [],
+      },
+      delay: 1500,
+    },
+
+    // Final actions
+    { action: 'setConfidence', value: 5, delay: 1000 },
   ],
 }
