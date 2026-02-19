@@ -84,7 +84,7 @@ Confidence Level: ${request.confidence}/5
 Extract the structured reasoning diagram from this clinical thinking.`
 
   const response = await client.messages.create({
-    model: 'claude-3-5-sonnet-20241022',
+    model: 'claude-3-5-sonnet-20240620',
     max_tokens: 4096,
     temperature: 0.3,
     system: systemPrompt,
@@ -156,7 +156,7 @@ ${params.newText}
 Update the diagram based on the new reasoning.`
 
   const response = await client.messages.create({
-    model: 'claude-3-5-sonnet-20241022',
+    model: 'claude-3-5-sonnet-20240620',
     max_tokens: 4096,
     temperature: 0.3,
     system: systemPrompt,
