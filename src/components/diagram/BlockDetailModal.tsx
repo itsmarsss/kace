@@ -115,18 +115,54 @@ export default function BlockDetailModal() {
                 if (!connectedBlock) return null
 
                 const connectedStyle = getBlockStyle(connectedBlock.type)
+
+                // Get colors for the connected block
+                const connectedBgClass =
+                  connectedBlock.type === 'OBSERVATION'
+                    ? 'bg-[var(--teal-light)]'
+                    : connectedBlock.type === 'INTERPRETATION'
+                      ? 'bg-[var(--slate-light)]'
+                      : connectedBlock.type === 'CONSIDERATION'
+                        ? 'bg-[var(--amber-light)]'
+                        : connectedBlock.type === 'CONTRAINDICATION'
+                          ? 'bg-[var(--crimson-light)]'
+                          : 'bg-[var(--green-light)]'
+
+                const connectedBorderClass =
+                  connectedBlock.type === 'OBSERVATION'
+                    ? 'border-[var(--teal-border)]'
+                    : connectedBlock.type === 'INTERPRETATION'
+                      ? 'border-[var(--slate-border)]'
+                      : connectedBlock.type === 'CONSIDERATION'
+                        ? 'border-[var(--amber-border)]'
+                        : connectedBlock.type === 'CONTRAINDICATION'
+                          ? 'border-[var(--crimson-border)]'
+                          : 'border-[var(--green-border)]'
+
+                const connectedColorClass =
+                  connectedBlock.type === 'OBSERVATION'
+                    ? 'text-[var(--teal)]'
+                    : connectedBlock.type === 'INTERPRETATION'
+                      ? 'text-[var(--slate)]'
+                      : connectedBlock.type === 'CONSIDERATION'
+                        ? 'text-[var(--amber)]'
+                        : connectedBlock.type === 'CONTRAINDICATION'
+                          ? 'text-[var(--crimson)]'
+                          : 'text-[var(--green)]'
+
                 return (
-                  <div
+                  <button
                     key={id}
-                    className="rounded-[var(--r-sm)] border border-[var(--border)] bg-[var(--surface)] p-[8px_12px]"
+                    onClick={() => dispatch({ type: 'SET_SELECTED_BLOCK', payload: connectedBlock })}
+                    className={`w-full cursor-pointer rounded-[var(--r-sm)] border p-[8px_12px] text-left transition-all duration-150 hover:shadow-[var(--shadow-md)] ${connectedBgClass} ${connectedBorderClass}`}
                   >
-                    <div className="mb-1 font-['DM_Sans',sans-serif] text-[9px] font-semibold uppercase tracking-[0.12em] text-[var(--text-tertiary)]">
+                    <div className={`mb-1 font-['DM_Sans',sans-serif] text-[9px] font-semibold uppercase tracking-[0.12em] ${connectedColorClass}`}>
                       {connectedStyle.label}
                     </div>
                     <div className="font-['DM_Sans',sans-serif] text-[13px] font-medium text-[var(--text-primary)]">
                       {connectedBlock.title}
                     </div>
-                  </div>
+                  </button>
                 )
               })}
             </div>
