@@ -36,9 +36,12 @@ const blockSchema = {
             description: 'Array of block IDs this connects to (can be multiple for branching, or multiple blocks can point to same ID for merging)'
           },
           step: { type: 'integer', description: 'Sequential step number' },
-          addedAt: { type: 'integer', description: 'Timestamp' }
+          addedAt: { type: 'integer', description: 'Timestamp' },
+          sourceStart: { type: 'integer', description: 'Character index where cited text starts in the NEW TEXT' },
+          sourceEnd: { type: 'integer', description: 'Character index where cited text ends in the NEW TEXT' },
+          sourceText: { type: 'string', description: 'The actual quoted text from reasoning that this block represents' }
         },
-        required: ['id', 'type', 'title', 'body', 'connects_to', 'step', 'addedAt']
+        required: ['id', 'type', 'title', 'body', 'connects_to', 'step', 'addedAt', 'sourceStart', 'sourceEnd', 'sourceText']
       }
     }
   },
@@ -75,6 +78,9 @@ ${params.previousText}
 NEW TEXT ADDED:
 ${params.textDiff}
 
+FULL NEW TEXT (for citation):
+${params.newText}
+
 CURRENT BLOCKS:
 ${JSON.stringify(params.currentBlocks, null, 2)}
 
@@ -107,9 +113,18 @@ Example of NON-SEQUENTIAL flow:
 - b3 (interpretation B) connects_to: ["b4"]
 - b4 (synthesis) connects_to: ["b5"] (decision)
 
+CITATION (REQUIRED):
+- For each block, you MUST identify where in the NEW TEXT it came from
+- sourceStart: character index where the relevant text starts (0-based)
+- sourceEnd: character index where the relevant text ends
+- sourceText: copy the exact text from NEW TEXT that this block represents
+- If a block spans multiple sentences, cite the full range
+- Be precise - this will be used to highlight text when user hovers over the block
+
 TASK: Extract new reasoning from added text and create new blocks. Keep existing blocks unless student explicitly revises them.
 
 Return ALL blocks (existing + new) with proper connections showing the true reasoning flow, not just sequential chains.
+Each block MUST include accurate citations (sourceStart, sourceEnd, sourceText) pointing to the NEW TEXT.
 
 Current timestamp: ${Date.now()}`
 

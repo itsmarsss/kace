@@ -6,6 +6,9 @@ export interface DiagramBlock {
   connects_to: string[]
   step?: number
   addedAt?: number
+  sourceStart?: number // Character index where cited text starts in reasoning
+  sourceEnd?: number // Character index where cited text ends in reasoning
+  sourceText?: string // The actual quoted text from reasoning
 }
 
 export interface AnalyzeReasoningRequest {

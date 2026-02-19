@@ -1,5 +1,6 @@
 import { forwardRef } from 'react'
 import { getBlockStyle, getBlockTypeClass } from './blockTypes'
+import { useMode } from '../../context/ModeProvider'
 
 interface DiagramBlockProps {
   block: any
@@ -9,6 +10,7 @@ interface DiagramBlockProps {
 
 const DiagramBlock = forwardRef<HTMLDivElement, DiagramBlockProps>(
   ({ block, index, diffState }, ref) => {
+    const { dispatch } = useMode()
     const style = getBlockStyle(block.type)
     const typeClass = getBlockTypeClass(block.type)
 
@@ -24,11 +26,26 @@ const DiagramBlock = forwardRef<HTMLDivElement, DiagramBlockProps>(
               ? 'text-[var(--crimson)]'
               : 'text-[var(--green)]' // DECISION
 
+    const handleMouseEnter = () => {
+      dispatch({ type: 'SET_HOVERED_BLOCK', payload: block })
+    }
+
+    const handleMouseLeave = () => {
+      dispatch({ type: 'SET_HOVERED_BLOCK', payload: null })
+    }
+
+    const handleDoubleClick = () => {
+      dispatch({ type: 'SET_SELECTED_BLOCK', payload: block })
+    }
+
     return (
       <div
         ref={ref}
-        className={`diagram-block ${typeClass} ${diffState ? `block--${diffState}` : ''}`}
+        className={`diagram-block ${typeClass} ${diffState ? `block--${diffState}` : ''} cursor-pointer transition-shadow hover:shadow-[var(--shadow-md)]`}
         style={{ animationDelay: `${index * 150}ms` }}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        onDoubleClick={handleDoubleClick}
       >
         {/* Type label */}
         <div

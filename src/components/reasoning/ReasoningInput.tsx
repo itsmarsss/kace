@@ -1,16 +1,14 @@
-import { useRef } from 'react'
 import { useMode } from '../../context/ModeProvider'
 import { useAnalysis } from '../../hooks/useAnalysis'
 import { useLiveDiagram } from '../../hooks/useLiveDiagram'
 import ConfidenceSlider from '../input/ConfidenceSlider'
 import TreatmentReference from './TreatmentReference'
+import HighlightedTextarea from './HighlightedTextarea'
 
 export default function ReasoningInput() {
   const { reasoningText, selectedDrugs, isSubmitted, isAnalyzing, mode, dispatch } = useMode()
   const { submitReasoning } = useAnalysis()
   const { triggerNow, isGenerating, countdown } = useLiveDiagram()
-
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   // Auto-resize textarea - disabled since we want it to fill container
   // useEffect(() => {
@@ -64,18 +62,17 @@ export default function ReasoningInput() {
       {/* Reasoning Textarea */}
       <div className="flex flex-1 flex-col px-5 pb-3">
         <div className="label-caps mb-2 flex-shrink-0">YOUR REASONING</div>
-        <textarea
-          ref={textareaRef}
+        <HighlightedTextarea
           value={reasoningText}
-          onChange={(e) =>
+          onChange={(value) =>
             dispatch({
               type: 'SET_REASONING_TEXT',
-              payload: e.target.value,
+              payload: value,
             })
           }
           readOnly={isSubmitted}
           placeholder="Walk through your reasoning. Which findings do you consider most significant? What did you rule out and why? What drives your drug selection?"
-          className={`h-full w-full resize-none rounded-[var(--r)] p-[13px_16px] font-['DM_Sans',sans-serif] text-[14px] leading-[1.7] shadow-[var(--shadow-sm)] outline-none transition-all duration-150 ${
+          className={`rounded-[var(--r)] shadow-[var(--shadow-sm)] outline-none transition-all duration-150 ${
             isSubmitted
               ? 'cursor-default border border-[var(--border)] bg-[var(--muted-bg)] text-[var(--text-secondary)]'
               : 'cursor-text border border-[var(--border-md)] bg-[var(--card)] text-[var(--text-primary)]'

@@ -57,6 +57,14 @@ REQUIRED FIELDS:
 - connects_to: array of block ID strings (can be empty, one, or many)
 - step: sequential number based on order in reasoning
 - addedAt: ${Date.now()}
+- sourceStart: character index where cited text starts (0-based)
+- sourceEnd: character index where cited text ends
+- sourceText: exact text from reasoning that this block represents
+
+CITATION (REQUIRED):
+- For each block, identify where in the reasoning text it came from
+- Be precise with character indices - this will highlight text on hover
+- If a block spans multiple sentences, cite the full range
 
 OUTPUT FORMAT:
 {
@@ -68,12 +76,15 @@ OUTPUT FORMAT:
       "body": "...",
       "connects_to": ["b2", "b3"],
       "step": 1,
-      "addedAt": ${Date.now()}
+      "addedAt": ${Date.now()},
+      "sourceStart": 0,
+      "sourceEnd": 50,
+      "sourceText": "..."
     }
   ]
 }
 
-Return ONLY this JSON structure.`
+Return ONLY this JSON structure with accurate citations for each block.`
 
   const userPrompt = `Clinical Case Context:
 ${request.caseContext}
@@ -84,7 +95,8 @@ ${request.reasoningText}
 Selected Treatments: ${request.selectedDrugs.join(', ') || 'None selected'}
 Confidence Level: ${request.confidence}/5
 
-Extract the structured reasoning diagram showing the true flow of their clinical thinking (branches, merges, not just linear).`
+Extract the structured reasoning diagram showing the true flow of their clinical thinking (branches, merges, not just linear).
+Include accurate citations (sourceStart, sourceEnd, sourceText) for each block pointing to the exact location in the reasoning text above.`
 
   const response = await client.messages.create({
     model: 'claude-sonnet-4-20250514',

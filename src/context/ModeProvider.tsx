@@ -20,6 +20,8 @@ interface ModeState {
   showDiagramFullscreen: boolean
   currentSpeechLine: number
   comparisonResult: ComparisonResult | null
+  hoveredBlock: DiagramBlock | null
+  selectedBlock: DiagramBlock | null
 }
 
 interface ModeAction {
@@ -62,6 +64,8 @@ const initialState: ModeState = {
   showDiagramFullscreen: false,
   currentSpeechLine: 0,
   comparisonResult: null,
+  hoveredBlock: null,
+  selectedBlock: null,
 }
 
 function modeReducer(state: ModeState, action: ModeAction): ModeState {
@@ -183,6 +187,12 @@ function modeReducer(state: ModeState, action: ModeAction): ModeState {
         ...state,
         currentSpeechLine: Math.max(state.currentSpeechLine - 1, 0),
       }
+
+    case 'SET_HOVERED_BLOCK':
+      return { ...state, hoveredBlock: action.payload }
+
+    case 'SET_SELECTED_BLOCK':
+      return { ...state, selectedBlock: action.payload }
 
     case 'RESET':
       return {

@@ -3,6 +3,7 @@ import { useMode } from '../../context/ModeProvider'
 import DiagramBlock from './DiagramBlock'
 import DiagramFlow from './DiagramFlow'
 import { DiagramFullscreenButton } from './DiagramFullscreen'
+import BlockDetailModal from './BlockDetailModal'
 
 export default function DiagramPanel() {
   const { diagramBlocks, diagramOpen, diagramLayout, dispatch } = useMode()
@@ -84,6 +85,9 @@ export default function DiagramPanel() {
           </div>
         )}
       </div>
+
+      {/* Block detail modal (shows on double-click) */}
+      <BlockDetailModal />
     </div>
   )
 }

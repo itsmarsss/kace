@@ -16,9 +16,11 @@ import {
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 import { getBlockStyle } from './blockTypes'
+import { useMode } from '../../context/ModeProvider'
 
 // Custom node component for diagram blocks
 function DiagramNode({ data }: { data: any }) {
+  const { dispatch } = useMode()
   const style = getBlockStyle(data.type)
 
   // Get Tailwind classes based on block type
@@ -66,9 +68,24 @@ function DiagramNode({ data }: { data: any }) {
             ? 'text-[var(--crimson)]'
             : 'text-[var(--green)]' // DECISION
 
+  const handleMouseEnter = () => {
+    dispatch({ type: 'SET_HOVERED_BLOCK', payload: data.block })
+  }
+
+  const handleMouseLeave = () => {
+    dispatch({ type: 'SET_HOVERED_BLOCK', payload: null })
+  }
+
+  const handleDoubleClick = () => {
+    dispatch({ type: 'SET_SELECTED_BLOCK', payload: data.block })
+  }
+
   return (
     <div
-      className={`min-w-[280px] max-w-[350px] rounded-[var(--r)] border border-t-[3px] p-[12px_14px] shadow-[var(--shadow-md)] ${bgClass} ${borderClass} ${borderTopClass}`}
+      className={`min-w-[280px] max-w-[350px] rounded-[var(--r)] border border-t-[3px] p-[12px_14px] shadow-[var(--shadow-md)] transition-all duration-150 hover:shadow-[var(--shadow-lg)] ${bgClass} ${borderClass} ${borderTopClass}`}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      onDoubleClick={handleDoubleClick}
     >
       {/* Connection handles for edges */}
       <Handle type="target" position={Position.Top} style={{ opacity: 0 }} />
@@ -139,6 +156,7 @@ function FlowContent({ blocks, setNodes, setEdges }: FlowContentProps) {
         type: block.type,
         title: block.title,
         body: block.body,
+        block: block, // Pass full block for hover/click handlers
       },
     }))
 
