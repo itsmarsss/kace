@@ -63,15 +63,26 @@ BLOCK TYPES:
 - DECISION: Student makes final choice or determination
 
 REQUIRED FIELDS:
-- id: "b1", "b2", etc.
+- id: STRING like "b1", "b2", "b3" (NOT numbers)
 - type: from list above
 - title: Concise summary (max 8 words)
 - body: Third-person summary of student's reasoning (2-3 sentences, concise)
-- connects_to: logical flow IDs
-- step: sequential order
+- connects_to: array of block ID strings
+- step: sequential number
 - addedAt: ${Date.now()}
 
-Return ONLY valid JSON. No markdown.
+OUTPUT FORMAT: Return object with "blocks" array:
+{
+  "blocks": [
+    {
+      "id": "b1",
+      "type": "OBSERVATION",
+      ...
+    }
+  ]
+}
+
+Return ONLY this JSON structure. No markdown code blocks.
 
 EXAMPLES:
 
@@ -156,13 +167,33 @@ Extract the structured reasoning diagram from this clinical thinking.`
       jsonText = codeBlockMatch[1].trim()
     }
 
-    // Try to find JSON object
-    const jsonMatch = jsonText.match(/\{[\s\S]*\}/)
-    if (!jsonMatch) {
-      throw new Error('No JSON found in response')
+    // Try to parse JSON (could be object or array)
+    let parsed: any
+
+    // Check if it's an array
+    if (jsonText.trim().startsWith('[')) {
+      const arrayMatch = jsonText.match(/\[[\s\S]*\]/)
+      if (!arrayMatch) {
+        throw new Error('No JSON array found in response')
+      }
+      parsed = { blocks: JSON.parse(arrayMatch[0]) }
+    } else {
+      // It's an object
+      const jsonMatch = jsonText.match(/\{[\s\S]*\}/)
+      if (!jsonMatch) {
+        throw new Error('No JSON found in response')
+      }
+      parsed = JSON.parse(jsonMatch[0])
     }
 
-    const parsed = JSON.parse(jsonMatch[0])
+    // Ensure IDs are strings
+    if (parsed.blocks) {
+      parsed.blocks = parsed.blocks.map((block: any) => ({
+        ...block,
+        id: String(block.id), // Convert numeric IDs to strings
+      }))
+    }
+
     return parsed
   } catch (error) {
     console.error('Failed to parse API response:', content.text)
@@ -223,15 +254,23 @@ WHEN TO ADD NEW BLOCKS:
 KEEP EXISTING BLOCKS unless student explicitly revises that specific thought.
 
 REQUIRED FIELDS:
-- id: keep existing, next available for new
+- id: STRING like "b1", "b2" (keep existing IDs, use next sequential for new)
 - type: from list above
 - title: concise summary (max 8 words)
 - body: third-person summary (2-3 sentences, concise)
-- connects_to: logical flow
+- connects_to: array of block ID strings
 - step: highest step + 1 for new blocks
 - addedAt: ${Date.now()}
 
-Return ONLY valid JSON. No markdown.
+OUTPUT FORMAT: Return object with "blocks" array containing ALL blocks (existing + new):
+{
+  "blocks": [
+    { existing blocks unchanged },
+    { new blocks with incremented IDs }
+  ]
+}
+
+Return ONLY this JSON structure. No markdown code blocks.
 
 EXAMPLE:
 
@@ -288,13 +327,33 @@ Update the diagram based on the new reasoning.`
       jsonText = codeBlockMatch[1].trim()
     }
 
-    // Try to find JSON object
-    const jsonMatch = jsonText.match(/\{[\s\S]*\}/)
-    if (!jsonMatch) {
-      throw new Error('No JSON found in response')
+    // Try to parse JSON (could be object or array)
+    let parsed: any
+
+    // Check if it's an array
+    if (jsonText.trim().startsWith('[')) {
+      const arrayMatch = jsonText.match(/\[[\s\S]*\]/)
+      if (!arrayMatch) {
+        throw new Error('No JSON array found in response')
+      }
+      parsed = { blocks: JSON.parse(arrayMatch[0]) }
+    } else {
+      // It's an object
+      const jsonMatch = jsonText.match(/\{[\s\S]*\}/)
+      if (!jsonMatch) {
+        throw new Error('No JSON found in response')
+      }
+      parsed = JSON.parse(jsonMatch[0])
     }
 
-    const parsed = JSON.parse(jsonMatch[0])
+    // Ensure IDs are strings
+    if (parsed.blocks) {
+      parsed.blocks = parsed.blocks.map((block: any) => ({
+        ...block,
+        id: String(block.id), // Convert numeric IDs to strings
+      }))
+    }
+
     return parsed
   } catch (error) {
     console.error('Failed to parse API response:', content.text)
