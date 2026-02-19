@@ -43,34 +43,43 @@ export async function analyzeReasoning(
 ): Promise<AnalyzeReasoningResponse> {
   const client = getClient()
 
-  const systemPrompt = `You are an expert clinical reasoning analyzer. Your task is to extract structured reasoning blocks from a clinician's written reasoning.
+  const systemPrompt = `You are an expert clinical reasoning analyzer. Extract structured reasoning blocks from a clinician's written reasoning.
 
-Extract the key steps in their clinical thinking process and categorize them into these types:
+BLOCK TYPES (use exactly these):
 - OBSERVATION: Clinical findings, vital signs, lab values, patient history
 - INTERPRETATION: Analysis and synthesis of observations
 - CONSIDERATION: Treatment options being considered
 - CONTRAINDICATION: Reasons against certain treatments
 - DECISION: Final treatment decision or key conclusions
 
-For each block, provide:
-- A concise title (max 8 words)
-- A body with the reasoning (2-3 sentences)
-- Connections to other blocks (logical flow)
+REQUIRED FIELDS:
+- id: string ("b1", "b2", etc.)
+- type: one of the exact types above (e.g., "OBSERVATION", not "assessment")
+- title: concise title (max 8 words)
+- body: reasoning explanation (2-3 sentences)
+- connects_to: array of block IDs that this block leads to
 
-Return ONLY a JSON object with this structure:
+CRITICAL: Return ONLY valid JSON. Do not wrap in markdown. Do not include explanations.
+
+Example format:
 {
   "blocks": [
     {
       "id": "b1",
       "type": "OBSERVATION",
-      "title": "...",
-      "body": "...",
-      "connects_to": ["b2", "b3"]
+      "title": "Elevated HbA1c presentation",
+      "body": "Patient presents with HbA1c of 9.1% indicating poor glycemic control. Classic symptoms of polyuria and polydipsia confirm active hyperglycemia.",
+      "connects_to": ["b2"]
+    },
+    {
+      "id": "b2",
+      "type": "INTERPRETATION",
+      "title": "Treatment urgency assessment",
+      "body": "HbA1c >9% requires immediate pharmacotherapy. Patient cannot achieve control with lifestyle alone at this level.",
+      "connects_to": ["b3"]
     }
   ]
-}
-
-Generate IDs as "b1", "b2", etc. Connect blocks to show logical reasoning flow (observations lead to interpretations, interpretations lead to considerations, etc.).`
+}`
 
   const userPrompt = `Clinical Case Context:
 ${request.caseContext}
@@ -102,9 +111,18 @@ Extract the structured reasoning diagram from this clinical thinking.`
     throw new Error('Unexpected response type from API')
   }
 
-  // Parse the JSON response
+  // Parse the JSON response (handle markdown code blocks)
   try {
-    const jsonMatch = content.text.match(/\{[\s\S]*\}/)
+    let jsonText = content.text.trim()
+
+    // Remove markdown code blocks if present
+    const codeBlockMatch = jsonText.match(/```(?:json)?\s*([\s\S]*?)\s*```/)
+    if (codeBlockMatch) {
+      jsonText = codeBlockMatch[1].trim()
+    }
+
+    // Try to find JSON object
+    const jsonMatch = jsonText.match(/\{[\s\S]*\}/)
     if (!jsonMatch) {
       throw new Error('No JSON found in response')
     }
@@ -130,20 +148,35 @@ export async function updateDiagramIncremental(params: {
 }): Promise<AnalyzeReasoningResponse> {
   const client = getClient()
 
-  const systemPrompt = `You are updating a reasoning diagram in real-time as a clinician types.
+  const systemPrompt = `You are updating a clinical reasoning diagram in real-time.
 
-Previous reasoning: ${params.previousText}
-New reasoning added: ${params.textDiff}
-Current diagram blocks: ${JSON.stringify(params.currentBlocks, null, 2)}
+PREVIOUS REASONING:
+${params.previousText}
 
-Your task: Update the diagram to reflect the new reasoning. You may:
-1. Add new blocks if new reasoning steps appear
-2. Modify existing blocks if reasoning is refined
-3. Update connections to show updated logical flow
+NEW TEXT ADDED:
+${params.textDiff}
 
-Keep existing block IDs where possible. Use "b1", "b2", etc. for new blocks.
+CURRENT BLOCKS:
+${JSON.stringify(params.currentBlocks, null, 2)}
 
-Return the complete updated blocks array in JSON format:
+TASK: Update the diagram to reflect new reasoning. You may:
+1. Add new blocks for new reasoning steps
+2. Modify existing blocks if refined
+3. Update connections to show logical flow
+
+BLOCK TYPES (use exactly these):
+- OBSERVATION, INTERPRETATION, CONSIDERATION, CONTRAINDICATION, DECISION
+
+REQUIRED FIELDS:
+- id: string (keep existing IDs, use "b1", "b2" for new ones)
+- type: exact type from list above
+- title: concise (max 8 words)
+- body: reasoning (2-3 sentences)
+- connects_to: array of block IDs
+
+CRITICAL: Return ONLY valid JSON. No markdown. No explanations.
+
+Format:
 {
   "blocks": [...]
 }`
@@ -174,7 +207,16 @@ Update the diagram based on the new reasoning.`
   }
 
   try {
-    const jsonMatch = content.text.match(/\{[\s\S]*\}/)
+    let jsonText = content.text.trim()
+
+    // Remove markdown code blocks if present
+    const codeBlockMatch = jsonText.match(/```(?:json)?\s*([\s\S]*?)\s*```/)
+    if (codeBlockMatch) {
+      jsonText = codeBlockMatch[1].trim()
+    }
+
+    // Try to find JSON object
+    const jsonMatch = jsonText.match(/\{[\s\S]*\}/)
     if (!jsonMatch) {
       throw new Error('No JSON found in response')
     }
