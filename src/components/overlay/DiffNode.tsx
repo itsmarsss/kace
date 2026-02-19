@@ -2,40 +2,51 @@ export default function DiffNode({ type, title, body, animationDelay = 0 }) {
   const labels = {
     match: 'Match',
     miss: 'Missed',
-    wrong: 'Diverged',
+    extra: 'Reconsidered',
   }
 
   const label = labels[type] || labels.match
 
-  // Define Tailwind classes for each type
+  // Define styles for each diff type
   const bgClass =
     type === 'match'
       ? 'bg-[var(--green-light)]'
       : type === 'miss'
-        ? 'bg-[var(--amber-light)]'
+        ? 'bg-[var(--muted-bg)]'
         : 'bg-[var(--crimson-light)]'
-  const borderClass =
+
+  const borderStyle =
     type === 'match'
-      ? 'border-[var(--green-border)]'
+      ? 'border-solid border-[var(--green-border)]'
       : type === 'miss'
-        ? 'border-[var(--amber-border)]'
-        : 'border-[var(--crimson-border)]'
+        ? 'border-dashed border-[var(--border-md)]'
+        : 'border-solid border-[var(--crimson-border)]'
+
   const labelColorClass =
     type === 'match'
       ? 'text-[var(--green)]'
       : type === 'miss'
-        ? 'text-[var(--amber)]'
+        ? 'text-[var(--text-tertiary)]'
         : 'text-[var(--crimson)]'
+
+  const opacityClass = type === 'miss' ? 'opacity-60' : 'opacity-100'
 
   return (
     <div
-      className={`animate-[fadeUp_0.4s_both] rounded-[6px] border px-[14px] py-[11px] ${bgClass} ${borderClass}`}
+      className={`animate-[fadeUp_0.4s_both] rounded-[6px] border px-[14px] py-[11px] ${bgClass} ${borderStyle} ${opacityClass}`}
       style={{ animationDelay: `${animationDelay}ms` }}
     >
-      <div
-        className={`mb-1 text-[9px] font-semibold uppercase tracking-[0.1em] ${labelColorClass}`}
-      >
-        {label}
+      <div className="mb-1 flex items-center gap-2">
+        <div
+          className={`text-[9px] font-semibold uppercase tracking-[0.1em] ${labelColorClass}`}
+        >
+          {label}
+        </div>
+        {type === 'extra' && (
+          <span className="rounded-[4px] bg-[var(--crimson)] px-[6px] py-[2px] text-[8px] font-bold uppercase tracking-wider text-white">
+            Reconsidered
+          </span>
+        )}
       </div>
 
       <div className="mb-[3px] text-[12px] font-medium text-[var(--text-primary)]">{title}</div>
