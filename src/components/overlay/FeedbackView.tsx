@@ -94,7 +94,7 @@ export default function FeedbackView() {
     const is2D = layout === '2d'
 
     return (
-      <div className="flex h-full flex-1 flex-col">
+      <div className="flex h-full flex-col">
         {/* Section header */}
         <div className="flex flex-shrink-0 items-center justify-between gap-3 border-b border-[var(--border)] px-4 py-3">
           <div>
@@ -165,9 +165,9 @@ export default function FeedbackView() {
   }
 
   return (
-    <div className="flex h-full w-full flex-col overflow-hidden bg-[var(--surface)]">
+    <div className="flex h-full w-full flex-col overflow-y-auto bg-[var(--surface)]">
       {/* Top bar with overall feedback */}
-      <div className="flex max-h-[40vh] flex-shrink-0 flex-col overflow-y-auto border-b border-[var(--border)] bg-[var(--surface)]">
+      <div className="flex flex-shrink-0 flex-col border-b border-[var(--border)] bg-[var(--surface)]">
         {/* Header row */}
         <div className="flex items-center justify-between px-6 py-4">
           <div className="flex items-center gap-4">
@@ -180,7 +180,9 @@ export default function FeedbackView() {
               </p>
             </div>
             {score > 0 && (
-              <div className={`flex h-16 w-16 items-center justify-center rounded-full ${getScoreBg()}`}>
+              <div
+                className={`flex h-16 w-16 items-center justify-center rounded-full ${getScoreBg()}`}
+              >
                 <div className={`text-[20px] font-bold ${getScoreColor()}`}>{score}</div>
               </div>
             )}
@@ -273,9 +275,9 @@ export default function FeedbackView() {
       </div>
 
       {/* Main content - side by side diagrams */}
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex h-[calc(100vh-52px)] flex-shrink-0 overflow-hidden">
         {/* Student's reasoning */}
-        <div className="flex w-1/2 flex-col overflow-hidden border-r border-[var(--border)]">
+        <div className="flex h-full w-1/2 flex-col overflow-hidden border-r border-[var(--border)]">
           {renderDiagramSection(
             'Your Reasoning',
             diagramBlocks,
@@ -287,7 +289,7 @@ export default function FeedbackView() {
         </div>
 
         {/* Ideal reasoning */}
-        <div className="flex w-1/2 flex-col overflow-hidden">
+        <div className="flex h-full w-1/2 flex-col overflow-hidden">
           {renderDiagramSection(
             'Ideal Reasoning',
             expertBlocks,
