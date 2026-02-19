@@ -1,15 +1,17 @@
 import { forwardRef } from 'react'
 import { getBlockStyle, getBlockTypeClass } from './blockTypes'
 import { useMode } from '../../context/ModeProvider'
+import BlockFeedback from './BlockFeedback'
 
 interface DiagramBlockProps {
   block: any
   index: number
   diffState?: string | null
+  showFeedback?: boolean
 }
 
 const DiagramBlock = forwardRef<HTMLDivElement, DiagramBlockProps>(
-  ({ block, index, diffState }, ref) => {
+  ({ block, index, diffState, showFeedback = false }, ref) => {
     const { dispatch } = useMode()
     const style = getBlockStyle(block.type)
     const typeClass = getBlockTypeClass(block.type)
@@ -64,6 +66,9 @@ const DiagramBlock = forwardRef<HTMLDivElement, DiagramBlockProps>(
         <div className="block-body font-['DM_Sans',sans-serif] text-[12px] font-normal leading-[1.55] text-[var(--text-secondary)]">
           {block.body}
         </div>
+
+        {/* Feedback */}
+        {showFeedback && block.feedback && <BlockFeedback feedback={block.feedback} />}
       </div>
     )
   }

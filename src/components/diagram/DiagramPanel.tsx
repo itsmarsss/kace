@@ -7,13 +7,30 @@ import { DiagramFullscreenButton } from './DiagramFullscreen'
 import BlockDetailModal from './BlockDetailModal'
 
 export default function DiagramPanel() {
-  const { diagramBlocks, diagramOpen, diagramLayout, dispatch } = useMode()
+  const {
+    diagramBlocks,
+    expertBlocks,
+    showExpertDiagram,
+    overallFeedback,
+    score,
+    mode,
+    diagramOpen,
+    diagramLayout,
+    dispatch,
+  } = useMode()
   const [layoutKey, setLayoutKey] = useState(0)
 
   const is2D = diagramLayout === '2d'
+  const hasExpertDiagram = expertBlocks.length > 0
+  const currentBlocks = showExpertDiagram ? expertBlocks : diagramBlocks
 
   const handleReLayout = () => {
     setLayoutKey((prev) => prev + 1)
+  }
+
+  const handleToggleDiagram = () => {
+    dispatch({ type: 'TOGGLE_EXPERT_DIAGRAM' })
+    setLayoutKey((prev) => prev + 1) // Force re-layout when switching
   }
 
   if (!diagramOpen) {
@@ -75,6 +92,21 @@ export default function DiagramPanel() {
           </button>
         )}
 
+        {/* Student/Expert toggle (live mode only, when expert blocks exist) */}
+        {mode === 'live' && hasExpertDiagram && (
+          <button
+            onClick={handleToggleDiagram}
+            className={`flex h-7 cursor-pointer items-center gap-1 rounded-[var(--r-sm)] border px-2 py-1 font-['DM_Sans',sans-serif] text-[10px] font-medium transition-all duration-150 ${
+              showExpertDiagram
+                ? 'border-[var(--green)] bg-[var(--green-light)] text-[var(--green)]'
+                : 'border-[var(--border)] bg-[var(--surface)] text-[var(--text-secondary)] hover:bg-[var(--card-hover)]'
+            }`}
+            title={showExpertDiagram ? 'Showing ideal reasoning' : 'Showing your reasoning'}
+          >
+            {showExpertDiagram ? '✓ Ideal' : 'Show Ideal'}
+          </button>
+        )}
+
         <DiagramFullscreenButton />
 
         <button
@@ -87,19 +119,43 @@ export default function DiagramPanel() {
 
       {/* Diagram scroll area */}
       <div className={`relative flex-1 ${is2D ? '' : 'overflow-y-auto overflow-x-hidden p-4'}`}>
-        {diagramBlocks.length === 0 ? (
+        {currentBlocks.length === 0 ? (
           <div className="flex h-full items-center justify-center p-5 text-center font-['DM_Sans',sans-serif] text-[13px] text-[var(--text-tertiary)]">
             Analysis could not be completed. You can still view the expert comparison.
           </div>
         ) : is2D ? (
           // 2D interactive canvas with React Flow - no padding, full height
-          <DiagramFlow key={layoutKey} blocks={diagramBlocks} />
+          <DiagramFlow key={layoutKey} blocks={currentBlocks} />
         ) : (
           // 1D vertical layout (no arrows, just stacked blocks)
           <div className="flex flex-col gap-4">
-            {diagramBlocks.map((block, index) => (
-              <DiagramBlock key={block.id} block={block} index={index} />
+            {currentBlocks.map((block, index) => (
+              <DiagramBlock
+                key={block.id}
+                block={block}
+                index={index}
+                showFeedback={!showExpertDiagram && mode === 'live'}
+              />
             ))}
+          </div>
+        )}
+
+        {/* Overall feedback banner (live mode, student view) */}
+        {mode === 'live' && !showExpertDiagram && overallFeedback && (
+          <div className="absolute bottom-4 left-4 right-4 rounded-[var(--r)] border border-[var(--border)] bg-[var(--surface)] p-4 shadow-[var(--shadow-lg)]">
+            <div className="mb-2 flex items-center justify-between">
+              <div className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--text-tertiary)]">
+                Overall Feedback
+              </div>
+              {score > 0 && (
+                <div className="rounded-[4px] bg-[var(--green-light)] px-3 py-1 text-[12px] font-bold text-[var(--green)]">
+                  {score}/100
+                </div>
+              )}
+            </div>
+            <div className="text-[12px] leading-[1.6] text-[var(--text-secondary)]">
+              {overallFeedback}
+            </div>
           </div>
         )}
       </div>
