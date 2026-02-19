@@ -45,53 +45,75 @@ export async function analyzeReasoning(
 ): Promise<AnalyzeReasoningResponse> {
   const client = getClient()
 
-  const systemPrompt = `You are extracting the student's reasoning into structured blocks. Your job is to ORGANIZE what they said, NOT to improve, correct, or add clinical knowledge.
+  const systemPrompt = `You are summarizing the student's clinical reasoning into concise blocks. Write in third-person narrative style using verbs like "Identifies", "Notes", "Recognizes", "Considers", "Rules out", "Decides".
 
 CRITICAL RULES:
-- Use the student's OWN WORDS and phrasing as much as possible
-- Do NOT add information the student didn't mention
-- Do NOT correct mistakes or misconceptions
-- Do NOT enhance their reasoning with additional clinical knowledge
-- Just organize their thoughts into blocks
+- Summarize what the student ACTUALLY said/thought, don't add your own clinical knowledge
+- Use third-person narrative: "Identifies X", "Notes that Y", "Recognizes Z"
+- Be concise but capture their key insight or reasoning
+- Do NOT add information they didn't mention
+- Do NOT correct their mistakes (we evaluate later)
+- Do NOT add formal clinical language they didn't use
 
-BLOCK TYPES (categorize what they said):
-- OBSERVATION: When student notes findings, vitals, labs, history ("I see...", "Looking at...", "Patient has...")
-- INTERPRETATION: When student analyzes or connects ideas ("This means...", "So...", "This changes...")
-- CONSIDERATION: When student considers treatment options ("Thinking about...", "Could use...", "What about...")
-- CONTRAINDICATION: When student rules something out ("Can't use...", "Worried about...", "Rule out...")
-- DECISION: When student makes a choice ("Decision:", "Going with...", "I choose...", "Final answer...")
-
-EXTRACTION APPROACH:
-- Title: Short summary using student's key phrase (their words, not yours)
-- Body: Extract 2-3 sentences directly from what they wrote, staying faithful to their language
-- Don't paraphrase into more formal/correct clinical language
-- If student says "pretty high" keep "pretty high", don't change to "significantly elevated"
-- If student makes an error, capture the error - we'll evaluate later
+BLOCK TYPES:
+- OBSERVATION: Student identifies findings, vitals, labs, history
+- INTERPRETATION: Student analyzes, connects ideas, draws conclusions
+- CONSIDERATION: Student considers treatment options
+- CONTRAINDICATION: Student rules something out or notes concerns
+- DECISION: Student makes final choice or determination
 
 REQUIRED FIELDS:
 - id: "b1", "b2", etc.
 - type: from list above
-- title: student's key phrase (max 8 words)
-- body: extracted from student's text (2-3 sentences, their words)
+- title: Concise summary (max 8 words)
+- body: Third-person summary of student's reasoning (2-3 sentences, concise)
 - connects_to: logical flow IDs
 - step: sequential order
 - addedAt: ${Date.now()}
 
 Return ONLY valid JSON. No markdown.
 
-Example of GOOD extraction (faithful to student):
-Student wrote: "HbA1c at 9.1%. That's pretty high, definitely needs treatment."
-Block: {
-  "title": "HbA1c pretty high, needs treatment",
-  "body": "HbA1c at 9.1%. That's pretty high, definitely needs treatment.",
+EXAMPLES:
+
+Student wrote: "Wait, let me check his history... Oh. NSTEMI 8 months ago. That's significant. He's got a stent in his LAD, on dual antiplatelet therapy."
+
+GOOD Block:
+{
+  "title": "Recent NSTEMI with LAD stent",
+  "body": "Identifies recent NSTEMI 8 months ago with LAD stent placement. Notes patient is on dual antiplatelet therapy.",
   "type": "OBSERVATION"
 }
 
-Example of BAD extraction (adding interpretation):
-Block: {
-  "title": "Severely uncontrolled hyperglycemia", ← NOT what student said
-  "body": "HbA1c 9.1% represents poor glycemic control requiring immediate pharmacologic intervention.", ← Too formal, added knowledge
+BAD Block (too verbatim):
+{
+  "title": "Wait, let me check his history",
+  "body": "Wait, let me check his history... Oh. NSTEMI 8 months ago. That's significant.",
   "type": "OBSERVATION"
+}
+
+BAD Block (added knowledge):
+{
+  "title": "High-risk coronary artery disease",
+  "body": "Recent NSTEMI indicates acute coronary syndrome requiring antiplatelet therapy per ACC/AHA guidelines.",
+  "type": "OBSERVATION"
+}
+
+---
+
+Student wrote: "Okay this changes everything. He doesn't just need glucose control - he needs a medication that will help his heart failure. The cardiac status is what's going to kill him if we don't address it."
+
+GOOD Block:
+{
+  "title": "Cardiac status is priority over glucose",
+  "body": "Recognizes that patient doesn't just need glucose control, but needs medication that addresses heart failure. Notes cardiac status is the critical factor that must be addressed.",
+  "type": "INTERPRETATION"
+}
+
+BAD Block (word-for-word):
+{
+  "title": "This changes everything",
+  "body": "Okay this changes everything. He doesn't just need glucose control. The cardiac status is what's going to kill him.",
+  "type": "INTERPRETATION"
 }`
 
   const userPrompt = `Clinical Case Context:
@@ -162,7 +184,7 @@ export async function updateDiagramIncremental(params: {
 }): Promise<AnalyzeReasoningResponse> {
   const client = getClient()
 
-  const systemPrompt = `You are extracting the student's NEW reasoning and updating their diagram. Use their OWN WORDS - do not improve or correct their thinking.
+  const systemPrompt = `You are summarizing the student's NEW reasoning and updating their diagram. Write concise third-person summaries using "Identifies", "Notes", "Recognizes", "Considers", "Rules out", "Decides".
 
 PREVIOUS TEXT:
 ${params.previousText}
@@ -175,48 +197,62 @@ ${JSON.stringify(params.currentBlocks, null, 2)}
 
 TREATMENTS SELECTED: ${params.selectedDrugs.join(', ') || 'None yet'}
 
-YOUR JOB: Extract new reasoning from the added text and add it as new blocks. Keep all existing blocks unchanged unless the student explicitly revised that specific thought.
+YOUR JOB: Identify new reasoning in the added text and create new blocks for it. Keep existing blocks unchanged unless student explicitly revises that thought.
 
 CRITICAL RULES:
-- Use student's EXACT WORDS and phrasing
-- Do NOT add clinical knowledge they didn't mention
-- Do NOT correct their mistakes
-- Do NOT enhance or formalize their language
-- Just extract and organize what they actually wrote
+- Write in third-person: "Identifies", "Notes", "Recognizes"
+- Summarize what student SAID, don't add clinical knowledge
+- Be concise but preserve their key insight
+- Do NOT correct mistakes (evaluation comes later)
+- Do NOT add formal medical language they didn't use
 
 BLOCK TYPES:
-- OBSERVATION: Student notes findings ("I see...", "Looking at...")
-- INTERPRETATION: Student analyzes ("This means...", "So...")
-- CONSIDERATION: Student considers options ("Thinking about...", "Could use...")
-- CONTRAINDICATION: Student rules out ("Can't use...", "Rule out...")
-- DECISION: Student makes choice ("Decision:", "Going with...", "I choose...")
+- OBSERVATION: Student identifies findings, vitals, labs, history
+- INTERPRETATION: Student analyzes, connects ideas, draws conclusions
+- CONSIDERATION: Student considers treatment options
+- CONTRAINDICATION: Student rules something out
+- DECISION: Student makes final choice
 
 WHEN TO ADD NEW BLOCKS:
-- Student introduces a new finding or observation
-- Student draws a new conclusion
-- Student considers a new treatment option
-- Student rules something out
-- Student makes a decision
+- New finding or observation mentioned
+- New conclusion or analysis drawn
+- New treatment option considered
+- Something ruled out
+- Decision made
 
-WHEN TO KEEP EXISTING BLOCKS:
-- Unless student explicitly corrects or revises a previous thought, keep all existing blocks as-is
+KEEP EXISTING BLOCKS unless student explicitly revises that specific thought.
 
 REQUIRED FIELDS:
-- id: keep existing, use next available for new ("b1", "b2"...)
+- id: keep existing, next available for new
 - type: from list above
-- title: student's key phrase (max 8 words, their language)
-- body: directly from student's text (2-3 sentences, their exact words)
+- title: concise summary (max 8 words)
+- body: third-person summary (2-3 sentences, concise)
 - connects_to: logical flow
-- step: highest existing step + 1 for all new blocks
+- step: highest step + 1 for new blocks
 - addedAt: ${Date.now()}
 
 Return ONLY valid JSON. No markdown.
 
-GOOD extraction: "Wait, let me check his history... Oh. NSTEMI 8 months ago."
-→ title: "Wait - NSTEMI 8 months ago", body: Uses student's exact surprised reaction
+EXAMPLE:
 
-BAD extraction: "Recent myocardial infarction requiring consideration"
-→ Too formal, loses student's discovery moment and tone`
+New text: "So metformin would control his glucose, sure, but it doesn't have proven mortality benefit in HFrEF. I need to think about SGLT2 inhibitors here."
+
+GOOD Block:
+{
+  "title": "Metformin lacks HFrEF mortality benefit",
+  "body": "Recognizes metformin provides glucose control but doesn't have proven mortality benefit in HFrEF. Considers SGLT2 inhibitors as alternative.",
+  "type": "INTERPRETATION"
+}
+
+BAD (word-for-word):
+{
+  "body": "So metformin would control his glucose, sure, but it doesn't have proven mortality benefit in HFrEF.",
+}
+
+BAD (added knowledge):
+{
+  "body": "Metformin is not indicated for heart failure per ESC guidelines. SGLT2 inhibitors demonstrate mortality reduction in EMPEROR-Reduced trial.",
+}`
 
   const userPrompt = `Clinical Case: ${params.caseContext}
 
