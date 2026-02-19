@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from 'react'
+import { useRef, useEffect } from 'react'
 import { useMode } from '../../context/ModeProvider'
 
 interface HighlightedTextareaProps {
@@ -7,8 +7,8 @@ interface HighlightedTextareaProps {
   readOnly?: boolean
   placeholder?: string
   className?: string
-  onFocus?: (e: React.FocusEvent<HTMLTextAreaElement>) => void
-  onBlur?: (e: React.FocusEvent<HTMLTextAreaElement>) => void
+  onFocus?: (e: React.FocusEvent<HTMLDivElement>) => void
+  onBlur?: (e: React.FocusEvent<HTMLDivElement>) => void
 }
 
 export default function HighlightedTextarea({
@@ -21,23 +21,35 @@ export default function HighlightedTextarea({
   onBlur,
 }: HighlightedTextareaProps) {
   const { hoveredBlock } = useMode()
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
-  const highlightRef = useRef<HTMLDivElement>(null)
-  const [scrollTop, setScrollTop] = useState(0)
+  const editorRef = useRef<HTMLDivElement>(null)
 
-  // Sync scroll position between textarea and highlight layer
-  const handleScroll = () => {
-    if (textareaRef.current && highlightRef.current) {
-      const scrollTop = textareaRef.current.scrollTop
-      setScrollTop(scrollTop)
-      highlightRef.current.scrollTop = scrollTop
+  // Update contenteditable when value changes externally
+  useEffect(() => {
+    if (editorRef.current && editorRef.current.innerText !== value) {
+      const selection = window.getSelection()
+      const range = selection?.rangeCount ? selection.getRangeAt(0) : null
+      const start = range?.startOffset || 0
+
+      editorRef.current.innerText = value
+
+      // Restore cursor position
+      if (range && editorRef.current.firstChild) {
+        try {
+          range.setStart(editorRef.current.firstChild, Math.min(start, value.length))
+          range.collapse(true)
+          selection?.removeAllRanges()
+          selection?.addRange(range)
+        } catch (e) {
+          // Ignore if cursor restoration fails
+        }
+      }
     }
-  }
+  }, [value])
 
   // Scroll to highlighted text when hovering over a block
   useEffect(() => {
-    if (hoveredBlock && textareaRef.current && hoveredBlock.sourceStart !== undefined) {
-      const textarea = textareaRef.current
+    if (hoveredBlock && editorRef.current && hoveredBlock.sourceStart !== undefined) {
+      const editor = editorRef.current
       const start = hoveredBlock.sourceStart
 
       // Calculate approximate line position
@@ -47,14 +59,23 @@ export default function HighlightedTextarea({
       const targetScroll = (lines - 3) * lineHeight // Scroll to show context above
 
       // Smooth scroll to the target position
-      textarea.scrollTop = Math.max(0, targetScroll)
+      editor.scrollTop = Math.max(0, targetScroll)
     }
   }, [hoveredBlock, value])
 
-  const renderHighlightedText = () => {
-    if (!hoveredBlock || hoveredBlock.sourceStart === undefined || hoveredBlock.sourceEnd === undefined) {
-      // No highlighting - render text (will be transparent via parent style)
-      return <span>{value}&nbsp;</span>
+  const handleInput = (e: React.FormEvent<HTMLDivElement>) => {
+    const newValue = e.currentTarget.innerText
+    onChange(newValue)
+  }
+
+  const renderContent = () => {
+    if (
+      !hoveredBlock ||
+      hoveredBlock.sourceStart === undefined ||
+      hoveredBlock.sourceEnd === undefined ||
+      !value
+    ) {
+      return value || ''
     }
 
     // Get highlight color based on block type
@@ -76,59 +97,45 @@ export default function HighlightedTextarea({
 
     return (
       <>
-        <span>{before}</span>
-        <mark style={{ backgroundColor: highlightColor, color: 'transparent' }}>{highlighted}</mark>
-        <span>{after}&nbsp;</span>
+        {before}
+        <mark
+          style={{
+            backgroundColor: highlightColor,
+            color: 'inherit',
+            padding: 0,
+            borderRadius: '2px',
+          }}
+        >
+          {highlighted}
+        </mark>
+        {after}
       </>
     )
   }
 
   return (
-    <div className="relative h-full w-full">
-      {/* Background layer with highlighted text */}
-      <div
-        ref={highlightRef}
-        className="absolute inset-0 overflow-hidden font-['DM_Sans',sans-serif]"
-        style={{
-          pointerEvents: 'none',
-          whiteSpace: 'pre-wrap',
-          wordWrap: 'break-word',
-          overflowWrap: 'break-word',
-          scrollbarWidth: 'none',
-          msOverflowStyle: 'none',
-          color: 'transparent',
-          padding: '13px 16px',
-          fontSize: '14px',
-          lineHeight: '1.7',
-          borderRadius: 'var(--r)',
-        }}
-      >
-        {renderHighlightedText()}
-      </div>
-
-      {/* Actual textarea */}
-      <textarea
-        ref={textareaRef}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        onScroll={handleScroll}
-        readOnly={readOnly}
-        placeholder={placeholder}
-        className={`hide-scrollbar relative h-full w-full resize-none bg-transparent font-['DM_Sans',sans-serif] ${className}`}
-        onFocus={onFocus}
-        onBlur={onBlur}
-        style={{
-          color: 'var(--text-primary)',
-          zIndex: 1,
-          padding: '13px 16px',
-          fontSize: '14px',
-          lineHeight: '1.7',
-          borderRadius: 'var(--r)',
-          whiteSpace: 'pre-wrap',
-          wordWrap: 'break-word',
-          overflowWrap: 'break-word',
-        }}
-      />
+    <div
+      ref={editorRef}
+      contentEditable={!readOnly}
+      onInput={handleInput}
+      onFocus={onFocus}
+      onBlur={onBlur}
+      className={`hide-scrollbar relative h-full w-full resize-none overflow-auto font-['DM_Sans',sans-serif] ${className}`}
+      style={{
+        color: 'var(--text-primary)',
+        padding: '13px 16px',
+        fontSize: '14px',
+        lineHeight: '1.7',
+        borderRadius: 'var(--r)',
+        whiteSpace: 'pre-wrap',
+        wordWrap: 'break-word',
+        overflowWrap: 'break-word',
+        outline: 'none',
+      }}
+      suppressContentEditableWarning
+      data-placeholder={!value ? placeholder : undefined}
+    >
+      {renderContent()}
     </div>
   )
 }
