@@ -8,8 +8,14 @@ export default function ModeSelectionModal() {
   const selectMode = (mode: 'demo' | 'live') => {
     dispatch({ type: 'SET_MODE', payload: mode })
     dispatch({ type: 'HIDE_MODE_MODAL' })
-    // Show difficulty modal after mode selection
-    dispatch({ type: 'SHOW_DIFFICULTY_MODAL' })
+
+    if (mode === 'live') {
+      // Show access code modal for live mode
+      dispatch({ type: 'SHOW_ACCESS_CODE_MODAL' })
+    } else {
+      // Show difficulty modal directly for demo mode
+      dispatch({ type: 'SHOW_DIFFICULTY_MODAL' })
+    }
   }
 
   return (

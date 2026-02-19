@@ -5,6 +5,8 @@ import { DiagramBlock } from '../services/api'
 interface ModeState {
   mode: 'demo' | 'live' | null
   showModeModal: boolean
+  showAccessCodeModal: boolean
+  accessGranted: boolean
   difficulty: 'easy' | 'medium' | 'hard' | null
   showDifficultyModal: boolean
   isPlaying: boolean
@@ -57,6 +59,8 @@ export const useMode = () => {
 const initialState: ModeState = {
   mode: null, // Show mode selection modal first
   showModeModal: true, // Show mode modal on first load
+  showAccessCodeModal: false,
+  accessGranted: false,
   difficulty: null, // Show difficulty modal after mode selection
   showDifficultyModal: false, // Will be shown after mode selection
   isPlaying: false,
@@ -93,6 +97,15 @@ function modeReducer(state: ModeState, action: ModeAction): ModeState {
 
     case 'SHOW_MODE_MODAL':
       return { ...state, showModeModal: true }
+
+    case 'SHOW_ACCESS_CODE_MODAL':
+      return { ...state, showAccessCodeModal: true }
+
+    case 'HIDE_ACCESS_CODE_MODAL':
+      return { ...state, showAccessCodeModal: false }
+
+    case 'SET_ACCESS_GRANTED':
+      return { ...state, accessGranted: action.payload }
 
     case 'SET_DIFFICULTY':
       return { ...state, difficulty: action.payload }
