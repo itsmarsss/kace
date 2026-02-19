@@ -32,37 +32,6 @@ export default function HighlightedTextarea({
     }
   }
 
-  // Scroll to highlighted text when hovering over a block
-  useEffect(() => {
-    if (hoveredBlock && textareaRef.current && hoveredBlock.sourceText && value) {
-      const textarea = textareaRef.current
-
-      // Find the actual position using fuzzy matching
-      const findStart = (searchText: string, fullText: string): number => {
-        // Try exact match first
-        let index = fullText.indexOf(searchText)
-        if (index !== -1) return index
-
-        // Try case-insensitive
-        index = fullText.toLowerCase().indexOf(searchText.toLowerCase())
-        if (index !== -1) return index
-
-        return 0 // Default to top if not found
-      }
-
-      const start = findStart(hoveredBlock.sourceText, value)
-
-      // Calculate approximate line position
-      const beforeText = value.substring(0, start)
-      const lines = beforeText.split('\n').length
-      const lineHeight = 14 * 1.7 // font-size * line-height
-      const targetScroll = (lines - 3) * lineHeight // Scroll to show context above
-
-      // Smooth scroll to the target position
-      textarea.scrollTop = Math.max(0, targetScroll)
-    }
-  }, [hoveredBlock, value])
-
   const getHighlightColor = (type: string) => {
     switch (type) {
       case 'OBSERVATION':
@@ -137,6 +106,27 @@ export default function HighlightedTextarea({
 
     return null
   }
+
+  // Scroll to highlighted text when hovering over a block
+  useEffect(() => {
+    if (hoveredBlock && textareaRef.current && hoveredBlock.sourceText && value) {
+      const textarea = textareaRef.current
+
+      // Find the actual position using the same fuzzy matching
+      const position = findTextPosition(hoveredBlock.sourceText, value)
+
+      if (position) {
+        // Calculate approximate line position
+        const beforeText = value.substring(0, position.start)
+        const lines = beforeText.split('\n').length
+        const lineHeight = 14 * 1.7 // font-size * line-height
+        const targetScroll = (lines - 3) * lineHeight // Scroll to show context above
+
+        // Smooth scroll to the target position
+        textarea.scrollTop = Math.max(0, targetScroll)
+      }
+    }
+  }, [hoveredBlock, value])
 
   const renderBackdrop = () => {
     // If no highlight or no source text, return empty
