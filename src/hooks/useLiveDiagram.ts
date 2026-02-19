@@ -29,6 +29,7 @@ export function useLiveDiagram() {
   const lastSnapshotRef = useRef<DiagramSnapshot | null>(null)
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
   const isGeneratingRef = useRef(false)
+  const stepCounterRef = useRef(0)
 
   const generateDiagram = useCallback(
     async (snapshot: DiagramSnapshot) => {
@@ -55,13 +56,19 @@ export function useLiveDiagram() {
       isGeneratingRef.current = true
 
       try {
+        // Increment step counter
+        stepCounterRef.current += 1
+        const currentStep = stepCounterRef.current
+
         // Compute what changed
         const textDiff = computeTextDiff(previousSnapshot?.text || '', snapshot.text)
 
         console.log('[Live Diagram] Generating update:', {
+          step: currentStep,
           previousLength: previousSnapshot?.text.length || 0,
           newLength: snapshot.text.length,
           diff: textDiff,
+          selectedDrugs: snapshot.drugs,
         })
 
         // Call Claude API to update diagram
@@ -71,6 +78,7 @@ export function useLiveDiagram() {
           textDiff,
           currentBlocks: diagramBlocks,
           caseContext: currentCase.systemContext,
+          selectedDrugs: snapshot.drugs,
         })
 
         // Update diagram with new blocks
