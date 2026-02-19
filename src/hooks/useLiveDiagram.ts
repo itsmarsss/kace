@@ -1,6 +1,6 @@
 import { useEffect, useRef, useCallback } from 'react'
 import { useMode } from '../context/ModeProvider'
-import { updateDiagramIncremental } from '../services/api'
+import { updateDiagramWithGemini } from '../services/gemini'
 
 interface DiagramSnapshot {
   text: string
@@ -71,8 +71,8 @@ export function useLiveDiagram() {
           selectedDrugs: snapshot.drugs,
         })
 
-        // Call Claude API to update diagram
-        const result = await updateDiagramIncremental({
+        // Call Gemini API to update diagram (fast & cheap for live updates)
+        const result = await updateDiagramWithGemini({
           previousText: previousSnapshot?.text || '',
           newText: snapshot.text,
           textDiff,
