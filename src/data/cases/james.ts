@@ -67,6 +67,108 @@ Symptoms:
 - Polyuria, polydipsia, fatigue (classic T2DM presentation)
 - Exertional dyspnea (cardiac)`,
 
+  // Student blocks (built during demo) with feedback
+  studentBlocks: [
+    {
+      id: 'd1',
+      type: 'OBSERVATION',
+      title: 'Uncontrolled T2DM presentation',
+      body: 'HbA1c 9.1% with classic symptoms (polyuria, polydipsia, fatigue). Clear indication for pharmacotherapy.',
+      connects_to: ['d4'],
+      feedback: {
+        isCorrect: true,
+        timing: 'correct',
+        necessity: 'necessary',
+        issues: [],
+        suggestions: [],
+      },
+    },
+    {
+      id: 'd2',
+      type: 'CONSIDERATION',
+      title: 'Metformin - standard first-line',
+      body: 'eGFR 52 allows metformin use with dose monitoring. Standard guideline-recommended approach.',
+      connects_to: ['d4'],
+      feedback: {
+        isCorrect: true,
+        timing: 'correct',
+        necessity: 'necessary',
+        issues: [],
+        suggestions: ['Good to consider first-line, but need to evaluate if this is the best choice given comorbidities'],
+      },
+    },
+    {
+      id: 'd3',
+      type: 'OBSERVATION',
+      title: 'HFrEF with recent MI',
+      body: 'EF 35% confirms heart failure. NSTEMI 8 months ago with LAD stent. High cardiovascular risk.',
+      connects_to: ['d4'],
+      feedback: {
+        isCorrect: true,
+        timing: 'correct',
+        necessity: 'necessary',
+        issues: [],
+        suggestions: [],
+      },
+    },
+    {
+      id: 'd4',
+      type: 'INTERPRETATION',
+      title: 'Cardiac risk supersedes glycemic urgency',
+      body: 'HFrEF is the dominant clinical problem. Must prioritize cardiovascular mortality benefit over pure glycemic efficacy.',
+      connects_to: ['d5', 'd6'],
+      feedback: {
+        isCorrect: true,
+        timing: 'correct',
+        necessity: 'necessary',
+        issues: [],
+        suggestions: [],
+      },
+    },
+    {
+      id: 'd5',
+      type: 'CONSIDERATION',
+      title: 'SGLT2i - proven HFrEF benefit',
+      body: 'Empagliflozin has demonstrated mortality reduction in HFrEF (EMPEROR-Reduced). Also provides glycemic control and BP benefits.',
+      connects_to: ['d7'],
+      feedback: {
+        isCorrect: true,
+        timing: 'correct',
+        necessity: 'necessary',
+        issues: [],
+        suggestions: [],
+      },
+    },
+    {
+      id: 'd6',
+      type: 'CONTRAINDICATION',
+      title: 'GLP-1 RA - less compelling in HFrEF',
+      body: 'While GLP-1 agonists have cardiovascular benefits, HFrEF mortality data is strongest for SGLT2 inhibitors.',
+      connects_to: ['d7'],
+      feedback: {
+        isCorrect: true,
+        timing: 'correct',
+        necessity: 'necessary',
+        issues: [],
+        suggestions: ['Could strengthen by citing specific trial comparisons'],
+      },
+    },
+    {
+      id: 'd7',
+      type: 'DECISION',
+      title: 'Empagliflozin as primary agent',
+      body: 'Addresses both T2DM and HFrEF with proven mortality reduction. eGFR 52 is safe. Evidence-based choice.',
+      connects_to: [],
+      feedback: {
+        isCorrect: true,
+        timing: 'correct',
+        necessity: 'necessary',
+        issues: [],
+        suggestions: [],
+      },
+    },
+  ],
+
   // Expert reasoning blocks for comparison
   expertBlocks: [
     {
@@ -119,6 +221,21 @@ Symptoms:
       connects_to: [],
     },
   ],
+
+  // Overall feedback for the analysis
+  overallFeedback: `Excellent clinical reasoning. You correctly identified HFrEF as the dominant clinical problem and prioritized cardiovascular mortality benefit over pure glycemic control. Your systematic approach of first considering metformin (standard first-line), then recognizing the cardiac history, and pivoting to SGLT2i based on EMPEROR-Reduced trial data demonstrates strong evidence-based decision making.
+
+Key strengths:
+- Recognized the significance of HFrEF (EF 35%) and recent MI
+- Understood that cardiac risk supersedes glycemic urgency
+- Correctly applied SGLT2i trial data (EMPEROR-Reduced) to this clinical scenario
+- Appropriately ruled out alternatives with clear reasoning
+
+Minor suggestions:
+- Could have explicitly mentioned monitoring for euglycemic DKA with SGLT2i
+- Consider mentioning the role of metformin as potential add-on therapy`,
+
+  score: 94,
 
   // Expert insight for overlay footer
   expertInsight:
@@ -266,5 +383,7 @@ Symptoms:
 
     // Final actions
     { action: 'setConfidence', value: 5, delay: 1000 },
+    { action: 'submit', delay: 1500 },
+    { action: 'buildDiagram', delay: 2000 },
   ],
 }

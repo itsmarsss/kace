@@ -132,18 +132,19 @@ function modeReducer(state: ModeState, action: ModeAction): ModeState {
       // This preserves the original structure (connections, etc.) from Gemini
       let updatedDiagramBlocks = state.diagramBlocks
 
-      if (action.payload.studentBlocks && state.mode === 'live') {
-        // In live mode, merge feedback from Claude's response into existing blocks
-        // Match by index since both are in chronological order
+      if (action.payload.studentBlocks && state.diagramBlocks.length > 0) {
+        // Merge feedback from payload into existing blocks (works in both live and demo mode)
+        // Match by ID first, then by index
         updatedDiagramBlocks = state.diagramBlocks.map((block, index) => {
           // Try multiple matching strategies
-          let feedbackBlock = action.payload.studentBlocks[index] // Match by position (most reliable)
+          let feedbackBlock =
+            action.payload.studentBlocks.find((fb: any) => fb.id === block.id) || // Match by ID (most reliable)
+            action.payload.studentBlocks[index] // Match by position
 
           // Fallback: try other matching methods if feedback not found
           if (!feedbackBlock?.feedback) {
             feedbackBlock = action.payload.studentBlocks.find(
               (fb: any) =>
-                fb.id === block.id ||
                 fb.title === block.title ||
                 fb.step === block.step ||
                 (fb.sourceText &&
@@ -160,7 +161,7 @@ function modeReducer(state: ModeState, action: ModeAction): ModeState {
           return block
         })
       } else if (action.payload.studentBlocks) {
-        // Demo mode or legacy format - use the blocks as provided
+        // No existing blocks - use the blocks as provided
         updatedDiagramBlocks = action.payload.studentBlocks
       } else if (action.payload.length) {
         // Legacy format - array of blocks
@@ -343,8 +344,16 @@ export function ModeProvider({ children }: { children: React.ReactNode }) {
             break
 
           case 'buildDiagram':
-            // In demo mode, use expert blocks as scripted diagram
-            dispatch({ type: 'DIAGRAM_READY', payload: james.expertBlocks })
+            // In demo mode, provide full analysis with feedback
+            dispatch({
+              type: 'DIAGRAM_READY',
+              payload: {
+                studentBlocks: james.studentBlocks,
+                expertBlocks: james.expertBlocks,
+                overallFeedback: james.overallFeedback,
+                score: james.score,
+              },
+            })
             break
 
           default:
