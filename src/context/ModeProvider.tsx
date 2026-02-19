@@ -12,7 +12,11 @@ interface ModeState {
   sessionState: 'idle' | 'analyzing' | 'reviewed' | 'expert'
   isAnalyzing: boolean
   isSubmitted: boolean
-  diagramBlocks: DiagramBlock[]
+  diagramBlocks: DiagramBlock[] // Student's blocks (with feedback in live mode)
+  expertBlocks: DiagramBlock[] // Expert/ideal blocks
+  overallFeedback: string // Overall analysis feedback
+  score: number // Overall score 0-100
+  showExpertDiagram: boolean // Toggle between student and expert diagram
   diagramOpen: boolean
   diagramLayout: '1d' | '2d'
   showOverlay: boolean
@@ -57,6 +61,10 @@ const initialState: ModeState = {
   isAnalyzing: false,
   isSubmitted: false,
   diagramBlocks: [],
+  expertBlocks: [],
+  overallFeedback: '',
+  score: 0,
+  showExpertDiagram: false,
   diagramOpen: false,
   diagramLayout: '1d', // '1d' | '2d'
   showOverlay: false,
@@ -120,7 +128,10 @@ function modeReducer(state: ModeState, action: ModeAction): ModeState {
         ...state,
         isAnalyzing: false,
         sessionState: 'reviewed',
-        diagramBlocks: action.payload,
+        diagramBlocks: action.payload.studentBlocks || action.payload, // Handle both new and legacy format
+        expertBlocks: action.payload.expertBlocks || [],
+        overallFeedback: action.payload.overallFeedback || '',
+        score: action.payload.score || 0,
         diagramOpen: true,
       }
 
@@ -193,6 +204,9 @@ function modeReducer(state: ModeState, action: ModeAction): ModeState {
 
     case 'SET_SELECTED_BLOCK':
       return { ...state, selectedBlock: action.payload }
+
+    case 'TOGGLE_EXPERT_DIAGRAM':
+      return { ...state, showExpertDiagram: !state.showExpertDiagram }
 
     case 'RESET':
       return {

@@ -1,4 +1,11 @@
-export default function DiffNode({ type, title, body, animationDelay = 0 }) {
+interface DiffNodeProps {
+  type: 'match' | 'miss' | 'extra'
+  title: string
+  body: string
+  animationDelay?: number
+}
+
+export default function DiffNode({ type, title, body, animationDelay = 0 }: DiffNodeProps) {
   const labels = {
     match: 'Match',
     miss: 'Missed',

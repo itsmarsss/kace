@@ -30,7 +30,12 @@ export function useAnalysis() {
       // Update diagram with results
       dispatch({
         type: 'DIAGRAM_READY',
-        payload: result.blocks,
+        payload: {
+          studentBlocks: result.studentBlocks || result.blocks || [], // Handle legacy format
+          expertBlocks: result.expertBlocks || [],
+          overallFeedback: result.overallFeedback || '',
+          score: result.score || 0,
+        },
       })
     } catch (error) {
       console.error('Analysis failed:', error)

@@ -26,65 +26,70 @@ export async function analyzeReasoningWithClaude(
 ): Promise<AnalyzeReasoningResponse> {
   const client = getClient()
 
-  const systemPrompt = `You are analyzing a medical student's clinical reasoning. Extract their reasoning into structured blocks using third-person narrative.
+  const systemPrompt = `You are an expert clinical educator analyzing a medical student's reasoning. You will:
+1. Extract and evaluate their reasoning into structured blocks
+2. Provide detailed feedback on each block
+3. Generate the ideal reasoning blocks showing correct clinical thinking
 
 BLOCK TYPES:
-- OBSERVATION: Student identifies findings, vitals, labs, history
-- INTERPRETATION: Student analyzes, connects ideas, draws conclusions
-- CONSIDERATION: Student considers treatment options
-- CONTRAINDICATION: Student rules something out
-- DECISION: Student makes final choice
+- OBSERVATION: Identifies findings, vitals, labs, history
+- INTERPRETATION: Analyzes, connects ideas, draws conclusions
+- CONSIDERATION: Considers treatment options
+- CONTRAINDICATION: Rules something out
+- DECISION: Makes final choice
 
-CRITICAL RULES:
-- Summarize what student SAID, don't add clinical knowledge they didn't mention
-- Use third-person: "Identifies", "Notes", "Recognizes", "Considers", "Decides"
-- Be concise but preserve their key insight
-- Do NOT correct mistakes (we evaluate separately)
+EVALUATION CRITERIA:
+For each student block, assess:
+- **Correctness**: Is the clinical reasoning accurate?
+- **Timing**: Should this have been considered earlier/later in the reasoning?
+- **Necessity**: Is this consideration necessary, unnecessary, or is something missing?
+- **Issues**: What specific problems exist (incorrect facts, flawed logic, missing info)?
+- **Suggestions**: What would improve this block?
 
-CONNECTIONS (IMPORTANT):
-- connects_to can have MULTIPLE IDs (branching: b1 → [b2, b3])
-- MULTIPLE blocks can point to SAME ID (merging: [b1, b2] → b3)
-- Show actual reasoning flow, not just sequential chains
-- If student considers 2 options from one observation: branch
-- If 2 findings lead to same conclusion: merge
-- If reasoning reconverges after branching: show it
-
-REQUIRED FIELDS:
-- id: STRING like "b1", "b2", "b3"
-- type: exact type from list above
-- title: concise summary (max 8 words)
-- body: third-person summary (2-3 sentences)
-- connects_to: array of block ID strings (can be empty, one, or many)
-- step: sequential number based on order in reasoning
-- addedAt: ${Date.now()}
-- sourceStart: character index where cited text starts (0-based)
-- sourceEnd: character index where cited text ends
-- sourceText: exact text from reasoning that this block represents
-
-CITATION (REQUIRED):
-- For each block, identify where in the reasoning text it came from
-- Be precise with character indices - this will highlight text on hover
-- If a block spans multiple sentences, cite the full range
-
-OUTPUT FORMAT:
+REQUIRED OUTPUT STRUCTURE:
 {
-  "blocks": [
+  "studentBlocks": [
     {
-      "id": "b1",
+      "id": "s1",
       "type": "OBSERVATION",
       "title": "...",
       "body": "...",
-      "connects_to": ["b2", "b3"],
+      "connects_to": ["s2"],
       "step": 1,
       "addedAt": ${Date.now()},
-      "sourceStart": 0,
-      "sourceEnd": 50,
-      "sourceText": "..."
+      "sourceText": "exact quote from student reasoning",
+      "feedback": {
+        "isCorrect": true/false,
+        "issues": ["specific problem 1", "specific problem 2"],
+        "suggestions": ["how to improve"],
+        "timing": "early" | "late" | "appropriate",
+        "necessity": "necessary" | "unnecessary" | "missing"
+      }
     }
-  ]
+  ],
+  "expertBlocks": [
+    {
+      "id": "e1",
+      "type": "OBSERVATION",
+      "title": "...",
+      "body": "...",
+      "connects_to": ["e2", "e3"],
+      "step": 1,
+      "addedAt": ${Date.now()}
+    }
+  ],
+  "overallFeedback": "2-3 paragraph summary of student's reasoning quality",
+  "score": 85
 }
 
-Return ONLY this JSON structure with accurate citations for each block.`
+FEEDBACK RULES:
+- Be constructive and educational
+- Point out both strengths and weaknesses
+- Suggest specific improvements
+- Consider the clinical context
+- Note when reasoning order matters
+
+Return ONLY this JSON structure.`
 
   const userPrompt = `Clinical Case Context:
 ${request.caseContext}
@@ -95,8 +100,13 @@ ${request.reasoningText}
 Selected Treatments: ${request.selectedDrugs.join(', ') || 'None selected'}
 Confidence Level: ${request.confidence}/5
 
-Extract the structured reasoning diagram showing the true flow of their clinical thinking (branches, merges, not just linear).
-Include accurate citations (sourceStart, sourceEnd, sourceText) for each block pointing to the exact location in the reasoning text above.`
+TASK:
+1. Extract the student's reasoning into structured blocks with accurate sourceText citations
+2. Evaluate each block: identify issues, assess timing/necessity, provide suggestions
+3. Create the ideal reasoning blocks showing correct clinical thinking for this case
+4. Provide overall feedback and a score (0-100)
+
+Focus on educational feedback that helps the student improve their clinical reasoning skills.`
 
   const response = await client.messages.create({
     model: 'claude-sonnet-4-20250514',
@@ -138,12 +148,29 @@ Include accurate citations (sourceStart, sourceEnd, sourceText) for each block p
       parsed = JSON.parse(jsonMatch[0])
     }
 
-    // Ensure IDs are strings
-    if (parsed.blocks) {
-      parsed.blocks = parsed.blocks.map((block: any) => ({
+    // Ensure IDs are strings for both student and expert blocks
+    if (parsed.studentBlocks) {
+      parsed.studentBlocks = parsed.studentBlocks.map((block: any) => ({
         ...block,
         id: String(block.id),
       }))
+    }
+    if (parsed.expertBlocks) {
+      parsed.expertBlocks = parsed.expertBlocks.map((block: any) => ({
+        ...block,
+        id: String(block.id),
+      }))
+    }
+
+    // Handle legacy format (just blocks array)
+    if (parsed.blocks && !parsed.studentBlocks) {
+      parsed.studentBlocks = parsed.blocks.map((block: any) => ({
+        ...block,
+        id: String(block.id),
+      }))
+      parsed.expertBlocks = []
+      parsed.overallFeedback = ''
+      parsed.score = 0
     }
 
     return parsed
