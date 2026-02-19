@@ -1,20 +1,11 @@
-import { useRef, useEffect } from 'react'
 import { X, Workflow, List } from 'lucide-react'
 import { useMode } from '../../context/ModeProvider'
 import DiagramBlock from './DiagramBlock'
-import DiagramArrows from './DiagramArrows'
 import DiagramFlow from './DiagramFlow'
 import { DiagramFullscreenButton } from './DiagramFullscreen'
 
 export default function DiagramPanel() {
   const { diagramBlocks, diagramOpen, diagramLayout, dispatch } = useMode()
-  const containerRef = useRef(null)
-  const blockRefs = useRef([])
-
-  // Initialize block refs array
-  useEffect(() => {
-    blockRefs.current = blockRefs.current.slice(0, diagramBlocks.length)
-  }, [diagramBlocks])
 
   const is2D = diagramLayout === '2d'
 
@@ -77,7 +68,6 @@ export default function DiagramPanel() {
 
       {/* Diagram scroll area */}
       <div
-        ref={containerRef}
         className={`relative flex-1 p-4 ${is2D ? 'overflow-auto' : 'overflow-y-auto overflow-x-hidden'}`}
       >
         {diagramBlocks.length === 0 ? (
@@ -88,27 +78,12 @@ export default function DiagramPanel() {
           // 2D interactive canvas with React Flow
           <DiagramFlow blocks={diagramBlocks} />
         ) : (
-          // 1D vertical layout
-          <>
-            {/* SVG arrows layer (behind blocks) */}
-            <DiagramArrows
-              blocks={diagramBlocks}
-              blockRefs={blockRefs.current}
-              containerRef={containerRef.current}
-            />
-
-            {/* Block cards */}
-            <div className="relative z-[1] flex flex-col gap-4">
-              {diagramBlocks.map((block, index) => (
-                <DiagramBlock
-                  key={block.id}
-                  ref={(el) => (blockRefs.current[index] = el)}
-                  block={block}
-                  index={index}
-                />
-              ))}
-            </div>
-          </>
+          // 1D vertical layout (no arrows, just stacked blocks)
+          <div className="flex flex-col gap-4">
+            {diagramBlocks.map((block, index) => (
+              <DiagramBlock key={block.id} block={block} index={index} />
+            ))}
+          </div>
         )}
       </div>
     </div>
