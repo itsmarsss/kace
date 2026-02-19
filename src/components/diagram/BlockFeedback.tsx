@@ -53,22 +53,22 @@ export default function BlockFeedback({ feedback, compact = false }: BlockFeedba
   }
 
   return (
-    <div className="mt-3 space-y-2 border-t border-[var(--border)] pt-3">
+    <div className="mt-4 space-y-3 border-t border-[var(--border)] pt-4">
       {/* Status header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           {getStatusIcon()}
-          <span className="text-[9px] font-semibold uppercase tracking-[0.12em] text-[var(--text-tertiary)]">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--text-tertiary)]">
             Feedback
           </span>
         </div>
         <div className="flex items-center gap-2">
           {getTimingIcon()}
           {feedback.timing === 'early' && (
-            <span className="text-[9px] text-[var(--amber)]">Should be later</span>
+            <span className="text-[11px] text-[var(--amber)]">Should be later</span>
           )}
           {feedback.timing === 'late' && (
-            <span className="text-[9px] text-[var(--crimson)]">Should be earlier</span>
+            <span className="text-[11px] text-[var(--crimson)]">Should be earlier</span>
           )}
           {getNecessityBadge()}
         </div>
@@ -76,16 +76,16 @@ export default function BlockFeedback({ feedback, compact = false }: BlockFeedba
 
       {/* Issues */}
       {feedback.issues && feedback.issues.length > 0 && (
-        <div className="space-y-1">
-          <div className="flex items-center gap-1 text-[9px] font-semibold uppercase tracking-[0.12em] text-[var(--crimson)]">
-            <AlertTriangle size={10} />
+        <div className="space-y-2">
+          <div className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--crimson)]">
+            <AlertTriangle size={12} />
             Issues
           </div>
-          <ul className="space-y-1">
+          <ul className="space-y-2">
             {feedback.issues.map((issue, i) => (
               <li
                 key={i}
-                className="text-[11px] leading-[1.6] text-[var(--text-secondary)] before:mr-2 before:content-['•']"
+                className="text-[13px] leading-[1.7] text-[var(--text-secondary)] before:mr-2 before:content-['•']"
               >
                 {issue}
               </li>
@@ -96,15 +96,15 @@ export default function BlockFeedback({ feedback, compact = false }: BlockFeedba
 
       {/* Suggestions */}
       {feedback.suggestions && feedback.suggestions.length > 0 && (
-        <div className="space-y-1">
-          <div className="text-[9px] font-semibold uppercase tracking-[0.12em] text-[var(--green)]">
+        <div className="space-y-2">
+          <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--green)]">
             Suggestions
           </div>
-          <ul className="space-y-1">
+          <ul className="space-y-2">
             {feedback.suggestions.map((suggestion, i) => (
               <li
                 key={i}
-                className="text-[11px] leading-[1.6] text-[var(--text-secondary)] before:mr-2 before:content-['→']"
+                className="text-[13px] leading-[1.7] text-[var(--text-secondary)] before:mr-2 before:content-['→']"
               >
                 {suggestion}
               </li>
