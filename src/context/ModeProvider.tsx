@@ -17,6 +17,7 @@ interface ModeState {
   overallFeedback: string // Overall analysis feedback
   score: number // Overall score 0-100
   showExpertDiagram: boolean // Toggle between student and expert diagram
+  showFeedbackModal: boolean // Show detailed feedback modal
   diagramOpen: boolean
   diagramLayout: '1d' | '2d'
   showOverlay: boolean
@@ -65,6 +66,7 @@ const initialState: ModeState = {
   overallFeedback: '',
   score: 0,
   showExpertDiagram: false,
+  showFeedbackModal: false,
   diagramOpen: false,
   diagramLayout: '1d', // '1d' | '2d'
   showOverlay: false,
@@ -133,6 +135,10 @@ function modeReducer(state: ModeState, action: ModeAction): ModeState {
         overallFeedback: action.payload.overallFeedback || '',
         score: action.payload.score || 0,
         diagramOpen: true,
+        // Show feedback modal in live mode when we have feedback
+        showFeedbackModal:
+          state.mode === 'live' &&
+          (action.payload.overallFeedback || action.payload.score > 0 || action.payload.expertBlocks?.length > 0),
       }
 
     case 'ADD_DIAGRAM_BLOCK':
@@ -207,6 +213,12 @@ function modeReducer(state: ModeState, action: ModeAction): ModeState {
 
     case 'TOGGLE_EXPERT_DIAGRAM':
       return { ...state, showExpertDiagram: !state.showExpertDiagram }
+
+    case 'SHOW_FEEDBACK_MODAL':
+      return { ...state, showFeedbackModal: true }
+
+    case 'HIDE_FEEDBACK_MODAL':
+      return { ...state, showFeedbackModal: false }
 
     case 'RESET':
       return {

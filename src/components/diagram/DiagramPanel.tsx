@@ -140,24 +140,6 @@ export default function DiagramPanel() {
           </div>
         )}
 
-        {/* Overall feedback banner (live mode, student view) */}
-        {mode === 'live' && !showExpertDiagram && overallFeedback && (
-          <div className="absolute bottom-4 left-4 right-4 rounded-[var(--r)] border border-[var(--border)] bg-[var(--surface)] p-4 shadow-[var(--shadow-lg)]">
-            <div className="mb-2 flex items-center justify-between">
-              <div className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--text-tertiary)]">
-                Overall Feedback
-              </div>
-              {score > 0 && (
-                <div className="rounded-[4px] bg-[var(--green-light)] px-3 py-1 text-[12px] font-bold text-[var(--green)]">
-                  {score}/100
-                </div>
-              )}
-            </div>
-            <div className="text-[12px] leading-[1.6] text-[var(--text-secondary)]">
-              {overallFeedback}
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Block detail modal (shows on double-click) */}
