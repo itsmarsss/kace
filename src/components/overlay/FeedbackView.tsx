@@ -67,7 +67,7 @@ export default function FeedbackView() {
   // Show analyzing loader
   if (isAnalyzing) {
     return (
-      <div className="fixed bottom-0 right-0 top-0 z-[300] flex items-center justify-center bg-[var(--surface)] left-[20%]">
+      <div className="flex h-full w-full items-center justify-center bg-[var(--surface)]">
         <div className="text-center">
           <div className="mb-4 inline-block h-12 w-12 animate-spin rounded-full border-4 border-[var(--border)] border-t-[var(--teal)]" />
           <div className="font-['DM_Sans',sans-serif] text-[16px] font-semibold text-[var(--text-primary)]">
@@ -186,7 +186,7 @@ export default function FeedbackView() {
   }
 
   return (
-    <div className="fixed bottom-0 right-0 top-0 z-[300] flex flex-col bg-[var(--surface)] left-[20%]">
+    <div className="flex h-full w-full flex-col bg-[var(--surface)]">
       {/* Top bar with overall feedback */}
       <div className="flex flex-col border-b border-[var(--border)] bg-[var(--surface)]">
         {/* Header row */}
