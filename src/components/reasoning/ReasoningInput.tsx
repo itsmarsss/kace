@@ -1,6 +1,9 @@
+import { useEffect } from 'react'
+import { Mic, MicOff } from 'lucide-react'
 import { useMode } from '../../context/ModeProvider'
 import { useAnalysis } from '../../hooks/useAnalysis'
 import { useLiveDiagram } from '../../hooks/useLiveDiagram'
+import { useSTT } from '../../hooks/useSTT'
 import ConfidenceSlider from '../input/ConfidenceSlider'
 import TreatmentReference from './TreatmentReference'
 import HighlightedTextarea from './HighlightedTextarea'
@@ -9,6 +12,17 @@ export default function ReasoningInput() {
   const { reasoningText, selectedDrugs, isSubmitted, isAnalyzing, mode, dispatch } = useMode()
   const { submitReasoning } = useAnalysis()
   const { triggerNow, isGenerating, countdown } = useLiveDiagram()
+  const { isListening, transcript, toggleListening } = useSTT()
+
+  // Append speech transcript to reasoning text
+  useEffect(() => {
+    if (transcript && !isSubmitted) {
+      dispatch({
+        type: 'SET_REASONING_TEXT',
+        payload: reasoningText + transcript,
+      })
+    }
+  }, [transcript, isSubmitted, dispatch, reasoningText])
 
   // Auto-resize textarea - disabled since we want it to fill container
   // useEffect(() => {
@@ -61,7 +75,23 @@ export default function ReasoningInput() {
 
       {/* Reasoning Textarea */}
       <div className="flex flex-1 flex-col px-5 pb-3">
-        <div className="label-caps mb-2 flex-shrink-0">YOUR REASONING</div>
+        <div className="label-caps mb-2 flex flex-shrink-0 items-center justify-between">
+          <span>YOUR REASONING</span>
+          {!isSubmitted && (
+            <button
+              onClick={toggleListening}
+              disabled={isSubmitted}
+              className={`rounded-[var(--r-sm)] p-1.5 transition-all duration-150 ${
+                isListening
+                  ? 'bg-[var(--crimson)] text-white shadow-[var(--shadow-sm)] hover:bg-[var(--crimson-dark)]'
+                  : 'bg-[var(--muted-bg)] text-[var(--text-secondary)] hover:bg-[var(--border)]'
+              }`}
+              title={isListening ? 'Stop recording' : 'Start voice input'}
+            >
+              {isListening ? <MicOff size={16} /> : <Mic size={16} />}
+            </button>
+          )}
+        </div>
         <HighlightedTextarea
           value={reasoningText}
           onChange={(value) =>
