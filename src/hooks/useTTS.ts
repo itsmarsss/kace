@@ -1,56 +1,55 @@
 import { useState, useEffect, useRef } from 'react'
+import { getCartesiaTTS } from '../services/cartesia'
 
 /**
- * Custom hook for Text-to-Speech using Web Speech API
+ * Custom hook for Text-to-Speech using Cartesia WebSocket streaming
  * @returns {Object} TTS controls and state
  */
 export function useTTS() {
   const [isSpeaking, setIsSpeaking] = useState(false)
-  const utteranceRef = useRef(null)
-  const voiceRef = useRef(null)
+  const ttsRef = useRef(null)
 
   useEffect(() => {
-    // Voice list is async — cache preferred voice after it loads
-    const setVoice = () => {
-      const voices = window.speechSynthesis.getVoices()
-      // Prefer en-GB Daniel voice if available
-      voiceRef.current =
-        voices.find((v) => v.lang === 'en-GB' && /daniel/i.test(v.name)) ||
-        voices.find((v) => v.lang.startsWith('en')) ||
-        null
-    }
-
-    window.speechSynthesis.onvoiceschanged = setVoice
-    setVoice() // Call immediately in case already loaded
-
     // Cleanup on unmount
     return () => {
-      window.speechSynthesis.cancel()
+      if (ttsRef.current) {
+        ttsRef.current.disconnect()
+      }
     }
   }, [])
 
-  const speak = (text) => {
-    // Cancel any ongoing speech
-    window.speechSynthesis.cancel()
+  const speak = async (text) => {
+    try {
+      // Stop any ongoing speech
+      if (ttsRef.current) {
+        ttsRef.current.stop()
+      }
 
-    const utterance = new SpeechSynthesisUtterance(text)
-    utterance.rate = 0.88
-    utterance.pitch = 0.95
+      // Get or create Cartesia TTS instance
+      const tts = getCartesiaTTS()
+      ttsRef.current = tts
 
-    if (voiceRef.current) {
-      utterance.voice = voiceRef.current
+      setIsSpeaking(true)
+
+      // Speak with Cartesia
+      await tts.speak(text)
+
+      // Update state when done
+      setTimeout(() => {
+        if (!tts.getIsPlaying()) {
+          setIsSpeaking(false)
+        }
+      }, 500)
+    } catch (error) {
+      console.error('TTS error:', error)
+      setIsSpeaking(false)
     }
-
-    utterance.onstart = () => setIsSpeaking(true)
-    utterance.onend = () => setIsSpeaking(false)
-    utterance.onerror = () => setIsSpeaking(false)
-
-    utteranceRef.current = utterance
-    window.speechSynthesis.speak(utterance)
   }
 
   const stop = () => {
-    window.speechSynthesis.cancel()
+    if (ttsRef.current) {
+      ttsRef.current.stop()
+    }
     setIsSpeaking(false)
   }
 
